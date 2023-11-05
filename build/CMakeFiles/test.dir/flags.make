@@ -6,5 +6,9 @@ CXX_FLAGS =  -rdynamic -O0 -ggdb -std=c++20 -Wall -Wno-deprecated -Werror -Wno-u
 
 CXX_DEFINES = 
 
+<<<<<<< HEAD
 CXX_INCLUDES = -I/root/serverProjects/cpp_chatroom_server/. -I/usr/local/include 
+=======
+CXX_INCLUDES = 
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 

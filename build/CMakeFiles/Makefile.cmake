@@ -43,7 +43,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+<<<<<<< HEAD
   "CMakeFiles/chat.dir/DependInfo.cmake"
   "CMakeFiles/test.dir/DependInfo.cmake"
   "CMakeFiles/test_config.dir/DependInfo.cmake"
+=======
+  "CMakeFiles/test.dir/DependInfo.cmake"
+  "CMakeFiles/chat.dir/DependInfo.cmake"
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
   )

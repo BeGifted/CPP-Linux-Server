@@ -114,6 +114,7 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+<<<<<<< HEAD
 # Target rules for targets named chat
 
 # Build rule for target.
@@ -127,6 +128,8 @@ chat/fast:
 .PHONY : chat/fast
 
 #=============================================================================
+=======
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 # Target rules for targets named test
 
 # Build rule for target.
@@ -140,6 +143,7 @@ test/fast:
 .PHONY : test/fast
 
 #=============================================================================
+<<<<<<< HEAD
 # Target rules for targets named test_config
 
 # Build rule for target.
@@ -178,6 +182,19 @@ chat/config.s: chat/config.cc.s
 chat/config.cc.s:
 	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/config.cc.s
 .PHONY : chat/config.cc.s
+=======
+# Target rules for targets named chat
+
+# Build rule for target.
+chat: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chat
+.PHONY : chat
+
+# fast build rule for target.
+chat/fast:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/build
+.PHONY : chat/fast
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 
 chat/log.o: chat/log.cc.o
 
@@ -260,6 +277,7 @@ tests/test.cc.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/tests/test.cc.s
 .PHONY : tests/test.cc.s
 
+<<<<<<< HEAD
 tests/test_config.o: tests/test_config.cc.o
 
 .PHONY : tests/test_config.o
@@ -287,6 +305,8 @@ tests/test_config.cc.s:
 	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cc.s
 .PHONY : tests/test_config.cc.s
 
+=======
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -294,6 +314,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+<<<<<<< HEAD
 	@echo "... chat"
 	@echo "... test"
 	@echo "... test_config"
@@ -301,6 +322,11 @@ help:
 	@echo "... chat/config.o"
 	@echo "... chat/config.i"
 	@echo "... chat/config.s"
+=======
+	@echo "... edit_cache"
+	@echo "... test"
+	@echo "... chat"
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 	@echo "... chat/log.o"
 	@echo "... chat/log.i"
 	@echo "... chat/log.s"
@@ -310,9 +336,12 @@ help:
 	@echo "... tests/test.o"
 	@echo "... tests/test.i"
 	@echo "... tests/test.s"
+<<<<<<< HEAD
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+=======
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 .PHONY : help
 
 

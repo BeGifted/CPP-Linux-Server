@@ -1,5 +1,11 @@
 /root/serverProjects/cpp_chatroom_server/build/CMakeFiles/rebuild_cache.dir
+<<<<<<< HEAD
 /root/serverProjects/cpp_chatroom_server/build/CMakeFiles/chat.dir
 /root/serverProjects/cpp_chatroom_server/build/CMakeFiles/test.dir
 /root/serverProjects/cpp_chatroom_server/build/CMakeFiles/test_config.dir
 /root/serverProjects/cpp_chatroom_server/build/CMakeFiles/edit_cache.dir
+=======
+/root/serverProjects/cpp_chatroom_server/build/CMakeFiles/edit_cache.dir
+/root/serverProjects/cpp_chatroom_server/build/CMakeFiles/test.dir
+/root/serverProjects/cpp_chatroom_server/build/CMakeFiles/chat.dir
+>>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
