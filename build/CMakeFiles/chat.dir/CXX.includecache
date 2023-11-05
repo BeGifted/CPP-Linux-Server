@@ -6,7 +6,6 @@
 
 #IncludeRegexTransform: 
 
-<<<<<<< HEAD
 /root/serverProjects/cpp_chatroom_server/chat/config.cc
 config.h
 /root/serverProjects/cpp_chatroom_server/chat/config.h
@@ -39,8 +38,6 @@ list
 functional
 -
 
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 /root/serverProjects/cpp_chatroom_server/chat/log.cc
 log.h
 /root/serverProjects/cpp_chatroom_server/chat/log.h
@@ -72,11 +69,8 @@ string.h
 -
 stdarg.h
 -
-<<<<<<< HEAD
 util.h
 /root/serverProjects/cpp_chatroom_server/chat/util.h
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 singleton.h
 /root/serverProjects/cpp_chatroom_server/chat/singleton.h
 
@@ -100,7 +94,6 @@ sys/syscall.h
 stdint.h
 -
 
-<<<<<<< HEAD
 /usr/local/include/yaml-cpp/binary.h
 string
 -
@@ -453,5 +446,3 @@ yaml-cpp/node/parse.h
 yaml-cpp/node/emit.h
 /usr/local/include/yaml-cpp/yaml-cpp/node/emit.h
 
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445

@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 /usr/local/bin/g++ -fPIC  -rdynamic -O0 -ggdb -std=c++20 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations  -shared -Wl,-soname,libchat.so -o ../lib/libchat.so CMakeFiles/chat.dir/chat/log.cc.o CMakeFiles/chat.dir/chat/util.cc.o CMakeFiles/chat.dir/chat/config.cc.o 
-=======
-/usr/local/bin/g++ -fPIC  -rdynamic -O0 -ggdb -std=c++20 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations  -shared -Wl,-soname,libchat.so -o ../lib/libchat.so CMakeFiles/chat.dir/chat/log.cc.o CMakeFiles/chat.dir/chat/util.cc.o 
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445

@@ -14,10 +14,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdarg.h>
-<<<<<<< HEAD
 #include "util.h"
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 #include "singleton.h"
 
 /**
@@ -47,10 +44,7 @@
 #define CHAT_LOG_FMT_ERROR(logger, fmt, ...) CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::ERROR, fmt, __VA_ARGS__)
 #define CHAT_LOG_FMT_FATAL(logger, fmt, ...) CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::FATAL, fmt, __VA_ARGS__)
 
-<<<<<<< HEAD
 #define CHAT_LOG_ROOT() chat::LoggerMgr::GetInstance()->getRoot()
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 
 namespace chat {
 class Logger;
@@ -226,10 +220,6 @@ private:
 
 typedef chat::Singleton<LoggerManager> LoggerMgr;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 }
 
 #endif

@@ -10,11 +10,8 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-<<<<<<< HEAD
   "../."
   "/usr/local/include"
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
   )
 
 # Targets to which this target links.

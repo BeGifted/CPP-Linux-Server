@@ -194,12 +194,9 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-<<<<<<< HEAD
 //Path to a library.
-YAMLCPP:FILEPATH=/usr/lib/x86_64-linux-gnu/libyaml-cpp.a
+YAMLCPP:FILEPATH=/usr/local/lib/libyaml-cpp.so
 
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 //Value Computed by CMake
 chat_BINARY_DIR:STATIC=/root/serverProjects/cpp_chatroom_server/build
 
@@ -209,12 +206,6 @@ chat_LIB_DEPENDS:STATIC=
 //Value Computed by CMake
 chat_SOURCE_DIR:STATIC=/root/serverProjects/cpp_chatroom_server
 
-<<<<<<< HEAD
-//The directory containing a CMake configuration file for yaml-cpp.
-yaml-cpp_DIR:PATH=/usr/local/lib/cmake/yaml-cpp
-
-=======
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
 
 ########################
 # INTERNAL cache entries

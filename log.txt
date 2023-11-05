@@ -1,7 +1,2 @@
-<<<<<<< HEAD
 2023-11-04 18:57:31	ERROR	test macro error
 2023-11-04 18:57:31	ERROR	test macro fmt error aa
-=======
-2023-11-04 00:56:39	ERROR	test macro error
-2023-11-04 00:56:39	ERROR	test macro fmt error aa
->>>>>>> 4254dc14c2b00a548c7237d0b64660f7ab626445
