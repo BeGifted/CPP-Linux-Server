@@ -8,3 +8,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/root/serverProjects/cpp_chatroom_server/. -I/usr/local/include 
 
+# Custom defines: CMakeFiles/test.dir/tests/test.cc.o_DEFINES = __FILE__="tests/test.cc"
+

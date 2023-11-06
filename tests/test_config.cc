@@ -188,9 +188,27 @@ void test_class() {
 
 }
 
+void test_log() {
+    static chat::Logger::ptr system_log = CHAT_LOG_NAME("system");
+    CHAT_LOG_INFO(system_log) << "hello system" << std::endl;
+    std::cout << chat::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    
+    YAML::Node root = YAML::LoadFile("/root/serverProjects/cpp_chatroom_server/bin/conf/log.yml");
+    chat::Config::LoadFromYaml(root);
+
+    std::cout << "--------------" << std::endl;
+    std::cout << chat::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    CHAT_LOG_INFO(system_log) << "hello system" << std::endl;
+
+    system_log->setFormatter("%d - %m%n");
+    CHAT_LOG_INFO(system_log) << "hello system" << std::endl;
+
+}
+
 int main(int argc, char** argv) {
     // test_yaml();
     // test_config();
-    test_class();
+    // test_class();
+    test_log();
     return 0;
 }

@@ -4,56 +4,57 @@ logs:
       formatter: '%d%T%m%n'
       appenders:
           - type: FileLogAppender
-            file: log.txt
+            file: root.txt
           - type: StdoutLogAppender
     - name: system
       level: debug
       formatter: '%d%T%m%n'
       appenders:
           - type: FileLogAppender
-            file: log.txt
+            file: system.txt
+            formatter: '%d%T[%p]%t%m%n'
           - type: StdoutLogAppender
 
-system:
-    port: 1
-    value: 15
-    int_vec: [10, 20]
-    int_list: [11, 22, 33]
-    int_set: [1, 2, 3, 3]
-    int_uset: [1, 2, 3, 3]
-    str_int_map:
-        d1: 20
-        d2: 30
-    str_int_umap:
-        d3: 20
-        d4: 30
+# system:
+#     port: 1
+#     value: 15
+#     int_vec: [10, 20]
+#     int_list: [11, 22, 33]
+#     int_set: [1, 2, 3, 3]
+#     int_uset: [1, 2, 3, 3]
+#     str_int_map:
+#         d1: 20
+#         d2: 30
+#     str_int_umap:
+#         d3: 20
+#         d4: 30
 
-class:
-    person:
-        name: ma
-        age: 22
-        sex: true
-    map:
-        ma01:
-            name: ma01
-            age: 18
-            sex: false
-        ma02:
-            name: ma02
-            age: 22
-            sex: true
-    vec_map:
-        ma:
-            - name: ma01
-              age: 22
-              sex: true 
-            - name: ma02
-              age: 22
-              sex: true 
-        hao:
-            - name: ma03
-              age: 22
-              sex: true 
-            - name: ma04
-              age: 22
-              sex: true 
+# class:
+#     person:
+#         name: ma
+#         age: 22
+#         sex: true
+#     map:
+#         ma01:
+#             name: ma01
+#             age: 18
+#             sex: false
+#         ma02:
+#             name: ma02
+#             age: 22
+#             sex: true
+#     vec_map:
+#         ma:
+#             - name: ma01
+#               age: 22
+#               sex: true 
+#             - name: ma02
+#               age: 22
+#               sex: true 
+#         hao:
+#             - name: ma03
+#               age: 22
+#               sex: true 
+#             - name: ma04
+#               age: 22
+#               sex: true 
