@@ -3,6 +3,7 @@
 
 CMakeFiles/test.dir/tests/test.cc.o: ../chat/log.h
 CMakeFiles/test.dir/tests/test.cc.o: ../chat/singleton.h
+CMakeFiles/test.dir/tests/test.cc.o: ../chat/thread.h
 CMakeFiles/test.dir/tests/test.cc.o: ../chat/util.h
 CMakeFiles/test.dir/tests/test.cc.o: ../tests/test.cc
 

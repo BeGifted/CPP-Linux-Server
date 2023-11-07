@@ -127,6 +127,19 @@ chat/fast:
 .PHONY : chat/fast
 
 #=============================================================================
+# Target rules for targets named test_config
+
+# Build rule for target.
+test_config: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_config
+.PHONY : test_config
+
+# fast build rule for target.
+test_config/fast:
+	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
+.PHONY : test_config/fast
+
+#=============================================================================
 # Target rules for targets named test
 
 # Build rule for target.
@@ -140,17 +153,17 @@ test/fast:
 .PHONY : test/fast
 
 #=============================================================================
-# Target rules for targets named test_config
+# Target rules for targets named test_thread
 
 # Build rule for target.
-test_config: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_config
-.PHONY : test_config
+test_thread: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_thread
+.PHONY : test_thread
 
 # fast build rule for target.
-test_config/fast:
-	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
-.PHONY : test_config/fast
+test_thread/fast:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/build
+.PHONY : test_thread/fast
 
 chat/config.o: chat/config.cc.o
 
@@ -205,6 +218,33 @@ chat/log.s: chat/log.cc.s
 chat/log.cc.s:
 	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/log.cc.s
 .PHONY : chat/log.cc.s
+
+chat/thread.o: chat/thread.cc.o
+
+.PHONY : chat/thread.o
+
+# target to build an object file
+chat/thread.cc.o:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/thread.cc.o
+.PHONY : chat/thread.cc.o
+
+chat/thread.i: chat/thread.cc.i
+
+.PHONY : chat/thread.i
+
+# target to preprocess a source file
+chat/thread.cc.i:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/thread.cc.i
+.PHONY : chat/thread.cc.i
+
+chat/thread.s: chat/thread.cc.s
+
+.PHONY : chat/thread.s
+
+# target to generate assembly for a file
+chat/thread.cc.s:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/thread.cc.s
+.PHONY : chat/thread.cc.s
 
 chat/util.o: chat/util.cc.o
 
@@ -287,6 +327,33 @@ tests/test_config.cc.s:
 	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cc.s
 .PHONY : tests/test_config.cc.s
 
+tests/test_thread.o: tests/test_thread.cc.o
+
+.PHONY : tests/test_thread.o
+
+# target to build an object file
+tests/test_thread.cc.o:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cc.o
+.PHONY : tests/test_thread.cc.o
+
+tests/test_thread.i: tests/test_thread.cc.i
+
+.PHONY : tests/test_thread.i
+
+# target to preprocess a source file
+tests/test_thread.cc.i:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cc.i
+.PHONY : tests/test_thread.cc.i
+
+tests/test_thread.s: tests/test_thread.cc.s
+
+.PHONY : tests/test_thread.s
+
+# target to generate assembly for a file
+tests/test_thread.cc.s:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cc.s
+.PHONY : tests/test_thread.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -294,16 +361,20 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... chat"
-	@echo "... test"
-	@echo "... test_config"
 	@echo "... edit_cache"
+	@echo "... chat"
+	@echo "... test_config"
+	@echo "... test"
+	@echo "... test_thread"
 	@echo "... chat/config.o"
 	@echo "... chat/config.i"
 	@echo "... chat/config.s"
 	@echo "... chat/log.o"
 	@echo "... chat/log.i"
 	@echo "... chat/log.s"
+	@echo "... chat/thread.o"
+	@echo "... chat/thread.i"
+	@echo "... chat/thread.s"
 	@echo "... chat/util.o"
 	@echo "... chat/util.i"
 	@echo "... chat/util.s"
@@ -313,6 +384,9 @@ help:
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+	@echo "... tests/test_thread.o"
+	@echo "... tests/test_thread.i"
+	@echo "... tests/test_thread.s"
 .PHONY : help
 
 

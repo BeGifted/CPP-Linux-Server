@@ -4,6 +4,7 @@
 CMakeFiles/test_config.dir/tests/test_config.cc.o: ../chat/config.h
 CMakeFiles/test_config.dir/tests/test_config.cc.o: ../chat/log.h
 CMakeFiles/test_config.dir/tests/test_config.cc.o: ../chat/singleton.h
+CMakeFiles/test_config.dir/tests/test_config.cc.o: ../chat/thread.h
 CMakeFiles/test_config.dir/tests/test_config.cc.o: ../chat/util.h
 CMakeFiles/test_config.dir/tests/test_config.cc.o: ../tests/test_config.cc
 CMakeFiles/test_config.dir/tests/test_config.cc.o: /usr/local/include/yaml-cpp/binary.h

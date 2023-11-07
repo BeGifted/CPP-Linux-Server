@@ -65,9 +65,29 @@ util.h
 /root/serverProjects/cpp_chatroom_server/chat/util.h
 singleton.h
 /root/serverProjects/cpp_chatroom_server/chat/singleton.h
+thread.h
+/root/serverProjects/cpp_chatroom_server/chat/thread.h
 
 /root/serverProjects/cpp_chatroom_server/chat/singleton.h
 memory
+-
+
+/root/serverProjects/cpp_chatroom_server/chat/thread.h
+thread
+-
+functional
+-
+memory
+-
+pthread.h
+-
+string
+-
+semaphore.h
+-
+stdint.h
+-
+atomic
 -
 
 /root/serverProjects/cpp_chatroom_server/chat/util.h

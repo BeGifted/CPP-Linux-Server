@@ -5,6 +5,7 @@ CMakeFiles/chat.dir/chat/config.cc.o: ../chat/config.cc
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/config.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/log.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/singleton.h
+CMakeFiles/chat.dir/chat/config.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/util.h
 CMakeFiles/chat.dir/chat/config.cc.o: /usr/local/include/yaml-cpp/binary.h
 CMakeFiles/chat.dir/chat/config.cc.o: /usr/local/include/yaml-cpp/dll.h
@@ -42,6 +43,7 @@ CMakeFiles/chat.dir/chat/log.cc.o: ../chat/config.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.cc
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/singleton.h
+CMakeFiles/chat.dir/chat/log.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/util.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/binary.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/dll.h
@@ -74,6 +76,12 @@ CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/parser.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/stlemitter.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/traits.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/yaml.h
+
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/singleton.h
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/thread.cc
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/thread.h
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/util.h
 
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/util.cc
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/util.h

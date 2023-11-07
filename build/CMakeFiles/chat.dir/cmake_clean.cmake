@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/chat.dir/chat/log.cc.o"
   "CMakeFiles/chat.dir/chat/util.cc.o"
   "CMakeFiles/chat.dir/chat/config.cc.o"
+  "CMakeFiles/chat.dir/chat/thread.cc.o"
   "../lib/libchat.pdb"
   "../lib/libchat.so"
 )

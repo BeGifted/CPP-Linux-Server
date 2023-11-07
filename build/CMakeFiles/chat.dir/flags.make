@@ -14,3 +14,5 @@ CXX_INCLUDES = -I/root/serverProjects/cpp_chatroom_server/. -I/usr/local/include
 
 # Custom defines: CMakeFiles/chat.dir/chat/config.cc.o_DEFINES = __FILE__="chat/config.cc"
 
+# Custom defines: CMakeFiles/chat.dir/chat/thread.cc.o_DEFINES = __FILE__="chat/thread.cc"
+
