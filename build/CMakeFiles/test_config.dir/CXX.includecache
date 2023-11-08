@@ -103,6 +103,10 @@ sys/syscall.h
 -
 stdint.h
 -
+string
+-
+vector
+-
 
 /root/serverProjects/cpp_chatroom_server/tests/test_config.cc
 ../chat/config.h

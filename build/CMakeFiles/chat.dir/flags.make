@@ -8,11 +8,13 @@ CXX_DEFINES = -Dchat_EXPORTS
 
 CXX_INCLUDES = -I/root/serverProjects/cpp_chatroom_server/. -I/usr/local/include 
 
-# Custom defines: CMakeFiles/chat.dir/chat/log.cc.o_DEFINES = __FILE__="chat/log.cc"
-
-# Custom defines: CMakeFiles/chat.dir/chat/util.cc.o_DEFINES = __FILE__="chat/util.cc"
-
 # Custom defines: CMakeFiles/chat.dir/chat/config.cc.o_DEFINES = __FILE__="chat/config.cc"
 
+# Custom defines: CMakeFiles/chat.dir/chat/fiber.cc.o_DEFINES = __FILE__="chat/fiber.cc"
+
+# Custom defines: CMakeFiles/chat.dir/chat/log.cc.o_DEFINES = __FILE__="chat/log.cc"
+
 # Custom defines: CMakeFiles/chat.dir/chat/thread.cc.o_DEFINES = __FILE__="chat/thread.cc"
+
+# Custom defines: CMakeFiles/chat.dir/chat/util.cc.o_DEFINES = __FILE__="chat/util.cc"
 

@@ -25,7 +25,7 @@
     if(logger->getLevel() <= level) \
         chat::LogEventWrap(chat::LogEvent::ptr(new chat::LogEvent(logger, level, \
                         __FILE__, __LINE__, 0, chat::GetThreadId(),\
-                chat::GetFiberId(), time(0)))).getSS()
+                chat::GetFiberId(), time(0), chat::Thread::GetName()))).getSS()
 
 #define CHAT_LOG_DEBUG(logger) CHAT_LOG_LEVEL(logger, chat::LogLevel::DEBUG)
 #define CHAT_LOG_INFO(logger) CHAT_LOG_LEVEL(logger, chat::LogLevel::INFO)
@@ -37,7 +37,7 @@
     if(logger->getLevel() <= level) \
         chat::LogEventWrap(chat::LogEvent::ptr(new chat::LogEvent(logger, level, \
                         __FILE__, __LINE__, 0, chat::GetThreadId(),\
-                chat::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+                chat::GetFiberId(), time(0), chat::Thread::GetName()))).getEvent()->format(fmt, __VA_ARGS__)
 
 #define CHAT_LOG_FMT_DEBUG(logger, fmt, ...) CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define CHAT_LOG_FMT_INFO(logger, fmt, ...)  CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::INFO, fmt, __VA_ARGS__)
@@ -76,7 +76,8 @@ class LogEvent {
 public:
     typedef std::shared_ptr<LogEvent> ptr;
     LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, 
-    int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+    int32_t line, uint32_t elapse, uint32_t thread_id, 
+    uint32_t fiber_id, uint64_t time, const std::string& thread_name);
 
     const char* getFile() const { return m_file; }
     int32_t getLine() const { return m_line; }
@@ -84,7 +85,7 @@ public:
     uint32_t getThreadId() const { return m_threadId; }
     uint32_t getFiberId() const { return m_fiberId; }
     uint32_t getTime() const { return m_time; }
-    const std::string& getThreadName() const { return m_threadName;}
+    const std::string& getThreadName() const { return m_threadName; }
     std::string getContent() const { return m_ss.str(); }
     std::shared_ptr<Logger> getLogger() const { return m_logger;}
     LogLevel::Level getLevel() const { return m_level;}

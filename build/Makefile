@@ -114,6 +114,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_fiber
+
+# Build rule for target.
+test_fiber: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_fiber
+.PHONY : test_fiber
+
+# fast build rule for target.
+test_fiber/fast:
+	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/build
+.PHONY : test_fiber/fast
+
+#=============================================================================
+# Target rules for targets named test_util
+
+# Build rule for target.
+test_util: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_util
+.PHONY : test_util
+
+# fast build rule for target.
+test_util/fast:
+	$(MAKE) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/build
+.PHONY : test_util/fast
+
+#=============================================================================
 # Target rules for targets named chat
 
 # Build rule for target.
@@ -191,6 +217,33 @@ chat/config.s: chat/config.cc.s
 chat/config.cc.s:
 	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/config.cc.s
 .PHONY : chat/config.cc.s
+
+chat/fiber.o: chat/fiber.cc.o
+
+.PHONY : chat/fiber.o
+
+# target to build an object file
+chat/fiber.cc.o:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/fiber.cc.o
+.PHONY : chat/fiber.cc.o
+
+chat/fiber.i: chat/fiber.cc.i
+
+.PHONY : chat/fiber.i
+
+# target to preprocess a source file
+chat/fiber.cc.i:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/fiber.cc.i
+.PHONY : chat/fiber.cc.i
+
+chat/fiber.s: chat/fiber.cc.s
+
+.PHONY : chat/fiber.s
+
+# target to generate assembly for a file
+chat/fiber.cc.s:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/fiber.cc.s
+.PHONY : chat/fiber.cc.s
 
 chat/log.o: chat/log.cc.o
 
@@ -327,6 +380,33 @@ tests/test_config.cc.s:
 	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cc.s
 .PHONY : tests/test_config.cc.s
 
+tests/test_fiber.o: tests/test_fiber.cc.o
+
+.PHONY : tests/test_fiber.o
+
+# target to build an object file
+tests/test_fiber.cc.o:
+	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o
+.PHONY : tests/test_fiber.cc.o
+
+tests/test_fiber.i: tests/test_fiber.cc.i
+
+.PHONY : tests/test_fiber.i
+
+# target to preprocess a source file
+tests/test_fiber.cc.i:
+	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/tests/test_fiber.cc.i
+.PHONY : tests/test_fiber.cc.i
+
+tests/test_fiber.s: tests/test_fiber.cc.s
+
+.PHONY : tests/test_fiber.s
+
+# target to generate assembly for a file
+tests/test_fiber.cc.s:
+	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/tests/test_fiber.cc.s
+.PHONY : tests/test_fiber.cc.s
+
 tests/test_thread.o: tests/test_thread.cc.o
 
 .PHONY : tests/test_thread.o
@@ -354,6 +434,33 @@ tests/test_thread.cc.s:
 	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cc.s
 .PHONY : tests/test_thread.cc.s
 
+tests/test_util.o: tests/test_util.cc.o
+
+.PHONY : tests/test_util.o
+
+# target to build an object file
+tests/test_util.cc.o:
+	$(MAKE) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/tests/test_util.cc.o
+.PHONY : tests/test_util.cc.o
+
+tests/test_util.i: tests/test_util.cc.i
+
+.PHONY : tests/test_util.i
+
+# target to preprocess a source file
+tests/test_util.cc.i:
+	$(MAKE) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/tests/test_util.cc.i
+.PHONY : tests/test_util.cc.i
+
+tests/test_util.s: tests/test_util.cc.s
+
+.PHONY : tests/test_util.s
+
+# target to generate assembly for a file
+tests/test_util.cc.s:
+	$(MAKE) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/tests/test_util.cc.s
+.PHONY : tests/test_util.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -362,6 +469,8 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... test_fiber"
+	@echo "... test_util"
 	@echo "... chat"
 	@echo "... test_config"
 	@echo "... test"
@@ -369,6 +478,9 @@ help:
 	@echo "... chat/config.o"
 	@echo "... chat/config.i"
 	@echo "... chat/config.s"
+	@echo "... chat/fiber.o"
+	@echo "... chat/fiber.i"
+	@echo "... chat/fiber.s"
 	@echo "... chat/log.o"
 	@echo "... chat/log.i"
 	@echo "... chat/log.s"
@@ -384,9 +496,15 @@ help:
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+	@echo "... tests/test_fiber.o"
+	@echo "... tests/test_fiber.i"
+	@echo "... tests/test_fiber.s"
 	@echo "... tests/test_thread.o"
 	@echo "... tests/test_thread.i"
 	@echo "... tests/test_thread.s"
+	@echo "... tests/test_util.o"
+	@echo "... tests/test_util.i"
+	@echo "... tests/test_util.s"
 .PHONY : help
 
 

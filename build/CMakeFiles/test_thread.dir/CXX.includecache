@@ -17,6 +17,10 @@ thread.h
 /root/serverProjects/cpp_chatroom_server/chat/thread.h
 singleton.h
 /root/serverProjects/cpp_chatroom_server/chat/singleton.h
+macro.h
+/root/serverProjects/cpp_chatroom_server/chat/macro.h
+fiber.h
+/root/serverProjects/cpp_chatroom_server/chat/fiber.h
 
 /root/serverProjects/cpp_chatroom_server/chat/config.h
 memory
@@ -42,6 +46,16 @@ unordered_map
 unordered_set
 -
 list
+-
+functional
+-
+thread.h
+/root/serverProjects/cpp_chatroom_server/chat/thread.h
+
+/root/serverProjects/cpp_chatroom_server/chat/fiber.h
+ucontext.h
+-
+memory
 -
 functional
 -
@@ -82,6 +96,16 @@ singleton.h
 thread.h
 /root/serverProjects/cpp_chatroom_server/chat/thread.h
 
+/root/serverProjects/cpp_chatroom_server/chat/macro.h
+string.h
+-
+assert.h
+-
+log.h
+/root/serverProjects/cpp_chatroom_server/chat/log.h
+util.h
+/root/serverProjects/cpp_chatroom_server/chat/util.h
+
 /root/serverProjects/cpp_chatroom_server/chat/singleton.h
 memory
 -
@@ -114,6 +138,10 @@ sys/types.h
 sys/syscall.h
 -
 stdint.h
+-
+string
+-
+vector
 -
 
 /root/serverProjects/cpp_chatroom_server/tests/test_thread.cc

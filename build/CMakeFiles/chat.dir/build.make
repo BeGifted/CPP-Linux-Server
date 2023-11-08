@@ -60,35 +60,9 @@ include CMakeFiles/chat.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/chat.dir/flags.make
 
-CMakeFiles/chat.dir/chat/log.cc.o: CMakeFiles/chat.dir/flags.make
-CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/chat.dir/chat/log.cc.o"
-	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/log.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/log.cc
-
-CMakeFiles/chat.dir/chat/log.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chat.dir/chat/log.cc.i"
-	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/serverProjects/cpp_chatroom_server/chat/log.cc > CMakeFiles/chat.dir/chat/log.cc.i
-
-CMakeFiles/chat.dir/chat/log.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/log.cc.s"
-	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/log.cc -o CMakeFiles/chat.dir/chat/log.cc.s
-
-CMakeFiles/chat.dir/chat/util.cc.o: CMakeFiles/chat.dir/flags.make
-CMakeFiles/chat.dir/chat/util.cc.o: ../chat/util.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/chat.dir/chat/util.cc.o"
-	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/util.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/util.cc
-
-CMakeFiles/chat.dir/chat/util.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chat.dir/chat/util.cc.i"
-	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/serverProjects/cpp_chatroom_server/chat/util.cc > CMakeFiles/chat.dir/chat/util.cc.i
-
-CMakeFiles/chat.dir/chat/util.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/util.cc.s"
-	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/util.cc -o CMakeFiles/chat.dir/chat/util.cc.s
-
 CMakeFiles/chat.dir/chat/config.cc.o: CMakeFiles/chat.dir/flags.make
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/config.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/chat.dir/chat/config.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/chat.dir/chat/config.cc.o"
 	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/config.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/config.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/config.cc
 
 CMakeFiles/chat.dir/chat/config.cc.i: cmake_force
@@ -98,6 +72,32 @@ CMakeFiles/chat.dir/chat/config.cc.i: cmake_force
 CMakeFiles/chat.dir/chat/config.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/config.cc.s"
 	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/config.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/config.cc -o CMakeFiles/chat.dir/chat/config.cc.s
+
+CMakeFiles/chat.dir/chat/fiber.cc.o: CMakeFiles/chat.dir/flags.make
+CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/fiber.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/chat.dir/chat/fiber.cc.o"
+	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/fiber.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/fiber.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/fiber.cc
+
+CMakeFiles/chat.dir/chat/fiber.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chat.dir/chat/fiber.cc.i"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/fiber.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/serverProjects/cpp_chatroom_server/chat/fiber.cc > CMakeFiles/chat.dir/chat/fiber.cc.i
+
+CMakeFiles/chat.dir/chat/fiber.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/fiber.cc.s"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/fiber.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/fiber.cc -o CMakeFiles/chat.dir/chat/fiber.cc.s
+
+CMakeFiles/chat.dir/chat/log.cc.o: CMakeFiles/chat.dir/flags.make
+CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/chat.dir/chat/log.cc.o"
+	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/log.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/log.cc
+
+CMakeFiles/chat.dir/chat/log.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chat.dir/chat/log.cc.i"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/serverProjects/cpp_chatroom_server/chat/log.cc > CMakeFiles/chat.dir/chat/log.cc.i
+
+CMakeFiles/chat.dir/chat/log.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/log.cc.s"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/log.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/log.cc -o CMakeFiles/chat.dir/chat/log.cc.s
 
 CMakeFiles/chat.dir/chat/thread.cc.o: CMakeFiles/chat.dir/flags.make
 CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/thread.cc
@@ -112,23 +112,38 @@ CMakeFiles/chat.dir/chat/thread.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/thread.cc.s"
 	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/thread.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/thread.cc -o CMakeFiles/chat.dir/chat/thread.cc.s
 
+CMakeFiles/chat.dir/chat/util.cc.o: CMakeFiles/chat.dir/flags.make
+CMakeFiles/chat.dir/chat/util.cc.o: ../chat/util.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/chat.dir/chat/util.cc.o"
+	/usr/local/bin/g++  $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chat.dir/chat/util.cc.o -c /root/serverProjects/cpp_chatroom_server/chat/util.cc
+
+CMakeFiles/chat.dir/chat/util.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chat.dir/chat/util.cc.i"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/serverProjects/cpp_chatroom_server/chat/util.cc > CMakeFiles/chat.dir/chat/util.cc.i
+
+CMakeFiles/chat.dir/chat/util.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chat.dir/chat/util.cc.s"
+	/usr/local/bin/g++ $(CXX_DEFINES) -D__FILE__=\"chat/util.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/serverProjects/cpp_chatroom_server/chat/util.cc -o CMakeFiles/chat.dir/chat/util.cc.s
+
 # Object files for target chat
 chat_OBJECTS = \
-"CMakeFiles/chat.dir/chat/log.cc.o" \
-"CMakeFiles/chat.dir/chat/util.cc.o" \
 "CMakeFiles/chat.dir/chat/config.cc.o" \
-"CMakeFiles/chat.dir/chat/thread.cc.o"
+"CMakeFiles/chat.dir/chat/fiber.cc.o" \
+"CMakeFiles/chat.dir/chat/log.cc.o" \
+"CMakeFiles/chat.dir/chat/thread.cc.o" \
+"CMakeFiles/chat.dir/chat/util.cc.o"
 
 # External object files for target chat
 chat_EXTERNAL_OBJECTS =
 
-../lib/libchat.so: CMakeFiles/chat.dir/chat/log.cc.o
-../lib/libchat.so: CMakeFiles/chat.dir/chat/util.cc.o
 ../lib/libchat.so: CMakeFiles/chat.dir/chat/config.cc.o
+../lib/libchat.so: CMakeFiles/chat.dir/chat/fiber.cc.o
+../lib/libchat.so: CMakeFiles/chat.dir/chat/log.cc.o
 ../lib/libchat.so: CMakeFiles/chat.dir/chat/thread.cc.o
+../lib/libchat.so: CMakeFiles/chat.dir/chat/util.cc.o
 ../lib/libchat.so: CMakeFiles/chat.dir/build.make
 ../lib/libchat.so: CMakeFiles/chat.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX shared library ../lib/libchat.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/serverProjects/cpp_chatroom_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX shared library ../lib/libchat.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/chat.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

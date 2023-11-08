@@ -3,7 +3,9 @@
 
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/chat.h
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/config.h
+CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/fiber.h
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/log.h
+CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/macro.h
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/singleton.h
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/thread.h
 CMakeFiles/test_thread.dir/tests/test_thread.cc.o: ../chat/util.h
