@@ -272,6 +272,60 @@ chat/log.cc.s:
 	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/log.cc.s
 .PHONY : chat/log.cc.s
 
+chat/mutex.o: chat/mutex.cc.o
+
+.PHONY : chat/mutex.o
+
+# target to build an object file
+chat/mutex.cc.o:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/mutex.cc.o
+.PHONY : chat/mutex.cc.o
+
+chat/mutex.i: chat/mutex.cc.i
+
+.PHONY : chat/mutex.i
+
+# target to preprocess a source file
+chat/mutex.cc.i:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/mutex.cc.i
+.PHONY : chat/mutex.cc.i
+
+chat/mutex.s: chat/mutex.cc.s
+
+.PHONY : chat/mutex.s
+
+# target to generate assembly for a file
+chat/mutex.cc.s:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/mutex.cc.s
+.PHONY : chat/mutex.cc.s
+
+chat/scheduler.o: chat/scheduler.cc.o
+
+.PHONY : chat/scheduler.o
+
+# target to build an object file
+chat/scheduler.cc.o:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/scheduler.cc.o
+.PHONY : chat/scheduler.cc.o
+
+chat/scheduler.i: chat/scheduler.cc.i
+
+.PHONY : chat/scheduler.i
+
+# target to preprocess a source file
+chat/scheduler.cc.i:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/scheduler.cc.i
+.PHONY : chat/scheduler.cc.i
+
+chat/scheduler.s: chat/scheduler.cc.s
+
+.PHONY : chat/scheduler.s
+
+# target to generate assembly for a file
+chat/scheduler.cc.s:
+	$(MAKE) -f CMakeFiles/chat.dir/build.make CMakeFiles/chat.dir/chat/scheduler.cc.s
+.PHONY : chat/scheduler.cc.s
+
 chat/thread.o: chat/thread.cc.o
 
 .PHONY : chat/thread.o
@@ -484,6 +538,12 @@ help:
 	@echo "... chat/log.o"
 	@echo "... chat/log.i"
 	@echo "... chat/log.s"
+	@echo "... chat/mutex.o"
+	@echo "... chat/mutex.i"
+	@echo "... chat/mutex.s"
+	@echo "... chat/scheduler.o"
+	@echo "... chat/scheduler.i"
+	@echo "... chat/scheduler.s"
 	@echo "... chat/thread.o"
 	@echo "... chat/thread.i"
 	@echo "... chat/thread.s"

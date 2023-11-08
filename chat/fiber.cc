@@ -86,6 +86,7 @@ uint64_t Fiber::GetFiberId() {
     return 0;
 }
 
+//重置协程函数 + 状态
 void Fiber::reset(std::function<void()> cb) {
     CHAT_ASSERT(m_stack);
     CHAT_ASSERT(m_state == State::TERM || m_state == State::INIT || m_state == State::EXCEPT);

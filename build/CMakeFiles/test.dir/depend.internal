@@ -3,6 +3,7 @@
 
 CMakeFiles/test.dir/tests/test.cc.o
  /root/serverProjects/cpp_chatroom_server/chat/log.h
+ /root/serverProjects/cpp_chatroom_server/chat/mutex.h
  /root/serverProjects/cpp_chatroom_server/chat/singleton.h
  /root/serverProjects/cpp_chatroom_server/chat/thread.h
  /root/serverProjects/cpp_chatroom_server/chat/util.h

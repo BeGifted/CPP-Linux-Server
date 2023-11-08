@@ -6,6 +6,7 @@ CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/config.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/fiber.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/log.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/macro.h
+CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/mutex.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/singleton.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/thread.h
 CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o: ../chat/util.h

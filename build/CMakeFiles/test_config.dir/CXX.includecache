@@ -70,11 +70,7 @@ singleton.h
 thread.h
 /root/serverProjects/cpp_chatroom_server/chat/thread.h
 
-/root/serverProjects/cpp_chatroom_server/chat/singleton.h
-memory
--
-
-/root/serverProjects/cpp_chatroom_server/chat/thread.h
+/root/serverProjects/cpp_chatroom_server/chat/mutex.h
 thread
 -
 functional
@@ -91,6 +87,14 @@ stdint.h
 -
 atomic
 -
+
+/root/serverProjects/cpp_chatroom_server/chat/singleton.h
+memory
+-
+
+/root/serverProjects/cpp_chatroom_server/chat/thread.h
+mutex.h
+/root/serverProjects/cpp_chatroom_server/chat/mutex.h
 
 /root/serverProjects/cpp_chatroom_server/chat/util.h
 pthread.h

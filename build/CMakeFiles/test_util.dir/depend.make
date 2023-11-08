@@ -6,6 +6,7 @@ CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/config.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/fiber.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/log.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/macro.h
+CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/mutex.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/singleton.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/thread.h
 CMakeFiles/test_util.dir/tests/test_util.cc.o: ../chat/util.h

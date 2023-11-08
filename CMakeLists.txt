@@ -19,6 +19,8 @@ set(LIB_SRC
     chat/log.cc
     chat/thread.cc
     chat/util.cc
+    chat/scheduler.cc
+    chat/mutex.cc
 )
 
 add_library(chat SHARED ${LIB_SRC})

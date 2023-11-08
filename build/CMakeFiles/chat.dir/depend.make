@@ -4,6 +4,7 @@
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/config.cc
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/config.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/config.cc.o: ../chat/mutex.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/config.cc.o: ../chat/util.h
@@ -44,6 +45,7 @@ CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/fiber.cc
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/fiber.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/log.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/macro.h
+CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/mutex.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/util.h
@@ -82,6 +84,7 @@ CMakeFiles/chat.dir/chat/fiber.cc.o: /usr/local/include/yaml-cpp/yaml.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/config.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.cc
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/log.cc.o: ../chat/mutex.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/log.cc.o: ../chat/util.h
@@ -117,7 +120,28 @@ CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/stlemitter.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/traits.h
 CMakeFiles/chat.dir/chat/log.cc.o: /usr/local/include/yaml-cpp/yaml.h
 
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/fiber.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/macro.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/mutex.cc
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/mutex.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/scheduler.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/singleton.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/thread.h
+CMakeFiles/chat.dir/chat/mutex.cc.o: ../chat/util.h
+
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/fiber.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/macro.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/mutex.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/scheduler.cc
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/scheduler.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/singleton.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/thread.h
+CMakeFiles/chat.dir/chat/scheduler.cc.o: ../chat/util.h
+
 CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/mutex.h
 CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/thread.cc
 CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/thread.h
@@ -125,6 +149,7 @@ CMakeFiles/chat.dir/chat/thread.cc.o: ../chat/util.h
 
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/fiber.h
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/log.h
+CMakeFiles/chat.dir/chat/util.cc.o: ../chat/mutex.h
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/util.cc.o: ../chat/util.cc
