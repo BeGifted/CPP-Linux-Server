@@ -48,5 +48,6 @@ int main(int argc, char** argv) {
     }
     CHAT_LOG_INFO(g_logger) << "thread test end";
     CHAT_LOG_INFO(g_logger) << "count=" << count;
+
     return 0;
 }

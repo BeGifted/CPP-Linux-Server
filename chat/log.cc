@@ -656,7 +656,7 @@ chat::ConfigVar<std::set<LogDefine> >::ptr g_log_defines =
 
 struct LogIniter {
     LogIniter() {
-        g_log_defines->addListener(0xF1E231, [](const std::set<LogDefine>& old_v, const std::set<LogDefine>& new_v) {
+        g_log_defines->addListener([](const std::set<LogDefine>& old_v, const std::set<LogDefine>& new_v) {
             CHAT_LOG_INFO(CHAT_LOG_ROOT()) << "on_logger_conf_changed";
             for (auto& i : new_v) {
                 auto it = old_v.find(i);

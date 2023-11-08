@@ -37,6 +37,8 @@ list
 -
 functional
 -
+thread.h
+/root/serverProjects/cpp_chatroom_server/chat/thread.h
 
 /root/serverProjects/cpp_chatroom_server/chat/log.cc
 log.h

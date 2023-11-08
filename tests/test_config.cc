@@ -172,7 +172,7 @@ void test_class() {
         CHAT_LOG_INFO(CHAT_LOG_ROOT()) <<  prefix << ": size=" << m.size(); \
     }
 
-    g_person->addListener(10, [] (const Person& old_v, const Person& new_v){
+    g_person->addListener([] (const Person& old_v, const Person& new_v){
         CHAT_LOG_INFO(CHAT_LOG_ROOT()) << "old_v=" << old_v.toString() << "new_v: " << new_v.toString();
     });
 
@@ -210,5 +210,8 @@ int main(int argc, char** argv) {
     // test_config();
     // test_class();
     test_log();
+    chat::Config::Visit([](chat::ConfigVarBase::ptr var){
+        CHAT_LOG_INFO(CHAT_LOG_ROOT()) << "name=" << var->getName() << " description=" << var->getDescription() << " typename=" << var->getTypeName() << " value=" << var->toString();
+    });
     return 0;
 }
