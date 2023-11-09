@@ -20,7 +20,7 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
         CHAT_ASSERT(GetThis() == nullptr);
         t_scheduler = this;
 
-        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this)));
+        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
         chat::Thread::SetName(m_name);
 
         t_scheduler_fiber = m_rootFiber.get();
@@ -61,6 +61,13 @@ void Scheduler::start() {
     for (size_t i = 0; i < m_threadCount; i++) {
         m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this), m_name + "_" + std::to_string(i)));
         m_threadIds.push_back(m_threads[i]->getId());
+    }
+    lock.unlock();
+
+    if (m_rootFiber) {
+        //m_rootFiber->swapIn();
+        m_rootFiber->call();
+        CHAT_LOG_INFO(g_logger) << "call out, state=" << m_rootFiber->getState();
     }
 }
 
@@ -119,6 +126,7 @@ void Scheduler::run() {  // 新创建线程执行
     while (true) {
         ft.reset();
         bool tickle_me = false;
+        bool is_active = false;
         {  //消息队列取出需要执行的任务
             MutexType::Lock lock(m_mutex);
             auto it = m_fibers.begin();
@@ -137,9 +145,9 @@ void Scheduler::run() {  // 新创建线程执行
 
                 ft = *it;
                 m_fibers.erase(it++);
-                // ++m_activeThreadCount;
-                // is_active = true;
-                // break;
+                ++m_activeThreadCount;
+                is_active = true;
+                break;
             }
         }
 
@@ -182,10 +190,10 @@ void Scheduler::run() {  // 新创建线程执行
                 cb_fiber.reset();
             }
         } else {  //无任务执行idle
-            // if (is_active) {
-            //     --m_activeThreadCount;
-            //     continue;
-            // }
+            if (is_active) {
+                --m_activeThreadCount;
+                continue;
+            }
             if (idle_fiber->getState() == Fiber::State::TERM) {
                 CHAT_LOG_INFO(g_logger) << "idle fiber terminates";
                 break;
@@ -200,6 +208,19 @@ void Scheduler::run() {  // 新创建线程执行
             }
         }
     }
+}
+
+void Scheduler::tickle() {
+    CHAT_LOG_INFO(g_logger) << "tickle";
+}
+
+bool Scheduler::stopping() {
+    MutexType::Lock lock(m_mutex);
+    return m_stopping && m_autoStop && m_fibers.empty() && m_activeThreadCount == 0;
+}
+
+void Scheduler::idle() {
+    CHAT_LOG_INFO(g_logger) << "idle";
 }
 
 }

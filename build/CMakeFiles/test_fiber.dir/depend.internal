@@ -8,6 +8,7 @@ CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o
  /root/serverProjects/cpp_chatroom_server/chat/log.h
  /root/serverProjects/cpp_chatroom_server/chat/macro.h
  /root/serverProjects/cpp_chatroom_server/chat/mutex.h
+ /root/serverProjects/cpp_chatroom_server/chat/scheduler.h
  /root/serverProjects/cpp_chatroom_server/chat/singleton.h
  /root/serverProjects/cpp_chatroom_server/chat/thread.h
  /root/serverProjects/cpp_chatroom_server/chat/util.h

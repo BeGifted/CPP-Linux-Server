@@ -49,6 +49,8 @@ config.h
 /root/serverProjects/cpp_chatroom_server/chat/config.h
 macro.h
 /root/serverProjects/cpp_chatroom_server/chat/macro.h
+scheduler.h
+/root/serverProjects/cpp_chatroom_server/chat/scheduler.h
 
 /root/serverProjects/cpp_chatroom_server/chat/fiber.h
 ucontext.h

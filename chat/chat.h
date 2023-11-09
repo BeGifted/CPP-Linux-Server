@@ -2,11 +2,12 @@
 #define __CHAT_CHAT_H__
 
 #include "config.h"
-#include "log.h"
-#include "util.h"
-#include "thread.h"
-#include "singleton.h"
-#include "macro.h"
 #include "fiber.h"
+#include "log.h"
+#include "macro.h"
+#include "singleton.h"
+#include "thread.h"
+#include "util.h"
+#include "scheduler.h"
 
 #endif

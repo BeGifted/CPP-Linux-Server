@@ -46,6 +46,7 @@ CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/fiber.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/log.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/macro.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/mutex.h
+CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/scheduler.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/singleton.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/thread.h
 CMakeFiles/chat.dir/chat/fiber.cc.o: ../chat/util.h
