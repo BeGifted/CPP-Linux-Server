@@ -475,6 +475,7 @@ void LogFormatter::init(){
         vec.push_back(std::make_tuple(nstr, std::string(), 0));
     }
     static std::map<std::string, std::function<FormatItem::ptr(const std::string& str)> > s_format_items = {
+//%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n
 #define XX(str, C) \
         {#str, [] (const std::string& fmt) { return FormatItem::ptr(new C(fmt)); }}
 

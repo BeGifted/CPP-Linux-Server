@@ -64,11 +64,11 @@ void Scheduler::start() {
     }
     lock.unlock();
 
-    if (m_rootFiber) {
-        //m_rootFiber->swapIn();
-        m_rootFiber->call();
-        CHAT_LOG_INFO(g_logger) << "call out, state=" << m_rootFiber->getState();
-    }
+    // if (m_rootFiber) {
+    //     //m_rootFiber->swapIn();
+    //     m_rootFiber->call();
+    //     CHAT_LOG_INFO(g_logger) << "call out, state=" << m_rootFiber->getState();
+    // }
 }
 
 void Scheduler::stop() {
@@ -100,8 +100,29 @@ void Scheduler::stop() {
         tickle();
     }
 
-    if (stopping()) {
-        return;
+    if (m_rootFiber) {
+        // while(!stopping()) {
+        //     if(m_rootFiber->getState() == Fiber::State::TERM
+        //         || m_rootFiber->getState() == Fiber::State::EXCEPT) {
+        //         m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
+        //         CHAT_LOG_INFO(g_logger) << "root fiber terminates, reset";
+        //         t_scheduler_fiber = m_rootFiber.get();
+        //     }
+        //     m_rootFiber->call();
+        // }
+        if (!stopping()) {
+            m_rootFiber->call();
+        }
+    }
+
+    std::vector<Thread::ptr> thrs;
+    {
+        MutexType::Lock lock(m_mutex);
+        thrs.swap(m_threads);
+    }
+
+    for (auto& i : thrs) {
+        i->join();
     }
 
     // if (exit_on_this_fiber) {
@@ -114,6 +135,7 @@ void Scheduler::setThis(){
 }
 
 void Scheduler::run() {  // 新创建线程执行
+    CHAT_LOG_DEBUG(g_logger) << m_name << " run";
     setThis();
     if (chat::GetThreadId() != m_rootThread) {
         t_scheduler_fiber = Fiber::GetThis().get();
@@ -158,7 +180,7 @@ void Scheduler::run() {  // 新创建线程执行
         if (ft.fiber 
             && (ft.fiber->getState() != Fiber::State::TERM 
                 && ft.fiber->getState() != Fiber::State::EXCEPT)) {
-            ++m_activeThreadCount;
+            // ++m_activeThreadCount;
             ft.fiber->swapIn();  //工作线程
             --m_activeThreadCount;
 
@@ -176,7 +198,7 @@ void Scheduler::run() {  // 新创建线程执行
             }
             ft.reset();
 
-            ++m_activeThreadCount;
+            // ++m_activeThreadCount;
             cb_fiber->swapIn();
             --m_activeThreadCount;
 
@@ -221,6 +243,9 @@ bool Scheduler::stopping() {
 
 void Scheduler::idle() {
     CHAT_LOG_INFO(g_logger) << "idle";
+    while (!stopping()) {
+        chat::Fiber::YieldToHold();
+    }
 }
 
 }
