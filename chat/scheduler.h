@@ -47,7 +47,8 @@ public:
         {
             MutexType::Lock lock(m_mutex);
             while(begin != end) {
-                tickle = scheduleNoLock(&*begin) || need_tickle;
+                need_tickle = scheduleNoLock(&*begin, -1) || need_tickle;
+                ++begin;
             }
         }
 
@@ -61,6 +62,8 @@ protected:
     virtual bool stopping();
     virtual void idle();
     void setThis();
+
+    bool hasIdleThreads() { return m_idleThreadCount > 0; }
     
 private:
     template<class FiberOrCb>

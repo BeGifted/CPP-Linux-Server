@@ -16,10 +16,12 @@ link_directories(/usr/local/lib)
 set(LIB_SRC
     chat/config.cc
     chat/fiber.cc
+    chat/iomanager.cc
     chat/log.cc
     chat/thread.cc
     chat/util.cc
     chat/scheduler.cc
+    chat/timer.cc
     chat/mutex.cc
 )
 
@@ -63,6 +65,11 @@ add_executable(test_scheduler tests/test_scheduler.cc)
 add_dependencies(test_scheduler chat)
 force_redefine_file_macro_for_sources(test_scheduler) #__FILE__
 target_link_libraries(test_scheduler ${LIB_LIB})
+
+add_executable(test_iomanager tests/test_iomanager.cc)
+add_dependencies(test_iomanager chat)
+force_redefine_file_macro_for_sources(test_iomanager) #__FILE__
+target_link_libraries(test_iomanager ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
