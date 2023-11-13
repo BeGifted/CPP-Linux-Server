@@ -16,6 +16,8 @@ link_directories(/usr/local/lib)
 set(LIB_SRC
     chat/config.cc
     chat/fiber.cc
+    chat/fd_manager.cc
+    chat/hook.cc
     chat/iomanager.cc
     chat/log.cc
     chat/thread.cc
@@ -32,6 +34,7 @@ force_redefine_file_macro_for_sources(chat) #__FILE__
 
 set(LIB_LIB
     chat
+    dl
     pthread
     -L/usr/local/lib -lyaml-cpp
 )
@@ -70,6 +73,11 @@ add_executable(test_iomanager tests/test_iomanager.cc)
 add_dependencies(test_iomanager chat)
 force_redefine_file_macro_for_sources(test_iomanager) #__FILE__
 target_link_libraries(test_iomanager ${LIB_LIB})
+
+add_executable(test_hook tests/test_hook.cc)
+add_dependencies(test_hook chat)
+force_redefine_file_macro_for_sources(test_hook) #__FILE__
+target_link_libraries(test_hook ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

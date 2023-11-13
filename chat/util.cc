@@ -6,7 +6,7 @@
 
 namespace chat {
 
-chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
+static chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
     
 pid_t GetThreadId() {
     return syscall(SYS_gettid);

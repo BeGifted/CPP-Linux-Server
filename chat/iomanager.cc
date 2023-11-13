@@ -130,7 +130,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
         event_ctx.cb.swap(cb);
     } else {
         event_ctx.fiber = Fiber::GetThis();
-        CHAT_ASSERT(event_ctx.fiber->GetFiberId() == Fiber::State::EXEC);
+        CHAT_ASSERT(event_ctx.fiber->getState() == Fiber::State::EXEC);
     }
 
     return 0;

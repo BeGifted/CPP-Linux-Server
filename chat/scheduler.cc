@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
+#include "hook.h"
 
 namespace chat {
 
@@ -136,6 +137,7 @@ void Scheduler::setThis(){
 
 void Scheduler::run() {  // 新创建线程执行
     CHAT_LOG_DEBUG(g_logger) << m_name << " run";
+    set_hook_enable(true);
     setThis();
     if (chat::GetThreadId() != m_rootThread) {
         t_scheduler_fiber = Fiber::GetThis().get();

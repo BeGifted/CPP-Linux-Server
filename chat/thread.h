@@ -3,6 +3,7 @@
 
 #include "mutex.h"
 
+
 namespace chat {
 
 class Thread {

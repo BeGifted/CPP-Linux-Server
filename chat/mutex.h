@@ -9,9 +9,10 @@
 #include <semaphore.h>
 #include <stdint.h>
 #include <atomic>
+#include "noncopyable.h"
 
 namespace chat {
-class Semaphore {  //信号量
+class Semaphore: Noncopyable {  //信号量
 public:
     Semaphore(uint32_t count = 0);
     ~Semaphore();
@@ -125,7 +126,7 @@ private:
     bool m_locked;
 };
 
-class Mutex {
+class Mutex: Noncopyable {
 public:
     typedef ScopedLockImpl<Mutex> Lock;
     Mutex() {
@@ -147,7 +148,7 @@ private:
     pthread_mutex_t m_mutex;
 };
 
-class NullMutex {
+class NullMutex: Noncopyable {
 public:
     typedef ScopedLockImpl<NullMutex> Lock;
     NullMutex() {}
@@ -156,7 +157,7 @@ public:
     void unlock() {}
 };
 
-class NullRWMutex {
+class NullRWMutex: Noncopyable {
 public:
     typedef ReadScopedLockImpl<NullRWMutex> Lock;
     typedef WriteScopedLockImpl<NullRWMutex> WriteLock;
@@ -167,7 +168,7 @@ public:
     void unlock() {}
 };
 
-class RWMutex {
+class RWMutex: Noncopyable {
 public:
     typedef ReadScopedLockImpl<RWMutex> ReadLock;
     typedef WriteScopedLockImpl<RWMutex> WriteLock;
@@ -195,7 +196,7 @@ private:
     pthread_rwlock_t m_lock;
 };
 
-class Spinlock {
+class Spinlock: Noncopyable {
 public:
     typedef ScopedLockImpl<Spinlock> Lock;
     Spinlock() {
@@ -219,7 +220,7 @@ private:
     pthread_spinlock_t m_mutex;
 };
 
-class CASLock{
+class CASLock: Noncopyable {
 public:
     typedef ScopedLockImpl<CASLock> Lock;
     CASLock() {
