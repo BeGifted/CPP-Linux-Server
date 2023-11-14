@@ -14,6 +14,7 @@ link_directories(/usr/local/lib)
 # message("***", ${YAMLCPP})
 
 set(LIB_SRC
+    chat/address.cc
     chat/config.cc
     chat/fiber.cc
     chat/fd_manager.cc
@@ -23,6 +24,7 @@ set(LIB_SRC
     chat/thread.cc
     chat/util.cc
     chat/scheduler.cc
+    chat/socket.cc
     chat/timer.cc
     chat/mutex.cc
 )
@@ -78,6 +80,16 @@ add_executable(test_hook tests/test_hook.cc)
 add_dependencies(test_hook chat)
 force_redefine_file_macro_for_sources(test_hook) #__FILE__
 target_link_libraries(test_hook ${LIB_LIB})
+
+add_executable(test_address tests/test_address.cc)
+add_dependencies(test_address chat)
+force_redefine_file_macro_for_sources(test_address) #__FILE__
+target_link_libraries(test_address ${LIB_LIB})
+
+add_executable(test_socket tests/test_socket.cc)
+add_dependencies(test_socket chat)
+force_redefine_file_macro_for_sources(test_socket) #__FILE__
+target_link_libraries(test_socket ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

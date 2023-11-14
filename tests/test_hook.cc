@@ -26,7 +26,7 @@ void test_sock() {
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(80);
-    inet_pton(AF_INET, "192.168.10.8", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "39.156.66.10", &addr.sin_addr.s_addr);
 
     CHAT_LOG_INFO(g_logger) << "begin connect";
     int rt = connect(sock, (const sockaddr*)&addr, sizeof(addr));
@@ -40,7 +40,7 @@ void test_sock() {
     rt = send(sock, data, sizeof(data), 0);
     CHAT_LOG_INFO(g_logger) << "send rt=" << rt << " errno=" << errno;
 
-    if(rt <= 0) {
+    if (rt <= 0) {
         return;
     }
 
