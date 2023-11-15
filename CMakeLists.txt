@@ -15,6 +15,7 @@ link_directories(/usr/local/lib)
 
 set(LIB_SRC
     chat/address.cc
+    chat/bytearray.cc
     chat/config.cc
     chat/fiber.cc
     chat/fd_manager.cc
@@ -90,6 +91,11 @@ add_executable(test_socket tests/test_socket.cc)
 add_dependencies(test_socket chat)
 force_redefine_file_macro_for_sources(test_socket) #__FILE__
 target_link_libraries(test_socket ${LIB_LIB})
+
+add_executable(test_bytearray tests/test_bytearray.cc)
+add_dependencies(test_bytearray chat)
+force_redefine_file_macro_for_sources(test_bytearray) #__FILE__
+target_link_libraries(test_bytearray ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

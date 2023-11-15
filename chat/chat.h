@@ -2,6 +2,7 @@
 #define __CHAT_CHAT_H__
 
 #include "address.h"
+#include "bytearray.h"
 #include "config.h"
 #include "endian.h"
 #include "fiber.h"
