@@ -29,6 +29,7 @@ set(LIB_SRC
     chat/mutex.cc
     chat/scheduler.cc
     chat/socket.cc
+    chat/stream.cc
     chat/timer.cc
     chat/thread.cc
     chat/tcp_server.cc

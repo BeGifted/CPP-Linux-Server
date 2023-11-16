@@ -16,6 +16,7 @@
 #include "singleton.h"
 #include "scheduler.h"
 #include "socket.h"
+#include "stream.h"
 #include "thread.h"
 #include "tcp_server.h"
 #include "timer.h"
