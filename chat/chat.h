@@ -17,6 +17,7 @@
 #include "scheduler.h"
 #include "socket.h"
 #include "thread.h"
+#include "tcp_server.h"
 #include "timer.h"
 #include "util.h"
 
