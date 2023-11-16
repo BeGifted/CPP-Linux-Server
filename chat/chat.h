@@ -8,6 +8,8 @@
 #include "fiber.h"
 #include "fd_manager.h"
 #include "hook.h"
+#include "http/http.h"
+#include "http/http_parser.h"
 #include "iomanager.h"
 #include "log.h"
 #include "macro.h"

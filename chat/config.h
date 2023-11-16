@@ -316,6 +316,8 @@ class Config {
 public:
     typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
     typedef RWMutex RWMutexType;
+
+    //获取/创建对应参数名的配置参数
     template<class T>
     static typename ConfigVar<T>:: ptr Lookup(const std::string& name, const T& default_value, const std::string& description = "") {
         RWMutexType::WriteLock lock(GetMutex());

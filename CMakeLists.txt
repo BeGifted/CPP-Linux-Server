@@ -20,6 +20,10 @@ set(LIB_SRC
     chat/fiber.cc
     chat/fd_manager.cc
     chat/hook.cc
+    chat/http/http.cc
+    chat/http/httpclient_parser.cc
+    chat/http/http11_parser.cc
+    chat/http/http_parser.cc
     chat/iomanager.cc
     chat/log.cc
     chat/thread.cc
@@ -96,6 +100,16 @@ add_executable(test_bytearray tests/test_bytearray.cc)
 add_dependencies(test_bytearray chat)
 force_redefine_file_macro_for_sources(test_bytearray) #__FILE__
 target_link_libraries(test_bytearray ${LIB_LIB})
+
+add_executable(test_http tests/test_http.cc)
+add_dependencies(test_http chat)
+force_redefine_file_macro_for_sources(test_http) #__FILE__
+target_link_libraries(test_http ${LIB_LIB})
+
+add_executable(test_http_parser tests/test_http_parser.cc)
+add_dependencies(test_http_parser chat)
+force_redefine_file_macro_for_sources(test_http_parser) #__FILE__
+target_link_libraries(test_http_parser ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
