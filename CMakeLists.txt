@@ -24,12 +24,14 @@ set(LIB_SRC
     chat/http/httpclient_parser.cc
     chat/http/http11_parser.cc
     chat/http/http_parser.cc
+    chat/http/http_session.cc
     chat/iomanager.cc
     chat/log.cc
     chat/mutex.cc
     chat/scheduler.cc
     chat/socket.cc
     chat/stream.cc
+    chat/streams/socket_stream.cc
     chat/timer.cc
     chat/thread.cc
     chat/tcp_server.cc
