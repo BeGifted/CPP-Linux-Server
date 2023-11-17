@@ -223,7 +223,7 @@ void on_response_last_chunk(void *data, const char *at, size_t length) {
 void on_response_http_field(void *data, const char *field, size_t flen
                            ,const char *value, size_t vlen) {
     HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
-    if(flen == 0) {
+    if (flen == 0) {
         CHAT_LOG_WARN(g_logger) << "invalid http response field length == 0";
         //parser->setError(1002);
         return;

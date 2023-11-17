@@ -11,6 +11,8 @@
 #include "http/http.h"
 #include "http/http_parser.h"
 #include "http/http_session.h"
+#include "http/http_server.h"
+#include "http/servlet.h"
 #include "iomanager.h"
 #include "log.h"
 #include "macro.h"

@@ -25,6 +25,8 @@ set(LIB_SRC
     chat/http/http11_parser.cc
     chat/http/http_parser.cc
     chat/http/http_session.cc
+    chat/http/http_server.cc
+    chat/http/servlet.cc
     chat/iomanager.cc
     chat/log.cc
     chat/mutex.cc
@@ -124,6 +126,11 @@ add_executable(echo_server examples/echo_server.cc)
 add_dependencies(echo_server chat)
 force_redefine_file_macro_for_sources(echo_server) #__FILE__
 target_link_libraries(echo_server ${LIB_LIB})
+
+add_executable(test_http_server tests/test_http_server.cc)
+add_dependencies(test_http_server chat)
+force_redefine_file_macro_for_sources(test_http_server) #__FILE__
+target_link_libraries(test_http_server ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
