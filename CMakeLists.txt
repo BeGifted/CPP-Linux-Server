@@ -21,6 +21,7 @@ set(LIB_SRC
     chat/fd_manager.cc
     chat/hook.cc
     chat/http/http.cc
+    chat/http/http_connection.cc
     chat/http/httpclient_parser.cc
     chat/http/http11_parser.cc
     chat/http/http_parser.cc
@@ -131,6 +132,11 @@ add_executable(test_http_server tests/test_http_server.cc)
 add_dependencies(test_http_server chat)
 force_redefine_file_macro_for_sources(test_http_server) #__FILE__
 target_link_libraries(test_http_server ${LIB_LIB})
+
+add_executable(test_http_connection tests/test_http_connection.cc)
+add_dependencies(test_http_connection chat)
+force_redefine_file_macro_for_sources(test_http_connection) #__FILE__
+target_link_libraries(test_http_connection ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

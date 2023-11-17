@@ -9,6 +9,7 @@
 #include "fd_manager.h"
 #include "hook.h"
 #include "http/http.h"
+#include "http/http_connection.h"
 #include "http/http_parser.h"
 #include "http/http_session.h"
 #include "http/http_server.h"
