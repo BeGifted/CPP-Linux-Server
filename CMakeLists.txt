@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++20 -Wall -Wno-de
 
 include_directories(.)
 include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
+link_directories(/usr/local/lib64)
 
 # find_library(YAMLCPP libyaml-cpp.so)
 # message("***", ${YAMLCPP})
@@ -59,10 +59,10 @@ set(LIB_LIB
 # ragelmaker(chat/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/chat/http)
 # ragelmaker(chat/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/chat)
 
-add_executable(test tests/test.cc)
-add_dependencies(test chat)
-force_redefine_file_macro_for_sources(test) #__FILE__
-target_link_libraries(test chat ${LIB_LIB})
+add_executable(test_log tests/test_log.cc)
+add_dependencies(test_log chat)
+force_redefine_file_macro_for_sources(test_log) #__FILE__
+target_link_libraries(test_log chat ${LIB_LIB})
 
 add_executable(test_config tests/test_config.cc)
 add_dependencies(test_config chat)
