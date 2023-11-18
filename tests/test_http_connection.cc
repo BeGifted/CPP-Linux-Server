@@ -2,6 +2,16 @@
 
 chat::Logger::ptr g_logger = CHAT_LOG_ROOT();
 
+void test_pool() {
+    chat::http::HttpConnectionPool::ptr pool(new chat::http::HttpConnectionPool(
+                "www.baidu.com", "", 80, false, 10, 1000 * 30, 5));
+
+    chat::IOManager::GetThis()->addTimer(1000, [pool](){
+            auto r = pool->doGet("/", 300);
+            CHAT_LOG_INFO(g_logger) << r->toString();
+    }, true);
+}
+
 void run() {
     chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("baidu.com:80");
     if (!addr) {
@@ -28,6 +38,18 @@ void run() {
     }
     CHAT_LOG_INFO(g_logger) << "rsp:" << std::endl << rsp->toString();
     
+    // std::ofstream ofs("rsp.dat");
+    // ofs << rsp->toString();
+
+    CHAT_LOG_INFO(g_logger) << "=========================";
+
+    auto r = chat::http::HttpConnection::DoGet("http://www.baidu.com", 300);
+    CHAT_LOG_INFO(g_logger) << "result=" << r->result
+        << " error=" << r->error
+        << " rsp=" << (r->response ? r->response->toString() : "");
+
+    CHAT_LOG_INFO(g_logger) << "=========================";
+    test_pool();
 }
 
 int main(int argc, char** argv) {
