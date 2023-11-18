@@ -22,8 +22,8 @@ set(LIB_SRC
     chat/hook.cc
     chat/http/http.cc
     chat/http/http_connection.cc
-    chat/http/httpclient_parser.cc
-    chat/http/http11_parser.cc
+    chat/http/httpclient_parser.cc  # rl
+    chat/http/http11_parser.cc  # rl
     chat/http/http_parser.cc
     chat/http/http_session.cc
     chat/http/http_server.cc
@@ -39,6 +39,7 @@ set(LIB_SRC
     chat/thread.cc
     chat/tcp_server.cc
     chat/util.cc
+    chat/uri.cc  # rl
 )
 
 add_library(chat SHARED ${LIB_SRC})
@@ -52,6 +53,11 @@ set(LIB_LIB
     pthread
     -L/usr/local/lib -lyaml-cpp
 )
+
+
+# ragelmaker(chat/http/http11_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/chat/http)
+# ragelmaker(chat/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/chat/http)
+# ragelmaker(chat/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/chat)
 
 add_executable(test tests/test.cc)
 add_dependencies(test chat)
@@ -137,6 +143,11 @@ add_executable(test_http_connection tests/test_http_connection.cc)
 add_dependencies(test_http_connection chat)
 force_redefine_file_macro_for_sources(test_http_connection) #__FILE__
 target_link_libraries(test_http_connection ${LIB_LIB})
+
+add_executable(test_uri tests/test_uri.cc)
+add_dependencies(test_uri chat)
+force_redefine_file_macro_for_sources(test_uri) #__FILE__
+target_link_libraries(test_uri ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
