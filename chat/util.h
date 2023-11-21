@@ -20,6 +20,8 @@ std::string BacktraceToString(int size = 64, int skip=2, const std::string& pref
 uint64_t GetCurrentMs();
 uint64_t GetCurrentUs();
 
+std::string Time2Str(time_t ts = time(0), const std::string& format = "%Y-%m-%d %H:%M:%S");
+time_t Str2Time(const char* str, const char* format = "%Y-%m-%d %H:%M:%S");
 
 }
 

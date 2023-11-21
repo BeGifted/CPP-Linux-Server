@@ -33,8 +33,8 @@ void HttpServer::handleClient(Socket::ptr client) {
         auto req = session->recvRequest();
         if (!req) {
             CHAT_LOG_DEBUG(g_logger) << "recv http request fail, errno="
-                << errno << " errstr=" << strerror(errno)
-                << " cliet:" << client->toString() << " keep_alive=" << m_isKeepalive;
+                << errno << ", errstr=" << strerror(errno)
+                << ", cliet:" << client->toString() << ", keep_alive=" << m_isKeepalive;
             break;
         }
 
