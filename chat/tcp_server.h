@@ -20,7 +20,7 @@ struct TcpServerConf {
     int timeout = 1000 * 2 * 60;
     int ssl = 0;
     std::string id;
-    /// 服务器类型，http, ws, rock
+    //服务器类型: http, ws, rock
     std::string type = "http";
     std::string name;
     std::string cert_file;
@@ -68,8 +68,7 @@ public:
         conf.accept_worker = node["accept_worker"].as<std::string>();
         conf.io_worker = node["io_worker"].as<std::string>();
         conf.process_worker = node["process_worker"].as<std::string>();
-        conf.args = LexicalCast<std::string
-            ,std::map<std::string, std::string> >()(node["args"].as<std::string>(""));
+        conf.args = LexicalCast<std::string, std::map<std::string, std::string> >()(node["args"].as<std::string>(""));
         if(node["address"].IsDefined()) {
             for(size_t i = 0; i < node["address"].size(); ++i) {
                 conf.address.push_back(node["address"][i].as<std::string>());

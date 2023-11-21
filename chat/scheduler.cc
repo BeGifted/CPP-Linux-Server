@@ -173,6 +173,7 @@ void Scheduler::run() {  // 新创建线程执行
                 is_active = true;
                 break;
             }
+            tickle_me |= it != m_fibers.end();
         }
 
         if (tickle_me) {

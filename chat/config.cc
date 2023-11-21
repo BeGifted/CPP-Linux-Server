@@ -23,6 +23,7 @@ static void ListAllMember(const std::string& prefix,
         CHAT_LOG_ERROR(CHAT_LOG_ROOT()) << "Config Invalid name: " << prefix << " : " << node;
         return;
     }
+
     output.push_back(std::make_pair(prefix, node));
     if (node.IsMap()) {
         for (auto it = node.begin(); it != node.end(); it++) {
@@ -62,11 +63,11 @@ void Config::LoadFromConfDir(const std::string& path, bool force) {
     FSUtil::ListAllFile(files, absoulte_path, ".yml");
 
     for(auto& i : files) {
-        {  //时间变了 内容没变 需要通过md5去重
+        {   //时间变了 内容没变 需要通过md5去重
             struct stat st;
             lstat(i.c_str(), &st);
             RWMutexType::ReadLock lock(GetMutex());
-            if (!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) {
+            if (!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) { 
                 continue;
             }
             s_file2modifytime[i] = st.st_mtime;

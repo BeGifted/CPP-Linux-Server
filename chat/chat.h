@@ -2,9 +2,12 @@
 #define __CHAT_CHAT_H__
 
 #include "address.h"
+#include "application.h"
 #include "bytearray.h"
 #include "config.h"
+#include "daemon.h"
 #include "endian.h"
+#include "env.h"
 #include "fiber.h"
 #include "fd_manager.h"
 #include "hook.h"

@@ -123,8 +123,7 @@ retry:
 
         int rt = iom->addEvent(fd, (chat::IOManager::Event)(event));
         if (rt) {
-            CHAT_LOG_ERROR(g_logger) << hook_fun_name << " addEvent("
-                << fd << ", " << event << ")";
+            CHAT_LOG_ERROR(g_logger) << hook_fun_name << " addEvent(" << fd << ", " << event << ")";
             if (timer) {
                 timer->cancel();
             }

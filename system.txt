@@ -1,4 +1,14 @@
-2023-11-08 12:59:23	[INFO]4036hello system
-
-2023-11-08 12:59:23	[INFO]4036hello system
-
+2023-11-21 19:16:56	[INFO]11810LoadConfFile file=/ServerProjects/cpp_chatroom_server/bin/conf/log.yml ok
+2023-11-21 19:16:56	[DEBUG]11810Fiber::Fiber
+2023-11-21 19:16:56	[DEBUG]11810Fiber::Fiber id=1
+2023-11-21 19:16:56	[INFO]118100x1f7b490 stopped
+2023-11-21 19:16:56	[DEBUG]11810main run
+2023-11-21 19:16:56	[DEBUG]11810Fiber::Fiber id=2
+2023-11-21 19:16:56	[DEBUG]11810Fiber::Fiber id=3
+2023-11-21 19:16:56	[INFO]11810name=main idle stopping exit
+2023-11-21 19:16:56	[INFO]11810idle fiber terminates
+2023-11-21 19:16:56	[DEBUG]11810Fiber::~Fiber id=3
+2023-11-21 19:16:56	[DEBUG]11810Fiber::~Fiber id=2
+2023-11-21 19:16:56	[INFO]118100x1f7b490 stopped
+2023-11-21 19:16:56	[DEBUG]11810Fiber::~Fiber id=1
+2023-11-21 19:16:56	[DEBUG]11810Fiber::~Fiber id=0

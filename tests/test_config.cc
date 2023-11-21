@@ -50,7 +50,7 @@ void print_yaml(const YAML::Node& node, int level) {
 }
 
 void test_yaml() {
-    YAML::Node root = YAML::LoadFile("/root/serverProjects/cpp_chatroom_server/bin/conf/log.yml");
+    YAML::Node root = YAML::LoadFile("/ServerProjects/cpp_chatroom_server/bin/conf/server.yml");
     print_yaml(root, 0);
     // CHAT_LOG_INFO(CHAT_LOG_ROOT()) << root;
     CHAT_LOG_INFO(CHAT_LOG_ROOT()) << root.Scalar();
@@ -86,7 +86,7 @@ void test_config() {
     XX_M(g_str_int_umap_val_config, str_int_umap, before);
     
 
-    YAML::Node root = YAML::LoadFile("/root/serverProjects/cpp_chatroom_server/bin/conf/log.yml");
+    YAML::Node root = YAML::LoadFile("/ServerProjects/cpp_chatroom_server/bin/conf/log.yml");
     chat::Config::LoadFromYaml(root);
     
     CHAT_LOG_INFO(CHAT_LOG_ROOT()) << "after: " << g_int_val_config->getValue();
@@ -193,7 +193,7 @@ void test_log() {
     CHAT_LOG_INFO(system_log) << "hello system" << std::endl;
     std::cout << chat::LoggerMgr::GetInstance()->toYamlString() << std::endl;
     
-    YAML::Node root = YAML::LoadFile("/root/serverProjects/cpp_chatroom_server/bin/conf/log.yml");
+    YAML::Node root = YAML::LoadFile("/ServerProjects/cpp_chatroom_server/bin/conf/log.yml");
     chat::Config::LoadFromYaml(root);
 
     std::cout << "--------------" << std::endl;
@@ -206,8 +206,8 @@ void test_log() {
 }
 
 int main(int argc, char** argv) {
-    // test_yaml();
-    // test_config();
+    //test_yaml();
+    //test_config();
     // test_class();
     test_log();
     chat::Config::Visit([](chat::ConfigVarBase::ptr var){

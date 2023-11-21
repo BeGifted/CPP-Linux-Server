@@ -1,5 +1,6 @@
 #include "log.h"
 #include "config.h"
+#include "env.h"
 
 namespace chat {
 
@@ -334,8 +335,8 @@ FileLogAppender::FileLogAppender(const std::string& filename)
 
 void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
     if (level >= m_level) {
-        uint64_t now = time(0);
-        if (now != m_lastTime) {
+        uint64_t now = event->getTime();
+        if (now >= m_lastTime + 3) {
             reopen();
             m_lastTime = now;
         }
@@ -351,8 +352,9 @@ bool FileLogAppender::reopen() {
     if (m_filestream) {
         m_filestream.close();
     }
-    m_filestream.open(m_filename);
-    return !!m_filestream;  //隐式转换，将文件流对象 m_filestream 转换为布尔值，以判断是否打开成功
+    // m_filestream.open(m_filename);
+    // return !!m_filestream;  //隐式转换，将文件流对象 m_filestream 转换为布尔值，以判断是否打开成功
+    return FSUtil::OpenForWrite(m_filestream, m_filename, std::ios::app);
 }
 
 std::string FileLogAppender::toYamlString() {
@@ -374,7 +376,7 @@ std::string FileLogAppender::toYamlString() {
 void StdoutLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
     if (level >= m_level) {
         MutexType::Lock lock(m_mutex);
-        std::cout << m_formatter->format(logger, level, event);
+        m_formatter->format(std::cout, logger, level, event);
     }
 }
 
@@ -396,6 +398,13 @@ std::string StdoutLogAppender::toYamlString() {
 LogFormatter::LogFormatter(const std::string& pattern) 
     :m_pattern(pattern) {
     init();
+}
+
+std::ostream& LogFormatter::format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
+    for(auto& i : m_items) {
+        i->format(ofs, logger, level, event);
+    }
+    return ofs;
 }
 
 std::string LogFormatter::format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
@@ -682,7 +691,11 @@ struct LogIniter {
                     if (a.type == 1) {
                         ap.reset(new FileLogAppender(a.file));
                     } else if (a.type == 2) {
-                        ap.reset(new StdoutLogAppender);
+                        if (!chat::EnvMgr::GetInstance()->has("d")) {
+                            ap.reset(new StdoutLogAppender);
+                        } else {
+                            continue;
+                        }
                     }
                     ap->setLevel(a.level);
                     if (!a.formatter.empty()) {
