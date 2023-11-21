@@ -1,7 +1,14 @@
 #include "config.h"
+#include "env.h"
+#include "log.h"
+#include "mutex.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace chat {
 
+static chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
 
 ConfigVarBase::ptr Config::LookupBase(const std::string& name) {
     RWMutexType::ReadLock lock(GetMutex());
@@ -43,6 +50,33 @@ void Config::LoadFromYaml(const YAML::Node& root) {
                 ss << i.second;
                 var->fromString(ss.str());
             }
+        }
+    }
+}
+
+static std::map<std::string, uint64_t> s_file2modifytime;
+
+void Config::LoadFromConfDir(const std::string& path, bool force) {
+    std::string absoulte_path = chat::EnvMgr::GetInstance()->getAbsolutePath(path);
+    std::vector<std::string> files;
+    FSUtil::ListAllFile(files, absoulte_path, ".yml");
+
+    for(auto& i : files) {
+        {  //时间变了 内容没变 需要通过md5去重
+            struct stat st;
+            lstat(i.c_str(), &st);
+            RWMutexType::ReadLock lock(GetMutex());
+            if (!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) {
+                continue;
+            }
+            s_file2modifytime[i] = st.st_mtime;
+        }
+        try {
+            YAML::Node root = YAML::LoadFile(i);
+            LoadFromYaml(root);
+            CHAT_LOG_INFO(g_logger) << "LoadConfFile file=" << i << " ok";
+        } catch (...) {
+            CHAT_LOG_ERROR(g_logger) << "LoadConfFile file=" << i << " failed";
         }
     }
 }

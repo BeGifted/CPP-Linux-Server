@@ -356,6 +356,7 @@ public:
     }
 
     static void LoadFromYaml(const YAML::Node& root);
+    static void LoadFromConfDir(const std::string& path, bool force = false);
 
     static ConfigVarBase::ptr LookupBase(const std::string& name);
 
@@ -363,7 +364,7 @@ public:
 private:
 
     static ConfigVarMap& GetDatas() {  //初始化不一致问题
-        static ConfigVarMap s_datas;
+        static ConfigVarMap s_datas;  //静态局部变量的初始化被保证是线程安全的
         return s_datas;
     }
     static RWMutexType& GetMutex() {
