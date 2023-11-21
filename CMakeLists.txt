@@ -18,6 +18,7 @@ set(LIB_SRC
     chat/bytearray.cc
     chat/config.cc
     chat/daemon.cc
+    chat/env.cc
     chat/fiber.cc
     chat/fd_manager.cc
     chat/hook.cc
@@ -159,6 +160,11 @@ add_executable(test_daemon tests/test_daemon.cc)
 add_dependencies(test_daemon chat)
 force_redefine_file_macro_for_sources(test_daemon) #__FILE__
 target_link_libraries(test_daemon ${LIB_LIB})
+
+add_executable(test_env tests/test_env.cc)
+add_dependencies(test_env chat)
+force_redefine_file_macro_for_sources(test_env) #__FILE__
+target_link_libraries(test_env ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

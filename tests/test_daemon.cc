@@ -19,5 +19,6 @@ int server_main(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    std::cout << argc << std::endl;
     return chat::start_daemon(argc, argv, server_main, argc != 1);
 }
