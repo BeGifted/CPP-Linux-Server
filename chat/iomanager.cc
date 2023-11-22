@@ -103,6 +103,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
         fd_ctx = m_fdcontexts[fd];
     }
 
+    //不可重复注册事件
     FdContext::MutexType::Lock lock2(fd_ctx->mutex);
     if (fd_ctx->m_events & event) {
         CHAT_LOG_ERROR(g_logger) << "addevent assert fd=" << fd << " event=" << event << " fd_ctx.event=" << fd_ctx->m_events;
@@ -121,7 +122,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
     }
 
     ++m_pendingEventCount;
-    fd_ctx->m_events = (Event)(fd_ctx->m_events | event);
+    fd_ctx->m_events = (IOManager::Event)(fd_ctx->m_events | event);
     FdContext::EventContext& event_ctx = fd_ctx->getContext(event);
     CHAT_ASSERT(!event_ctx.scheduler && !event_ctx.fiber && !event_ctx.cb);
 
