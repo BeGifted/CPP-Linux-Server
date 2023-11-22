@@ -42,6 +42,7 @@ set(LIB_SRC
     chat/iomanager.cc
     chat/log.cc
     chat/mutex.cc
+    chat/protocol.cc
     chat/scheduler.cc
     chat/socket.cc
     chat/stream.cc

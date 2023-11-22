@@ -24,6 +24,7 @@
 #include "iomanager.h"
 #include "log.h"
 #include "macro.h"
+#include "protocol.h"
 #include "singleton.h"
 #include "scheduler.h"
 #include "socket.h"
