@@ -13,6 +13,10 @@ link_directories(/usr/local/lib64)
 # find_library(YAMLCPP libyaml-cpp.so)
 # message("***", ${YAMLCPP})
 
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
+
 set(LIB_SRC
     chat/address.cc
     chat/application.cc
@@ -31,6 +35,10 @@ set(LIB_SRC
     chat/http/http_session.cc
     chat/http/http_server.cc
     chat/http/servlet.cc
+    chat/http/ws_connection.cc
+    chat/http/ws_server.cc
+    chat/http/ws_servlet.cc
+    chat/http/ws_session.cc
     chat/iomanager.cc
     chat/log.cc
     chat/mutex.cc
@@ -43,6 +51,7 @@ set(LIB_SRC
     chat/tcp_server.cc
     chat/util.cc
     chat/uri.cc  # rl
+    chat/worker.cc
 )
 
 add_library(chat SHARED ${LIB_SRC})
@@ -55,6 +64,7 @@ set(LIB_LIB
     dl
     pthread
     -L/usr/local/lib -lyaml-cpp
+    ${OPENSSL_LIBRARIES}
 )
 
 
@@ -167,10 +177,15 @@ set(LIB_LIB
 # force_redefine_file_macro_for_sources(test_env) #__FILE__
 # target_link_libraries(test_env ${LIB_LIB})
 
-add_executable(test_application tests/test_application.cc)
-add_dependencies(test_application chat)
-force_redefine_file_macro_for_sources(test_application) #__FILE__
-target_link_libraries(test_application ${LIB_LIB})
+# add_executable(test_application tests/test_application.cc)
+# add_dependencies(test_application chat)
+# force_redefine_file_macro_for_sources(test_application) #__FILE__
+# target_link_libraries(test_application ${LIB_LIB})
+
+add_executable(main chat/main.cc)
+add_dependencies(main chat)
+force_redefine_file_macro_for_sources(main) #__FILE__
+target_link_libraries(main ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

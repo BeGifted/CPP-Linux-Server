@@ -8,8 +8,9 @@
 #include "log.h"
 // #include "module.h"
 // #include "rock/rock_stream.h"
-// #include "worker.h"
-// #include "http/ws_server.h"
+#include "worker.h"
+#include "http/ws_server.h"
+#include "http/http_server.h"
 // #include "rock/rock_server.h"
 // #include "ns/name_server_module.h"
 // #include "db/fox_thread.h"
@@ -28,12 +29,6 @@ static chat::ConfigVar<std::string>::ptr g_server_pid_file =
     chat::Config::Lookup("server.pid_file"
             ,std::string("chat.pid")
             , "server pid file");
-
-static chat::ConfigVar<std::string>::ptr g_service_discovery_zk =
-    chat::Config::Lookup("service_discovery.zk"
-            ,std::string("")
-            , "service discovery zookeeper");
-
 
 static chat::ConfigVar<std::vector<TcpServerConf> >::ptr g_servers_conf
     = chat::Config::Lookup("servers", std::vector<TcpServerConf>(), "http server config");
@@ -62,9 +57,9 @@ bool Application::init(int argc, char** argv) {
         is_print_help = true;
     }
 
-    // std::string conf_path = chat::EnvMgr::GetInstance()->getConfigPath();
-    // CHAT_LOG_INFO(g_logger) << "load conf path:" << conf_path;
-    // chat::Config::LoadFromConfDir(conf_path);
+    std::string conf_path = chat::EnvMgr::GetInstance()->getConfigPath();
+    CHAT_LOG_INFO(g_logger) << "load conf path:" << conf_path;
+    chat::Config::LoadFromConfDir(conf_path);
 
     // ModuleMgr::GetInstance()->init();
     // std::vector<Module::ptr> modules;
@@ -155,7 +150,7 @@ int Application::run_fiber() {
     //     _exit(0);
     // }
 
-    // chat::WorkerMgr::GetInstance()->init();
+    chat::WorkerMgr::GetInstance()->init();
     // FoxThreadMgr::GetInstance()->init();
     // FoxThreadMgr::GetInstance()->start();
     // RedisMgr::GetInstance();
@@ -198,51 +193,43 @@ int Application::run_fiber() {
             CHAT_LOG_ERROR(g_logger) << "invalid address: " << a;
             _exit(0);
         }
-        // IOManager* accept_worker = chat::IOManager::GetThis();
-        // IOManager* io_worker = chat::IOManager::GetThis();
-        // IOManager* process_worker = chat::IOManager::GetThis();
-        // if(!i.accept_worker.empty()) {
-        //     accept_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.accept_worker).get();
-        //     if(!accept_worker) {
-        //         CHAT_LOG_ERROR(g_logger) << "accept_worker: " << i.accept_worker
-        //             << " not exists";
-        //         _exit(0);
-        //     }
-        // }
-        // if(!i.io_worker.empty()) {
-        //     io_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.io_worker).get();
-        //     if(!io_worker) {
-        //         CHAT_LOG_ERROR(g_logger) << "io_worker: " << i.io_worker
-        //             << " not exists";
-        //         _exit(0);
-        //     }
-        // }
-        // if(!i.process_worker.empty()) {
-        //     process_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.process_worker).get();
-        //     if(!process_worker) {
-        //         CHAT_LOG_ERROR(g_logger) << "process_worker: " << i.process_worker
-        //             << " not exists";
-        //         _exit(0);
-        //     }
-        // }
+        IOManager* accept_worker = chat::IOManager::GetThis();
+        IOManager* io_worker = chat::IOManager::GetThis();
+        IOManager* process_worker = chat::IOManager::GetThis();
+        if (!i.accept_worker.empty()) {
+            accept_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.accept_worker).get();
+            if (!accept_worker) {
+                CHAT_LOG_ERROR(g_logger) << "accept_worker: " << i.accept_worker << " not exists";
+                _exit(0);
+            }
+        }
+        if (!i.io_worker.empty()) {
+            io_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.io_worker).get();
+            if (!io_worker) {
+                CHAT_LOG_ERROR(g_logger) << "io_worker: " << i.io_worker << " not exists";
+                _exit(0);
+            }
+        }
+        if (!i.process_worker.empty()) {
+            process_worker = chat::WorkerMgr::GetInstance()->getAsIOManager(i.process_worker).get();
+            if (!process_worker) {
+                CHAT_LOG_ERROR(g_logger) << "process_worker: " << i.process_worker << " not exists";
+                _exit(0);
+            }
+        }
 
         TcpServer::ptr server;
         if(i.type == "http") {
-            //server.reset(new chat::http::HttpServer(i.keepalive, process_worker, io_worker, accept_worker));
-            server.reset(new chat::http::HttpServer(i.keepalive));
+            server.reset(new chat::http::HttpServer(i.keepalive, process_worker, io_worker, accept_worker));
         } else if(i.type == "ws") {
-            // server.reset(new chat::http::WSServer(
-            //                 process_worker, io_worker, accept_worker));
+            server.reset(new chat::http::WSServer(process_worker, io_worker, accept_worker));
         } else if(i.type == "rock") {
-            // server.reset(new chat::RockServer("rock",
-            //                 process_worker, io_worker, accept_worker));
+            // server.reset(new chat::RockServer("rock", process_worker, io_worker, accept_worker));
         } else if(i.type == "nameserver") {
-            // server.reset(new chat::RockServer("nameserver",
-            //                 process_worker, io_worker, accept_worker));
+            // server.reset(new chat::RockServer("nameserver", process_worker, io_worker, accept_worker));
             // ModuleMgr::GetInstance()->add(std::make_shared<chat::ns::NameServerModule>());
         } else {
-            CHAT_LOG_ERROR(g_logger) << "invalid server type=" << i.type
-                << LexicalCast<TcpServerConf, std::string>()(i);
+            CHAT_LOG_ERROR(g_logger) << "invalid server type=" << i.type << LexicalCast<TcpServerConf, std::string>()(i);
             _exit(0);
         }
         if (!i.name.empty()) {
@@ -255,12 +242,11 @@ int Application::run_fiber() {
             }
             _exit(0);
         }
-        // if(i.ssl) {
-        //     if(!server->loadCertificates(i.cert_file, i.key_file)) {
-        //         CHAT_LOG_ERROR(g_logger) << "loadCertificates fail, cert_file="
-        //             << i.cert_file << " key_file=" << i.key_file;
-        //     }
-        // }
+        if (i.ssl) {
+            if (!server->loadCertificates(i.cert_file, i.key_file)) {
+                CHAT_LOG_ERROR(g_logger) << "loadCertificates fail, cert_file=" << i.cert_file << " key_file=" << i.key_file;
+            }
+        }
         server->setConf(i);
         m_servers[i.type].push_back(server);
         svrs.push_back(server);

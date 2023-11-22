@@ -117,14 +117,14 @@ void TcpServer::handleClient(Socket::ptr client) {
 }
 
 bool TcpServer::loadCertificates(const std::string& cert_file, const std::string& key_file) {
-    // for (auto& i : m_socks) {
-    //     auto ssl_socket = std::dynamic_pointer_cast<SSLSocket>(i);
-    //     if(ssl_socket) {
-    //         if(!ssl_socket->loadCertificates(cert_file, key_file)) {
-    //             return false;
-    //         }
-    //     }
-    // }
+    for (auto& i : m_socks) {
+        auto ssl_socket = std::dynamic_pointer_cast<SSLSocket>(i);
+        if(ssl_socket) {
+            if(!ssl_socket->loadCertificates(cert_file, key_file)) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
