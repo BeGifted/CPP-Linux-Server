@@ -62,6 +62,7 @@ force_redefine_file_macro_for_sources(chat) #__FILE__
 
 set(LIB_LIB
     chat
+    jsoncpp
     dl
     pthread
     -L/usr/local/lib -lyaml-cpp

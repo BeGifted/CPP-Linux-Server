@@ -109,7 +109,7 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client) {
         if(stream->readFixSize(&ws_head, sizeof(ws_head)) <= 0) {
             break;
         }
-        CHAT_LOG_DEBUG(g_logger) << "WSFrameHead " << ws_head.toString();
+        CHAT_LOG_INFO(g_logger) << "WSFrameHead " << ws_head.toString();
 
         if(ws_head.opcode == WSFrameHead::PING) {
             CHAT_LOG_INFO(g_logger) << "PING";
@@ -121,7 +121,7 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client) {
                 || ws_head.opcode == WSFrameHead::TEXT_FRAME
                 || ws_head.opcode == WSFrameHead::BIN_FRAME) {
             if(!client && !ws_head.mask) {
-                CHAT_LOG_INFO(g_logger) << "WSFrameHead mask != 1";
+                CHAT_LOG_INFO(g_logger) << "WSFrameHead mask != 1, mask=" << ws_head.mask;
                 break;
             }
             uint64_t length = 0;
@@ -170,11 +170,11 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client) {
             }
 
             if(ws_head.fin) {
-                CHAT_LOG_DEBUG(g_logger) << data;
+                CHAT_LOG_INFO(g_logger) << data;
                 return WSFrameMessage::ptr(new WSFrameMessage(opcode, std::move(data)));
             }
         } else {
-            CHAT_LOG_DEBUG(g_logger) << "invalid opcode=" << ws_head.opcode;
+            CHAT_LOG_INFO(g_logger) << "invalid opcode=" << ws_head.opcode;
         }
     } while(true);
     stream->close();

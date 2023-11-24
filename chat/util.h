@@ -13,6 +13,7 @@
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <jsoncpp/json/json.h>
 
 namespace chat {
     
@@ -84,7 +85,51 @@ V GetParamValue(const Map& m, const K& k, const V& def = V()) {
     return def;
 }
 
+template<class T>
+void delete_array(T* v) {
+    if(v) {
+        delete[] v;
+    }
 }
 
+std::string GetIPv4();
+
+class TypeUtil {
+public:
+    static int8_t ToChar(const std::string& str);
+    static int64_t Atoi(const std::string& str);
+    static double Atof(const std::string& str);
+    static int8_t ToChar(const char* str);
+    static int64_t Atoi(const char* str);
+    static double Atof(const char* str);
+};
+
+class JsonUtil {
+public:
+    static bool NeedEscape(const std::string& v);
+    static std::string Escape(const std::string& v);
+    static std::string GetString(const Json::Value& json
+                          ,const std::string& name
+                          ,const std::string& default_value = "");
+    static double GetDouble(const Json::Value& json
+                     ,const std::string& name
+                     ,double default_value = 0);
+    static int32_t GetInt32(const Json::Value& json
+                     ,const std::string& name
+                     ,int32_t default_value = 0);
+    static uint32_t GetUint32(const Json::Value& json
+                       ,const std::string& name
+                       ,uint32_t default_value = 0);
+    static int64_t GetInt64(const Json::Value& json
+                     ,const std::string& name
+                     ,int64_t default_value = 0);
+    static uint64_t GetUint64(const Json::Value& json
+                       ,const std::string& name
+                       ,uint64_t default_value = 0);
+    static bool FromString(Json::Value& json, const std::string& v);
+    static std::string ToString(const Json::Value& json);
+};
+
+}
 
 #endif

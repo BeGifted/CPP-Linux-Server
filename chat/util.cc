@@ -486,4 +486,265 @@ std::string random_string(size_t len, const std::string& chars) {
     return rt;
 }
 
+in_addr_t GetIPv4Inet() {
+    struct ifaddrs* ifas = nullptr;
+    struct ifaddrs* ifa = nullptr;
+
+    in_addr_t localhost = inet_addr("127.0.0.1");
+    if(getifaddrs(&ifas)) {
+        CHAT_LOG_ERROR(g_logger) << "getifaddrs errno=" << errno
+            << " errstr=" << strerror(errno);
+        return localhost;
+    }
+
+    in_addr_t ipv4 = localhost;
+
+    for(ifa = ifas; ifa && ifa->ifa_addr; ifa = ifa->ifa_next) {
+        if(ifa->ifa_addr->sa_family != AF_INET) {
+            continue;
+        }
+        if(!strncasecmp(ifa->ifa_name, "lo", 2)) {
+            continue;
+        }
+        ipv4 = ((struct sockaddr_in*)ifa->ifa_addr)->sin_addr.s_addr;
+        if(ipv4 == localhost) {
+            continue;
+        }
+    }
+    if(ifas != nullptr) {
+        freeifaddrs(ifas);
+    }
+    return ipv4;
+}
+
+std::string _GetIPv4() {
+    std::shared_ptr<char> ipv4(new char[INET_ADDRSTRLEN], chat::delete_array<char>);
+    memset(ipv4.get(), 0, INET_ADDRSTRLEN);
+    auto ia = GetIPv4Inet();
+    inet_ntop(AF_INET, &ia, ipv4.get(), INET_ADDRSTRLEN);
+    return ipv4.get();
+}
+
+std::string GetIPv4() {
+    static const std::string ip = _GetIPv4();
+    return ip;
+}
+
+
+int8_t  TypeUtil::ToChar(const std::string& str) {
+    if(str.empty()) {
+        return 0;
+    }
+    return *str.begin();
+}
+
+int64_t TypeUtil::Atoi(const std::string& str) {
+    if(str.empty()) {
+        return 0;
+    }
+    return strtoull(str.c_str(), nullptr, 10);
+}
+
+double  TypeUtil::Atof(const std::string& str) {
+    if(str.empty()) {
+        return 0;
+    }
+    return atof(str.c_str());
+}
+
+int8_t  TypeUtil::ToChar(const char* str) {
+    if(str == nullptr) {
+        return 0;
+    }
+    return str[0];
+}
+
+int64_t TypeUtil::Atoi(const char* str) {
+    if(str == nullptr) {
+        return 0;
+    }
+    return strtoull(str, nullptr, 10);
+}
+
+double  TypeUtil::Atof(const char* str) {
+    if(str == nullptr) {
+        return 0;
+    }
+    return atof(str);
+}
+
+
+
+bool JsonUtil::NeedEscape(const std::string& v) {
+    for(auto& c : v) {
+        switch(c) {
+            case '\f':
+            case '\t':
+            case '\r':
+            case '\n':
+            case '\b':
+            case '"':
+            case '\\':
+                return true;
+            default:
+                break;
+        }
+    }
+    return false;
+}
+
+std::string JsonUtil::Escape(const std::string& v) {
+    size_t size = 0;
+    for(auto& c : v) {
+        switch(c) {
+            case '\f':
+            case '\t':
+            case '\r':
+            case '\n':
+            case '\b':
+            case '"':
+            case '\\':
+                size += 2;
+                break;
+            default:
+                size += 1;
+                break;
+        }
+    }
+    if(size == v.size()) {
+        return v;
+    }
+
+    std::string rt;
+    rt.resize(size);
+    for(auto& c : v) {
+        switch(c) {
+            case '\f':
+                rt.append("\\f");
+                break;
+            case '\t':
+                rt.append("\\t");
+                break;
+            case '\r':
+                rt.append("\\r");
+                break;
+            case '\n':
+                rt.append("\\n");
+                break;
+            case '\b':
+                rt.append("\\b");
+                break;
+            case '"':
+                rt.append("\\\"");
+                break;
+            case '\\':
+                rt.append("\\\\");
+                break;
+            default:
+                rt.append(1, c);
+                break;
+
+        }
+    }
+    return rt;
+}
+
+std::string JsonUtil::GetString(const Json::Value& json
+                      ,const std::string& name
+                      ,const std::string& default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isString()) {
+        return v.asString();
+    }
+    return default_value;
+}
+
+double JsonUtil::GetDouble(const Json::Value& json
+                 ,const std::string& name
+                 ,double default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isDouble()) {
+        return v.asDouble();
+    } else if(v.isString()) {
+        return TypeUtil::Atof(v.asString());
+    }
+    return default_value;
+}
+
+int32_t JsonUtil::GetInt32(const Json::Value& json
+                 ,const std::string& name
+                 ,int32_t default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isInt()) {
+        return v.asInt();
+    } else if(v.isString()) {
+        return TypeUtil::Atoi(v.asString());
+    }
+    return default_value;
+}
+
+uint32_t JsonUtil::GetUint32(const Json::Value& json
+                   ,const std::string& name
+                   ,uint32_t default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isUInt()) {
+        return v.asUInt();
+    } else if(v.isString()) {
+        return TypeUtil::Atoi(v.asString());
+    }
+    return default_value;
+}
+
+int64_t JsonUtil::GetInt64(const Json::Value& json
+                 ,const std::string& name
+                 ,int64_t default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isInt64()) {
+        return v.asInt64();
+    } else if(v.isString()) {
+        return TypeUtil::Atoi(v.asString());
+    }
+    return default_value;
+}
+
+uint64_t JsonUtil::GetUint64(const Json::Value& json
+                   ,const std::string& name
+                   ,uint64_t default_value) {
+    if(!json.isMember(name)) {
+        return default_value;
+    }
+    auto& v = json[name];
+    if(v.isUInt64()) {
+        return v.asUInt64();
+    } else if(v.isString()) {
+        return TypeUtil::Atoi(v.asString());
+    }
+    return default_value;
+}
+
+bool JsonUtil::FromString(Json::Value& json, const std::string& v) {
+    Json::Reader reader;
+    return reader.parse(v, json);
+}
+
+std::string JsonUtil::ToString(const Json::Value& json) {
+    Json::FastWriter w;
+    return w.write(json);
+}
+
 }
