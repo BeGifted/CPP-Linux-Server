@@ -198,7 +198,7 @@ bool IOManager::cancelEvent(int fd, Event event) {
 }
 
 bool IOManager::cancelAll(int fd) {
- RWMutexType::ReadLock lock(m_mutex);
+    RWMutexType::ReadLock lock(m_mutex);
     if((int)m_fdcontexts.size() <= fd) {
         return false;
     }
