@@ -479,7 +479,8 @@ static _SSLInit s_init;
 
 }
 
-SSLSocket::SSLSocket(int family, int type, int protocol):Socket(family, type, protocol) {
+SSLSocket::SSLSocket(int family, int type, int protocol)
+    :Socket(family, type, protocol) {
 }
 
 Socket::ptr SSLSocket::accept() {
