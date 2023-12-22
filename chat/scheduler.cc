@@ -251,6 +251,17 @@ void Scheduler::idle() {
     }
 }
 
+void Scheduler::switchTo(int thread) {
+    CHAT_ASSERT(Scheduler::GetThis() != nullptr);
+    if (Scheduler::GetThis() == this) {
+        if (thread == -1 || thread == chat::GetThreadId()) {
+            return;
+        }
+    }
+    schedule(Fiber::GetThis(), thread);
+    Fiber::YieldToHold();
+}
+
 std::ostream& Scheduler::dump(std::ostream& os) {
     os << "[Scheduler name=" << m_name
        << " size=" << m_threadCount
@@ -265,6 +276,19 @@ std::ostream& Scheduler::dump(std::ostream& os) {
         os << m_threadIds[i];
     }
     return os;
+}
+
+SchedulerSwitcher::SchedulerSwitcher(Scheduler* target) {
+    m_caller = Scheduler::GetThis();
+    if(target) {
+        target->switchTo();
+    }
+}
+
+SchedulerSwitcher::~SchedulerSwitcher() {
+    if(m_caller) {
+        m_caller->switchTo();
+    }
 }
 
 }

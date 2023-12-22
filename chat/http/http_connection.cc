@@ -225,13 +225,13 @@ HttpResult::ptr HttpConnection::DoRequest(HttpMethod method
 HttpResult::ptr HttpConnection::DoRequest(HttpRequest::ptr req
                             , Uri::ptr uri
                             , uint64_t timeout_ms) {
-    // bool is_ssl = uri->getScheme() == "https";
+    bool is_ssl = uri->getScheme() == "https";
     Address::ptr addr = uri->createAddress();
     if (!addr) {
         return std::make_shared<HttpResult>((int)HttpResult::Error::INVALID_HOST
                 , nullptr, "invalid host: " + uri->getHost());
     }
-    Socket::ptr sock = Socket::CreateTCP(addr);
+    Socket::ptr sock = is_ssl ? SSLSocket::CreateTCP(addr) : Socket::CreateTCP(addr);
     if (!sock) {
         return std::make_shared<HttpResult>((int)HttpResult::Error::CREATE_SOCKET_ERROR
                 , nullptr, "create socket fail: " + addr->toString()
@@ -328,7 +328,7 @@ HttpConnection::ptr HttpConnectionPool::getConnection() {
             return nullptr;
         }
         addr->setPort(m_port);
-        Socket::ptr sock = Socket::CreateTCP(addr);
+        Socket::ptr sock = m_isHttps ? SSLSocket::CreateTCP(addr) : Socket::CreateTCP(addr);
         if (!sock) {
             CHAT_LOG_ERROR(g_logger) << "create sock fail: " << addr->toString();
             return nullptr;

@@ -8,6 +8,27 @@
 
 namespace chat {
 
+class WorkerGroup : Noncopyable, public std::enable_shared_from_this<WorkerGroup> {
+public:
+    typedef std::shared_ptr<WorkerGroup> ptr;
+    static WorkerGroup::ptr Create(uint32_t batch_size, chat::Scheduler* s = chat::Scheduler::GetThis()) {
+        return std::make_shared<WorkerGroup>(batch_size, s);
+    }
+
+    WorkerGroup(uint32_t batch_size, chat::Scheduler* s = chat::Scheduler::GetThis());
+    ~WorkerGroup();
+
+    void schedule(std::function<void()> cb, int thread = -1);
+    void waitAll();
+private:
+    void doWork(std::function<void()> cb);
+private:
+    uint32_t m_batchSize;
+    bool m_finish;
+    Scheduler* m_scheduler;
+    FiberSemaphore m_sem;
+};
+
 class WorkerManager {
 public:
     WorkerManager();

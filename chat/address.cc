@@ -511,7 +511,7 @@ socklen_t UnixAddress::getAddrLen() const {
 std::string UnixAddress::getPath() const {
     std::stringstream ss;
     if(m_length > offsetof(sockaddr_un, sun_path)
-            && m_addr.sun_path[0] == '\0') {
+        && m_addr.sun_path[0] == '\0') {
         ss << "\\0" << std::string(m_addr.sun_path + 1,
                 m_length - offsetof(sockaddr_un, sun_path) - 1);
     } else {
