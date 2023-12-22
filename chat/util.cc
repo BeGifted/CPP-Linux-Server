@@ -12,6 +12,7 @@
 #include <ifaddrs.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#include <signal.h>
 
 namespace chat {
 
@@ -417,19 +418,19 @@ std::string md5sum(const std::string &data) {
     return md5sum(data.c_str(), data.size());
 }
 
-std::string sha0sum(const void *data, size_t len) {
-    SHA_CTX ctx;
-    SHA_Init(&ctx);
-    SHA_Update(&ctx, data, len);
-    std::string result;
-    result.resize(SHA_DIGEST_LENGTH);
-    SHA_Final((unsigned char*)&result[0], &ctx);
-    return result;
-}
+// std::string sha0sum(const void *data, size_t len) {
+//     SHA_CTX ctx;
+//     SHA_Init(&ctx);
+//     SHA_Update(&ctx, data, len);
+//     std::string result;
+//     result.resize(SHA_DIGEST_LENGTH);
+//     SHA_Final((unsigned char*)&result[0], &ctx);
+//     return result;
+// }
 
-std::string sha0sum(const std::string & data) {
-    return sha0sum(data.c_str(), data.length());
-}
+// std::string sha0sum(const std::string & data) {
+//     return sha0sum(data.c_str(), data.length());
+// }
 
 std::string sha1sum(const void *data, size_t len) {
     SHA_CTX ctx;
