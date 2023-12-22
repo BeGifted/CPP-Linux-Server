@@ -144,10 +144,10 @@ set(LIB_LIB
 # force_redefine_file_macro_for_sources(test_tcp_server) #__FILE__
 # target_link_libraries(test_tcp_server ${LIB_LIB})
 
-add_executable(echo_server examples/echo_server.cc)
-add_dependencies(echo_server chat)
-force_redefine_file_macro_for_sources(echo_server) #__FILE__
-target_link_libraries(echo_server ${LIB_LIB})
+# add_executable(echo_server examples/echo_server.cc)
+# add_dependencies(echo_server chat)
+# force_redefine_file_macro_for_sources(echo_server) #__FILE__
+# target_link_libraries(echo_server ${LIB_LIB})
 
 # add_executable(test_http_server tests/test_http_server.cc)
 # add_dependencies(test_http_server chat)
@@ -184,15 +184,20 @@ target_link_libraries(echo_server ${LIB_LIB})
 # force_redefine_file_macro_for_sources(test_application) #__FILE__
 # target_link_libraries(test_application ${LIB_LIB})
 
-add_executable(main chat/main.cc)
-add_dependencies(main chat)
-force_redefine_file_macro_for_sources(main) #__FILE__
-target_link_libraries(main ${LIB_LIB})
+# add_executable(main chat/main.cc)
+# add_dependencies(main chat)
+# force_redefine_file_macro_for_sources(main) #__FILE__
+# target_link_libraries(main ${LIB_LIB})
 
 add_executable(echo_server_udp examples/echo_server_udp.cc)
 add_dependencies(echo_server_udp chat)
 force_redefine_file_macro_for_sources(echo_server_udp) #__FILE__
 target_link_libraries(echo_server_udp ${LIB_LIB})
+
+add_executable(echo_client_udp examples/echo_client_udp.cc)
+add_dependencies(echo_client_udp chat)
+force_redefine_file_macro_for_sources(echo_client_udp) #__FILE__
+target_link_libraries(echo_client_udp ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
