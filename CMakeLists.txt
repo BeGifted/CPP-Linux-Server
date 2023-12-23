@@ -47,6 +47,7 @@ set(LIB_SRC
     chat/socket.cc
     chat/stream.cc
     chat/streams/socket_stream.cc
+    chat/streams/zlib_stream.cc
     chat/timer.cc
     chat/thread.cc
     chat/tcp_server.cc
@@ -67,6 +68,7 @@ set(LIB_LIB
     pthread
     -L/usr/local/lib -lyaml-cpp
     ${OPENSSL_LIBRARIES}
+    -lz # zlib
 )
 
 
@@ -154,10 +156,10 @@ set(LIB_LIB
 # force_redefine_file_macro_for_sources(test_http_server) #__FILE__
 # target_link_libraries(test_http_server ${LIB_LIB})
 
-# add_executable(test_http_connection tests/test_http_connection.cc)
-# add_dependencies(test_http_connection chat)
-# force_redefine_file_macro_for_sources(test_http_connection) #__FILE__
-# target_link_libraries(test_http_connection ${LIB_LIB})
+add_executable(test_http_connection tests/test_http_connection.cc)
+add_dependencies(test_http_connection chat)
+force_redefine_file_macro_for_sources(test_http_connection) #__FILE__
+target_link_libraries(test_http_connection ${LIB_LIB})
 
 # add_executable(test_uri tests/test_uri.cc)
 # add_dependencies(test_uri chat)

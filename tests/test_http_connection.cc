@@ -52,8 +52,28 @@ void run() {
     test_pool();
 }
 
+void test_https() {
+    auto r = chat::http::HttpConnection::DoGet("www.baidu.com", 300, {
+                        {"Accept-Encoding", "gzip, deflate, br"},
+                        // {"Connection", "keep-alive"}
+            });
+    CHAT_LOG_INFO(g_logger) << "result=" << r->result
+        << " error=" << r->error
+        << " rsp=" << (r->response ? r->response->toString() : "");
+
+    chat::http::HttpConnectionPool::ptr pool(new chat::http::HttpConnectionPool(
+                "www.baidu.com", "", 443, true, 10, 1000 * 30, 5));
+
+    chat::IOManager::GetThis()->addTimer(1000, [pool](){
+            auto r = pool->doGet("/", 300, {
+                        {"Accept-Encoding", "gzip, deflate, br"}
+                    });
+            CHAT_LOG_INFO(g_logger) << r->toString();
+    }, true);
+}
+
 int main(int argc, char** argv) {
     chat::IOManager iom(2);
-    iom.schedule(run);
+    iom.schedule(test_https);
     return 0;
 }

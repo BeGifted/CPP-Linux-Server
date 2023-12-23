@@ -2,6 +2,7 @@
 #include "http_parser.h"
 #include "chat/log.h"
 #include "chat/util.h"
+#include "chat/streams/zlib_stream.h"
 
 namespace chat {
 namespace http {
@@ -109,7 +110,6 @@ HttpResponse::ptr HttpConnection::recvResponse() {
     } else {
         int64_t length = parser->getContentLength();
         if (length > 0) {
-            std::string body;
             body.resize(length);
 
             int len = 0;
@@ -127,8 +127,26 @@ HttpResponse::ptr HttpConnection::recvResponse() {
                     return nullptr;
                 }
             }
-            parser->getData()->setBody(body);
         }
+    }
+
+    // content encoding
+    if(!body.empty()) {
+        auto content_encoding = parser->getData()->getHeader("content-encoding");
+        CHAT_LOG_DEBUG(g_logger) << "content_encoding: " << content_encoding
+            << " size=" << body.size();
+        if(strcasecmp(content_encoding.c_str(), "gzip") == 0) {
+            auto zs = ZlibStream::CreateGzip(false);
+            zs->write(body.c_str(), body.size());
+            zs->flush();
+            zs->getResult().swap(body);
+        } else if(strcasecmp(content_encoding.c_str(), "deflate") == 0) {
+            auto zs = ZlibStream::CreateDeflate(false);
+            zs->write(body.c_str(), body.size());
+            zs->flush();
+            zs->getResult().swap(body);
+        }
+        parser->getData()->setBody(body);
     }
 
     return parser->getData();

@@ -43,9 +43,7 @@ bool TcpServer::bind(const std::vector<Address::ptr>& addrs
                         ,bool ssl) {
     m_ssl = ssl;
     for(auto& addr : addrs) {
-        Socket::ptr sock = ssl ? SSLSocket::CreateTCP(addr) : Socket::CreateTCP(addr);
-        // Socket::ptr sock = Socket::CreateTCP(addr);
-        if (!sock->bind(addr)) {
+        Socket::ptr sock = ssl ? SSLSocket::CreateTCP(addr) : Socket::CreateTCP(addr);        if (!sock->bind(addr)) {
             CHAT_LOG_ERROR(g_logger) << "bind fail errno="
                 << errno << " errstr=" << strerror(errno)
                 << " addr=[" << addr->toString() << "]";
