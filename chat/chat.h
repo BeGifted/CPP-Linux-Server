@@ -29,6 +29,7 @@
 #include "scheduler.h"
 #include "socket.h"
 #include "stream.h"
+#include "streams/async_socket_stream.h"
 #include "streams/socket_stream.h"
 #include "streams/zlib_stream.h"
 #include "thread.h"

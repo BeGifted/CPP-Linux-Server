@@ -146,6 +146,7 @@ bool Socket::init(int sock) {
 }
 
 bool Socket::bind(const Address::ptr addr) {
+    m_remoteAddress = addr;
     if (!isValid()) {
         newSock();
         if (CHAT_UNLIKELY(!isValid())) {
@@ -160,15 +161,15 @@ bool Socket::bind(const Address::ptr addr) {
         return false;
     }
 
-    // UnixAddress::ptr uaddr = std::dynamic_pointer_cast<UnixAddress>(addr);
-    // if(uaddr) {
-    //     Socket::ptr sock = Socket::CreateUnixTCPSocket();
-    //     if(sock->connect(uaddr)) {
-    //         return false;
-    //     } else {
-    //         chat::FSUtil::Unlink(uaddr->getPath(), true);
-    //     }
-    // }
+    UnixAddress::ptr uaddr = std::dynamic_pointer_cast<UnixAddress>(addr);
+    if(uaddr) {
+        Socket::ptr sock = Socket::CreateUnixTCPSocket();
+        if(sock->connect(uaddr)) {
+            return false;
+        } else {
+            chat::FSUtil::Unlink(uaddr->getPath(), true);
+        }
+    }
 
     if(::bind(m_sock, addr->getAddr(), addr->getAddrLen())) {
         CHAT_LOG_ERROR(g_logger) << "bind error errrno=" << errno

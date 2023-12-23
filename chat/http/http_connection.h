@@ -39,7 +39,7 @@ struct HttpResult {
 };
 
 
-class HttpConnection: public SocketStream{
+class HttpConnection: public SocketStream {
 friend class HttpConnectionPool;
 public:
     typedef std::shared_ptr<HttpConnection> ptr;

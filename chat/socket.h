@@ -60,7 +60,7 @@ public:
 
     virtual bool init(int sock);
     virtual bool bind(const Address::ptr addr);
-    virtual bool reconnect(uint64_t timeout_ms);
+    virtual bool reconnect(uint64_t timeout_ms = -1);
     virtual bool connect(const Address::ptr addr, uint64_t timeout_ms = -1);
     virtual bool listen(int backlog = SOMAXCONN);
     virtual bool close();

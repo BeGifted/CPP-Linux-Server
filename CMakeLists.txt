@@ -46,6 +46,7 @@ set(LIB_SRC
     chat/scheduler.cc
     chat/socket.cc
     chat/stream.cc
+    chat/async_socket_stream.cc
     chat/streams/socket_stream.cc
     chat/streams/zlib_stream.cc
     chat/timer.cc
