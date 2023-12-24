@@ -53,7 +53,7 @@ void ServletDispatch::addGlobServletCreator(const std::string& uri, IServletCrea
     m_globs.push_back(std::make_pair(uri, creator));
 }
 
-void ServletDispatch::addServlet(const std::string& uri ,FunctionServlet::callback cb) {
+void ServletDispatch::addServlet(const std::string& uri, FunctionServlet::callback cb) {
     RWMutexType::WriteLock lock(m_mutex);
     m_datas[uri] = std::make_shared<HoldServletCreator>(std::make_shared<FunctionServlet>(cb));
 }
