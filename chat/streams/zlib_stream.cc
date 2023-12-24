@@ -199,4 +199,14 @@ std::string ZlibStream::getResult() const {
     return rt;
 }
 
+chat::ByteArray::ptr ZlibStream::getByteArray() {
+    chat::ByteArray::ptr ba(new chat::ByteArray);
+    for(auto& i : m_buffs) {
+        ba->write(i.iov_base, i.iov_len);
+    }
+    ba->setPosition(0);
+    return ba;
+}
+
+
 }

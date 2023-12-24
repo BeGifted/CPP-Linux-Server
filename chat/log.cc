@@ -679,6 +679,8 @@ struct LogIniter {
                 } else if (!(i == *it)) {
                     //修改logger
                     logger = CHAT_LOG_NAME(i.name);
+                } else {
+                    continue;
                 }
 
                 logger->setLevel(i.level);

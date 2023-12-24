@@ -17,6 +17,7 @@
 #include "http/http_session.h"
 #include "http/http_server.h"
 #include "http/servlet.h"
+#include "http/session_data.h"
 #include "http/ws_connection.h"
 #include "http/ws_server.h"
 #include "http/ws_servlet.h"

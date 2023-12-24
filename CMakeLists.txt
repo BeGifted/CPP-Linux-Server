@@ -16,6 +16,8 @@ link_directories(/usr/local/lib64)
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+find_package(Protobuf)
+include_directories(${Protobuf_INCLUDE_DIRS})
 
 set(LIB_SRC
     chat/address.cc
@@ -35,6 +37,7 @@ set(LIB_SRC
     chat/http/http_session.cc
     chat/http/http_server.cc
     chat/http/servlet.cc
+    chat/http/session_data.cc
     chat/http/ws_connection.cc
     chat/http/ws_server.cc
     chat/http/ws_servlet.cc
@@ -46,7 +49,8 @@ set(LIB_SRC
     chat/scheduler.cc
     chat/socket.cc
     chat/stream.cc
-    chat/async_socket_stream.cc
+    chat/streams/async_socket_stream.cc
+    chat/streams/load_balance.cc
     chat/streams/socket_stream.cc
     chat/streams/zlib_stream.cc
     chat/timer.cc
@@ -70,6 +74,7 @@ set(LIB_LIB
     -L/usr/local/lib -lyaml-cpp
     ${OPENSSL_LIBRARIES}
     -lz # zlib
+    ${PROTOBUF_LIBRARIES}
 )
 
 

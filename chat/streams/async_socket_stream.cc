@@ -101,7 +101,10 @@ void AsyncSocketStream::doRead() {
     innerClose();
     m_waitSem.notify();
 
-    //TODO auto start
+    // auto start
+    if (m_autoConnect) {
+        m_iomanager->addTimer(10, std::bind(&AsyncSocketStream::start, shared_from_this()));
+    }
 }
 
 void AsyncSocketStream::doWrite() {

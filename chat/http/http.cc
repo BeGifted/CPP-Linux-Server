@@ -205,58 +205,57 @@ void HttpRequest::initParam() {
     initCookies();
 }
 
-void HttpRequest::initQueryParam() {
-//     if (m_parserParamFlag & 0x1) {
-//         return;
-//     }
-/*
-// #define PARSE_PARAM(str, m, flag, trim) \
-//     size_t pos = 0; \
-//     do { \
-//         size_t last = pos; \
-//         pos = str.find('=', pos); \
-//         if(pos == std::string::npos) { \
-//             break; \
-//         } \
-//         size_t key = pos; \
-//         pos = str.find(flag, pos); \
-//         m.insert(std::make_pair(trim(str.substr(last, key - last)), \
-//                     chat::StringUtil::UrlDecode(str.substr(key + 1, pos - key - 1)))); \
-//         if(pos == std::string::npos) { \
-//             break; \
-//         } \
-//         ++pos; \
-//     } while(true);
+#define PARSE_PARAM(str, m, flag, trim) \
+    size_t pos = 0; \
+    do { \
+        size_t last = pos; \
+        pos = str.find('=', pos); \
+        if(pos == std::string::npos) { \
+            break; \
+        } \
+        size_t key = pos; \
+        pos = str.find(flag, pos); \
+        m.insert(std::make_pair(trim(str.substr(last, key - last)), \
+                    chat::StringUtil::UrlDecode(str.substr(key + 1, pos - key - 1)))); \
+        if(pos == std::string::npos) { \
+            break; \
+        } \
+        ++pos; \
+    } while(true);
 
-//     PARSE_PARAM(m_query, m_params, '&', );
-//     m_parserParamFlag |= 0x1;
-*/
+void HttpRequest::initQueryParam() {
+    if (m_parserParamFlag & 0x1) {
+        return;
+    }
+
+    PARSE_PARAM(m_query, m_params, '&', );
+    m_parserParamFlag |= 0x1;
 }
 
 void HttpRequest::initBodyParam() {
-    // if(m_parserParamFlag & 0x2) {
-    //     return;
-    // }
-    // std::string content_type = getHeader("content-type");
-    // if(strcasestr(content_type.c_str(), "application/x-www-form-urlencoded") == nullptr) {
-    //     m_parserParamFlag |= 0x2;
-    //     return;
-    // }
-    // PARSE_PARAM(m_body, m_params, '&',);
-    // m_parserParamFlag |= 0x2;
+    if(m_parserParamFlag & 0x2) {
+        return;
+    }
+    std::string content_type = getHeader("content-type");
+    if(strcasestr(content_type.c_str(), "application/x-www-form-urlencoded") == nullptr) {
+        m_parserParamFlag |= 0x2;
+        return;
+    }
+    PARSE_PARAM(m_body, m_params, '&',);
+    m_parserParamFlag |= 0x2;
 }
 
 void HttpRequest::initCookies() {
-    // if(m_parserParamFlag & 0x4) {
-    //     return;
-    // }
-    // std::string cookie = getHeader("cookie");
-    // if(cookie.empty()) {
-    //     m_parserParamFlag |= 0x4;
-    //     return;
-    // }
-    // PARSE_PARAM(cookie, m_cookies, ';', chat::StringUtil::Trim);
-    // m_parserParamFlag |= 0x4;
+    if(m_parserParamFlag & 0x4) {
+        return;
+    }
+    std::string cookie = getHeader("cookie");
+    if(cookie.empty()) {
+        m_parserParamFlag |= 0x4;
+        return;
+    }
+    PARSE_PARAM(cookie, m_cookies, ';', chat::StringUtil::Trim);
+    m_parserParamFlag |= 0x4;
 }
 
 HttpResponse::HttpResponse(uint8_t version, bool close)
@@ -287,21 +286,21 @@ void HttpResponse::setRedirect(const std::string& uri) {
 void HttpResponse::setCookie(const std::string& key, const std::string& val,
                              time_t expired, const std::string& path,
                              const std::string& domain, bool secure) {
-    // std::stringstream ss;
-    // ss << key << "=" << val;
-    // if(expired > 0) {
-    //     ss << ";expires=" << chat::Time2Str(expired, "%a, %d %b %Y %H:%M:%S") << " GMT";
-    // }
-    // if(!domain.empty()) {
-    //     ss << ";domain=" << domain;
-    // }
-    // if(!path.empty()) {
-    //     ss << ";path=" << path;
-    // }
-    // if(secure) {
-    //     ss << ";secure";
-    // }
-    // m_cookies.push_back(ss.str());
+    std::stringstream ss;
+    ss << key << "=" << val;
+    if(expired > 0) {
+        ss << ";expires=" << chat::Time2Str(expired, "%a, %d %b %Y %H:%M:%S") << " GMT";
+    }
+    if(!domain.empty()) {
+        ss << ";domain=" << domain;
+    }
+    if(!path.empty()) {
+        ss << ";path=" << path;
+    }
+    if(secure) {
+        ss << ";secure";
+    }
+    m_cookies.push_back(ss.str());
 }
 
 
