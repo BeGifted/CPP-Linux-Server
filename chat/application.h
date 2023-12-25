@@ -2,8 +2,7 @@
 #define __CHAT_APPLICATION_H__
 
 #include "http/http_server.h"
-// #include "streams/service_discovery.h"
-// #include "rock/rock_stream.h"
+#include "streams/service_discovery.h"
 
 namespace chat {
 
@@ -18,7 +17,7 @@ public:
     bool getServer(const std::string& type, std::vector<TcpServer::ptr>& svrs);
     void listAllServer(std::map<std::string, std::vector<TcpServer::ptr> >& servers);
 
-    // ZKServiceDiscovery::ptr getServiceDiscovery() const { return m_serviceDiscovery;}
+    ZKServiceDiscovery::ptr getServiceDiscovery() const { return m_serviceDiscovery;}
     // RockSDLoadBalance::ptr getRockSDLoadBalance() const { return m_rockSDLoadBalance;}
 private:
     int main(int argc, char** argv);
@@ -31,7 +30,7 @@ private:
     IOManager::ptr m_mainIOManager;
     static Application* s_instance;
 
-    // ZKServiceDiscovery::ptr m_serviceDiscovery;
+    ZKServiceDiscovery::ptr m_serviceDiscovery;
     // RockSDLoadBalance::ptr m_rockSDLoadBalance;
 };
 

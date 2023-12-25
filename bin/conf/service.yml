@@ -1,0 +1,2 @@
+service_discovery:
+    zk: 127.0.0.1:2387

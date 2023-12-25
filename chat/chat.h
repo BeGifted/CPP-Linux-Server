@@ -31,6 +31,8 @@
 #include "socket.h"
 #include "stream.h"
 #include "streams/async_socket_stream.h"
+#include "streams/load_balance.h"
+#include "streams/service_discovery.h"
 #include "streams/socket_stream.h"
 #include "streams/zlib_stream.h"
 #include "thread.h"

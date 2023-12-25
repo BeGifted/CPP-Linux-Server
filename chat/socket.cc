@@ -351,8 +351,6 @@ Address::ptr Socket::getRemoteAddress() {
     }
     socklen_t addrlen = result->getAddrLen();
     if (getpeername(m_sock, result->getAddr(), &addrlen)) {  //获取已连接套接字的对等端地址信息
-        CHAT_LOG_ERROR(g_logger) << "getpeername error sock=" << m_sock
-           << " errno=" << errno << " errstr=" << strerror(errno);
         return Address::ptr(new UnknownAddress(m_family));
     }
     if (m_family == AF_UNIX) {

@@ -11,6 +11,7 @@
 #include "worker.h"
 #include "http/ws_server.h"
 #include "http/http_server.h"
+#include "util.h"
 // #include "rock/rock_server.h"
 // #include "ns/name_server_module.h"
 // #include "db/fox_thread.h"
@@ -32,6 +33,11 @@ static chat::ConfigVar<std::string>::ptr g_server_pid_file =
 
 static chat::ConfigVar<std::vector<TcpServerConf> >::ptr g_servers_conf
     = chat::Config::Lookup("servers", std::vector<TcpServerConf>(), "http server config");
+
+static chat::ConfigVar<std::string>::ptr g_service_discovery_zk =
+    chat::Config::Lookup("service_discovery.zk"
+            ,std::string("")
+            , "service discovery zookeeper");
 
 Application* Application::s_instance = nullptr;
 
@@ -252,40 +258,40 @@ int Application::run_fiber() {
         svrs.push_back(server);
     }
 
-    // if(!g_service_discovery_zk->getValue().empty()) {
-    //     m_serviceDiscovery.reset(new ZKServiceDiscovery(g_service_discovery_zk->getValue()));
-    //     m_rockSDLoadBalance.reset(new RockSDLoadBalance(m_serviceDiscovery));
+    if(!g_service_discovery_zk->getValue().empty()) {
+        m_serviceDiscovery.reset(new ZKServiceDiscovery(g_service_discovery_zk->getValue()));
+        // m_rockSDLoadBalance.reset(new RockSDLoadBalance(m_serviceDiscovery));
 
-    //     std::vector<TcpServer::ptr> svrs;
-    //     if(!getServer("http", svrs)) {
-    //         m_serviceDiscovery->setSelfInfo(chat::GetIPv4() + ":0:" + chat::GetHostName());
-    //     } else {
-    //         std::string ip_and_port;
-    //         for(auto& i : svrs) {
-    //             auto socks = i->getSocks();
-    //             for(auto& s : socks) {
-    //                 auto addr = std::dynamic_pointer_cast<IPv4Address>(s->getLocalAddress());
-    //                 if(!addr) {
-    //                     continue;
-    //                 }
-    //                 auto str = addr->toString();
-    //                 if(str.find("127.0.0.1") == 0) {
-    //                     continue;
-    //                 }
-    //                 if(str.find("0.0.0.0") == 0) {
-    //                     ip_and_port = chat::GetIPv4() + ":" + std::to_string(addr->getPort());
-    //                     break;
-    //                 } else {
-    //                     ip_and_port = addr->toString();
-    //                 }
-    //             }
-    //             if(!ip_and_port.empty()) {
-    //                 break;
-    //             }
-    //         }
-    //         m_serviceDiscovery->setSelfInfo(ip_and_port + ":" + chat::GetHostName());
-    //     }
-    // }
+        std::vector<TcpServer::ptr> svrs;
+        if(!getServer("http", svrs)) {
+            m_serviceDiscovery->setSelfInfo(chat::GetIPv4() + ":0:" + chat::GetHostName());
+        } else {
+            std::string ip_and_port;
+            for(auto& i : svrs) {
+                auto socks = i->getSocks();
+                for(auto& s : socks) {
+                    auto addr = std::dynamic_pointer_cast<IPv4Address>(s->getLocalAddress());
+                    if(!addr) {
+                        continue;
+                    }
+                    auto str = addr->toString();
+                    if(str.find("127.0.0.1") == 0) {
+                        continue;
+                    }
+                    if(str.find("0.0.0.0") == 0) {
+                        ip_and_port = chat::GetIPv4() + ":" + std::to_string(addr->getPort());
+                        break;
+                    } else {
+                        ip_and_port = addr->toString();
+                    }
+                }
+                if(!ip_and_port.empty()) {
+                    break;
+                }
+            }
+            m_serviceDiscovery->setSelfInfo(ip_and_port + ":" + chat::GetHostName());
+        }
+    }
 
     // for(auto& i : modules) {
     //     i->onServerReady();

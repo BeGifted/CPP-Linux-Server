@@ -10,7 +10,8 @@ static chat::ConfigVar<std::map<std::string, std::map<std::string, std::string> 
 WorkerGroup::WorkerGroup(uint32_t batch_size, chat::Scheduler* s)
     :m_batchSize(batch_size)
     ,m_finish(false)
-    ,m_scheduler(s) {
+    ,m_scheduler(s)
+    ,m_sem(batch_size) {
 }
 
 WorkerGroup::~WorkerGroup() {

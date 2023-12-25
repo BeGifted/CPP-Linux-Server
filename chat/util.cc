@@ -488,50 +488,6 @@ std::string random_string(size_t len, const std::string& chars) {
     return rt;
 }
 
-in_addr_t GetIPv4Inet() {
-    struct ifaddrs* ifas = nullptr;
-    struct ifaddrs* ifa = nullptr;
-
-    in_addr_t localhost = inet_addr("127.0.0.1");
-    if(getifaddrs(&ifas)) {
-        CHAT_LOG_ERROR(g_logger) << "getifaddrs errno=" << errno
-            << " errstr=" << strerror(errno);
-        return localhost;
-    }
-
-    in_addr_t ipv4 = localhost;
-
-    for(ifa = ifas; ifa && ifa->ifa_addr; ifa = ifa->ifa_next) {
-        if(ifa->ifa_addr->sa_family != AF_INET) {
-            continue;
-        }
-        if(!strncasecmp(ifa->ifa_name, "lo", 2)) {
-            continue;
-        }
-        ipv4 = ((struct sockaddr_in*)ifa->ifa_addr)->sin_addr.s_addr;
-        if(ipv4 == localhost) {
-            continue;
-        }
-    }
-    if(ifas != nullptr) {
-        freeifaddrs(ifas);
-    }
-    return ipv4;
-}
-
-std::string _GetIPv4() {
-    std::shared_ptr<char> ipv4(new char[INET_ADDRSTRLEN], chat::delete_array<char>);
-    memset(ipv4.get(), 0, INET_ADDRSTRLEN);
-    auto ia = GetIPv4Inet();
-    inet_ntop(AF_INET, &ia, ipv4.get(), INET_ADDRSTRLEN);
-    return ipv4.get();
-}
-
-std::string GetIPv4() {
-    static const std::string ip = _GetIPv4();
-    return ip;
-}
-
 
 int8_t  TypeUtil::ToChar(const std::string& str) {
     if(str.empty()) {
@@ -1314,6 +1270,93 @@ std::string PBToJsonString(const google::protobuf::Message& message) {
     Json::Value jnode;
     serialize_message(message, jnode);
     return chat::JsonUtil::ToString(jnode);
+}
+
+std::vector<std::string> split(const std::string &str, char delim, size_t max) {
+    std::vector<std::string> result;
+    if (str.empty()) {
+        return result;
+    }
+
+    size_t last = 0;
+    size_t pos = str.find(delim);
+    while (pos != std::string::npos) {
+        result.push_back(str.substr(last, pos - last));
+        last = pos + 1;
+        if (--max == 1)
+            break;
+        pos = str.find(delim, last);
+    }
+    result.push_back(str.substr(last));
+    return result;
+}
+
+std::vector<std::string> split(const std::string &str, const char *delims, size_t max) {
+    std::vector<std::string> result;
+    if (str.empty()) {
+        return result;
+    }
+
+    size_t last = 0;
+    size_t pos = str.find_first_of(delims);
+    while (pos != std::string::npos) {
+        result.push_back(str.substr(last, pos - last));
+        last = pos + 1;
+        if (--max == 1)
+            break;
+        pos = str.find_first_of(delims, last);
+    }
+    result.push_back(str.substr(last));
+    return result;
+}
+
+std::string GetHostName() {
+    std::shared_ptr<char> host(new char[512], chat::delete_array<char>);
+    memset(host.get(), 0, 512);
+    gethostname(host.get(), 511);
+    return host.get();
+}
+
+in_addr_t GetIPv4Inet() {
+    struct ifaddrs* ifas = nullptr;
+    struct ifaddrs* ifa = nullptr;
+
+    in_addr_t localhost = inet_addr("127.0.0.1");
+    if(getifaddrs(&ifas)) {
+        return localhost;
+    }
+
+    in_addr_t ipv4 = localhost;
+
+    for(ifa = ifas; ifa && ifa->ifa_addr; ifa = ifa->ifa_next) {
+        if(ifa->ifa_addr->sa_family != AF_INET) {
+            continue;
+        }
+        if(!strncasecmp(ifa->ifa_name, "lo", 2)) {
+            continue;
+        }
+        ipv4 = ((struct sockaddr_in*)ifa->ifa_addr)->sin_addr.s_addr;
+        if(ipv4 == localhost) {
+            continue;
+        }
+    }
+    if(ifas != nullptr) {
+        freeifaddrs(ifas);
+    }
+    return ipv4;
+}
+
+std::string _GetIPv4() {
+    std::shared_ptr<char> ipv4(new char[INET_ADDRSTRLEN], chat::delete_array<char>);
+    memset(ipv4.get(), 0, INET_ADDRSTRLEN);
+    auto ia = GetIPv4Inet();
+    inet_ntop(AF_INET, &ia, ipv4.get(), INET_ADDRSTRLEN);
+    return ipv4.get();
+}
+
+std::string GetIPv4() {
+    static const std::string ip = _GetIPv4();
+    return ip;
 }
 
 }

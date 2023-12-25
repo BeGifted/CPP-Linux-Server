@@ -18,6 +18,9 @@
 #include <memory>
 #include <google/protobuf/message.h>
 #include <cxxabi.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
 
 namespace chat {
     
@@ -309,6 +312,26 @@ std::string Join(Iter begin, Iter end, const std::string& tag) {
     }
     return ss.str();
 }
+
+// std::vector<std::string> split(const std::string& str, char delimiter) {
+//     std::vector<std::string> tokens;
+//     std::string token;
+//     std::istringstream tokenStream(str);
+    
+//     while (std::getline(tokenStream, token, delimiter)) {
+//         tokens.push_back(token);
+//     }
+    
+//     return tokens;
+// }
+
+
+std::string GetHostName();
+std::string GetIPv4();
+
+
+std::vector<std::string> split(const std::string &str, char delim, size_t max = ~0);
+std::vector<std::string> split(const std::string &str, const char *delims, size_t max = ~0);
 
 
 }

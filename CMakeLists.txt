@@ -51,6 +51,7 @@ set(LIB_SRC
     chat/stream.cc
     chat/streams/async_socket_stream.cc
     chat/streams/load_balance.cc
+    chat/streams/service_discovery.cc
     chat/streams/socket_stream.cc
     chat/streams/zlib_stream.cc
     chat/timer.cc
@@ -213,6 +214,11 @@ add_executable(test_zk_client tests/test_zk_client.cc)
 add_dependencies(test_zk_client chat)
 force_redefine_file_macro_for_sources(test_zk_client) #__FILE__
 target_link_libraries(test_zk_client ${LIB_LIB})
+
+add_executable(teat_service_discovery tests/teat_service_discovery.cc)
+add_dependencies(teat_service_discovery chat)
+force_redefine_file_macro_for_sources(teat_service_discovery) #__FILE__
+target_link_libraries(teat_service_discovery ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
