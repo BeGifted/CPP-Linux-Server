@@ -1,7 +1,5 @@
 #include "http_server.h"
 #include "chat/log.h"
-// #include "chat/http/servlets/config_servlet.h"
-// #include "chat/http/servlets/status_servlet.h"
 
 namespace chat {
 namespace http {
@@ -17,8 +15,6 @@ HttpServer::HttpServer(bool keepalive
     m_dispatch.reset(new ServletDispatch);
 
     m_type = "http";
-    // m_dispatch->addServlet("/_/status", Servlet::ptr(new StatusServlet));
-    // m_dispatch->addServlet("/_/config", Servlet::ptr(new ConfigServlet));
 }
 
 void HttpServer::setName(const std::string& v) {

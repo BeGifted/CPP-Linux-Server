@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 #include <boost/lexical_cast.hpp>
-#include "log.h"
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <map>
@@ -15,6 +14,8 @@
 #include <list>
 #include <functional>
 #include "thread.h"
+#include "log.h"
+#include "util.h"
 
 namespace chat {
 
@@ -249,7 +250,7 @@ public:
             return ToStr()(m_val);
         }catch(std::exception& e) {
             CHAT_LOG_ERROR(CHAT_LOG_ROOT()) << "ConfigVar::toString exception "
-                << e.what() << " convert: " << typeid(m_val).name() << " to string";
+                << e.what() << " convert: " << TypeToName<T>() << " to string";
         }
         return "";
     }
@@ -259,7 +260,7 @@ public:
             setValue(FromStr()(val));
         }catch(std::exception& e) {
             CHAT_LOG_ERROR(CHAT_LOG_ROOT()) << "ConfigVar::fromString exception "
-                << e.what() << " convert: string to " << typeid(m_val).name();
+                << e.what() << " convert: string to " << TypeToName<T>();
         }
         return false;
     }
@@ -280,7 +281,7 @@ public:
         RWMutexType::WriteLock lock(m_mutex);
         m_val = v;
     }
-    std::string getTypeName() const override { return typeid(T).name(); }
+    std::string getTypeName() const override { return TypeToName<T>(); }
 
     uint64_t addListener(on_change_cb cb) {
         static uint64_t s_fun_id = 0;
@@ -329,7 +330,7 @@ public:
                 return tmp;
             } else {
                 CHAT_LOG_ERROR(CHAT_LOG_ROOT()) << "Lookup name=" << name << " exists but type not " 
-                << typeid(T).name() << " real_type=" << it->second->getTypeName()
+                << TypeToName<T>() << " real_type=" << it->second->getTypeName()
                 << " " << it->second->toString();
                 return nullptr;
             }

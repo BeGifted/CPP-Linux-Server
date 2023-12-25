@@ -18,7 +18,7 @@ public:
 
     AsyncSocketStream(Socket::ptr sock, bool owner = true);
 
-    bool start();
+    virtual bool start();
     virtual void close() override;
 public:
     enum Error {
@@ -45,6 +45,12 @@ public:
         virtual void doRsp();
         virtual bool doSend(AsyncSocketStream::ptr stream) = 0;
     };
+
+    void setWorker(chat::IOManager* v) { m_worker = v;}
+    chat::IOManager* getWorker() const { return m_worker;}
+
+    void setIOManager(chat::IOManager* v) { m_iomanager = v;}
+    chat::IOManager* getIOManager() const { return m_iomanager;}
 
     bool isAutoConnect() const { return m_autoConnect;}
     void setAutoConnect(bool v) { m_autoConnect = v;}
@@ -111,6 +117,7 @@ protected:
     bool m_autoConnect;
     chat::Timer::ptr m_timer;
     chat::IOManager* m_iomanager;
+    chat::IOManager* m_worker;
 
     connect_callback m_connectCb;
     disconnect_callback m_disconnectCb;

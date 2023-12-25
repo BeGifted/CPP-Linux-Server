@@ -59,6 +59,7 @@ set(LIB_SRC
     chat/util.cc
     chat/uri.cc  # rl
     chat/worker.cc
+    chat/zk_client.cc
 )
 
 add_library(chat SHARED ${LIB_SRC})
@@ -75,6 +76,7 @@ set(LIB_LIB
     ${OPENSSL_LIBRARIES}
     -lz # zlib
     ${PROTOBUF_LIBRARIES}
+    zookeeper_mt
 )
 
 
@@ -206,6 +208,11 @@ add_executable(echo_client_udp examples/echo_client_udp.cc)
 add_dependencies(echo_client_udp chat)
 force_redefine_file_macro_for_sources(echo_client_udp) #__FILE__
 target_link_libraries(echo_client_udp ${LIB_LIB})
+
+add_executable(test_zk_client tests/test_zk_client.cc)
+add_dependencies(test_zk_client chat)
+force_redefine_file_macro_for_sources(test_zk_client) #__FILE__
+target_link_libraries(test_zk_client ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

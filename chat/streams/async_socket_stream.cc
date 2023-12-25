@@ -1,5 +1,6 @@
 #include "async_socket_stream.h"
 #include "chat/util.h"
+#include "chat/macro.h"
 
 namespace chat {
 
@@ -35,12 +36,17 @@ AsyncSocketStream::AsyncSocketStream(Socket::ptr sock, bool owner)
     ,m_waitSem(2)
     ,m_sn(0)
     ,m_autoConnect(false)
-    ,m_iomanager(nullptr) {
+    ,m_iomanager(nullptr)
+    ,m_worker(nullptr) {
 }
 
 bool AsyncSocketStream::start() {
-    if(!m_iomanager) {
+    if (!m_iomanager) {
         m_iomanager = chat::IOManager::GetThis();
+    }
+
+    if (!m_worker) {
+        m_worker = chat::IOManager::GetThis();
     }
 
     do {
@@ -61,7 +67,7 @@ bool AsyncSocketStream::start() {
         }
 
         if(m_connectCb) {
-            if(m_connectCb(shared_from_this())) {
+            if(!m_connectCb(shared_from_this())) {
                 innerClose();
                 m_waitSem.notify();
                 m_waitSem.notify();
@@ -172,7 +178,8 @@ bool AsyncSocketStream::addCtx(Ctx::ptr ctx) {
 }
 
 bool AsyncSocketStream::enqueue(Ctx::ptr ctx) {
-    RWMutexType::WriteLock lock(m_mutex);
+    CHAT_ASSERT(ctx);
+    RWMutexType::WriteLock lock(m_queueMutex);
     bool empty = m_queue.empty();
     m_queue.push_back(ctx);
     lock.unlock();
@@ -183,6 +190,7 @@ bool AsyncSocketStream::enqueue(Ctx::ptr ctx) {
 }
 
 bool AsyncSocketStream::innerClose() {
+    CHAT_ASSERT(m_iomanager == chat::IOManager::GetThis());
     if(isConnected() && m_disconnectCb) {
         m_disconnectCb(shared_from_this());
     }

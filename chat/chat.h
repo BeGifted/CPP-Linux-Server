@@ -38,6 +38,7 @@
 #include "timer.h"
 #include "util.h"
 #include "worker.h"
+#include "zk_client.h"
 
 
 #endif
