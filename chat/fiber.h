@@ -6,12 +6,15 @@
 
 #define FIBER_UCONTEXT      1
 #define FIBER_FCONTEXT      2
-#define FIBER_CONTEXT_TYPE  FIBER_UCONTEXT
+#define FIBER_LIBCO         3 
+#define FIBER_CONTEXT_TYPE  FIBER_LIBCO
 
 #if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
 #include <ucontext.h>
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
 #include "chat/fcontext/fcontext.h"
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
+#include "chat/libco/coctx.h"
 #endif
 
 namespace chat {
@@ -59,6 +62,8 @@ public:
     static void MainFunc();
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
     static void MainFunc(intptr_t vp);
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
+    static void* MainFunc(void*, void*);
 #endif
 
 #if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
@@ -66,6 +71,8 @@ public:
     static void CallerMainFunc();
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
     static void CallerMainFunc(intptr_t vp);
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
+    static void* CallerMainFunc(void*, void*);
 #endif
 
     static uint64_t GetFiberId();
@@ -78,6 +85,8 @@ private:
     ucontext_t m_ctx;
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
     fcontext_t m_ctx = nullptr;
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
+    coctx_t m_ctx;
 #endif
     void* m_stack = nullptr;
 

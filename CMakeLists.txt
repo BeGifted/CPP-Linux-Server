@@ -47,6 +47,8 @@ set(LIB_SRC
     chat/http/ws_session.cc
     chat/iomanager.cc
     chat/log.cc
+    chat/libco/coctx.cc
+    chat/libco/coctx_swap.S
     chat/mutex.cc
     chat/protocol.cc
     chat/scheduler.cc
@@ -179,10 +181,10 @@ target_link_libraries(test_http_connection ${LIB_LIB})
 # force_redefine_file_macro_for_sources(test_uri) #__FILE__
 # target_link_libraries(test_uri ${LIB_LIB})
 
-# add_executable(http_server examples/http_server.cc)
-# add_dependencies(http_server chat)
-# force_redefine_file_macro_for_sources(http_server) #__FILE__
-# target_link_libraries(http_server ${LIB_LIB})
+add_executable(http_server examples/http_server.cc)
+add_dependencies(http_server chat)
+force_redefine_file_macro_for_sources(http_server) #__FILE__
+target_link_libraries(http_server ${LIB_LIB})
 
 # add_executable(test_daemon tests/test_daemon.cc)
 # add_dependencies(test_daemon chat)

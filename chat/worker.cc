@@ -54,7 +54,8 @@ Scheduler::ptr WorkerManager::get(const std::string& name) {
     if(it->second.size() == 1) {
         return it->second[0];
     }
-    return it->second[rand() % it->second.size()];
+    static uint32_t s_count = 0;
+    return it->second[chat::Atomic::addFetch(s_count, 1) % uint32_t(it->second.size())];
 }
 
 IOManager::ptr WorkerManager::getAsIOManager(const std::string& name) {
@@ -74,7 +75,7 @@ bool WorkerManager::init(const std::map<std::string, std::map<std::string, std::
             } else {
                 s = std::make_shared<IOManager>(thread_num, false, name + "-" + std::to_string(x));
             }
-            add(s);
+            add(name, s);
         }
     }
     m_stop = m_datas.empty();
@@ -111,6 +112,10 @@ std::ostream& WorkerManager::dump(std::ostream& os) {
         }
     }
     return os;
+}
+
+void WorkerManager::add(const std::string& name, Scheduler::ptr s) {
+    m_datas[name].push_back(s);
 }
 
 }
