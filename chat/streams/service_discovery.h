@@ -60,6 +60,8 @@ public:
     virtual void start() = 0;
     virtual void stop() = 0;
 
+    std::string toString();
+
     service_callback getServiceCallback() const { return m_cb;}
     void setServiceCallback(service_callback v) { m_cb = v;}
 
@@ -99,6 +101,7 @@ public:
 
     virtual void start();
     virtual void stop();
+
 private:
     void onWatch(int type, int stat, const std::string& path, ZKClient::ptr);
     void onZKConnect(const std::string& path, ZKClient::ptr client);
