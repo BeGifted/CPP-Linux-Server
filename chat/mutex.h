@@ -9,9 +9,10 @@
 #include <semaphore.h>
 #include <stdint.h>
 #include <atomic>
+#include <list>
+#include <tbb/spin_rw_mutex.h>
 #include "noncopyable.h"
 #include "fiber.h"
-#include <list>
 
 namespace chat {
 class Semaphore: Noncopyable {  //信号量
@@ -265,6 +266,35 @@ private:
     std::list<std::pair<Scheduler*, Fiber::ptr> > m_waiters;
     size_t m_concurrency;
 };
+
+class RWSpinlock : Noncopyable{
+public:
+    typedef ReadScopedLockImpl<RWSpinlock> ReadLock;
+    typedef WriteScopedLockImpl<RWSpinlock> WriteLock;
+
+    RWSpinlock() {
+    }
+
+    ~RWSpinlock() {
+    }
+
+    void rdlock() {
+        m_lock.lock_read();
+    }
+
+    void wrlock() {
+        m_lock.lock();
+    }
+
+    void unlock() {
+        m_lock.unlock();
+    }
+private:
+    tbb::spin_rw_mutex m_lock;
+};
+
+
+
 
 }
 

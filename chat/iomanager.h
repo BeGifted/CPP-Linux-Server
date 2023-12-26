@@ -19,7 +19,7 @@ public:
 
 private:
     struct FdContext {
-        typedef Mutex MutexType;
+        typedef Spinlock MutexType;
         struct EventContext {
             Scheduler* scheduler = nullptr;  //事件执行
             Fiber::ptr fiber;  //事件协程

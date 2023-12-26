@@ -148,7 +148,7 @@ HttpResponse::ptr HttpConnection::recvResponse() {
         }
         parser->getData()->setBody(body);
     }
-
+    parser->getData()->initConnection();
     return parser->getData();
 }
 
@@ -314,6 +314,7 @@ HttpConnectionPool::HttpConnectionPool(const std::string& host
     ,m_maxAliveTime(max_alive_time)
     ,m_maxRequest(max_request)
     ,m_isHttps(is_https) {
+    m_service = m_host + ":" + std::to_string(m_port); // for dns, TODO
 }
 
 HttpConnection::ptr HttpConnectionPool::getConnection(uint64_t& timeout_ms) {
@@ -324,11 +325,11 @@ HttpConnection::ptr HttpConnectionPool::getConnection(uint64_t& timeout_ms) {
     while (!m_conns.empty()) {
         auto conn = *m_conns.begin();
         m_conns.pop_front();
-        if (!conn->isConnected()) {
+        if ((conn->m_createTime + m_maxAliveTime) > now_ms) {
             invalid_conns.push_back(conn);
             continue;
         }
-        if ((conn->m_createTime + m_maxAliveTime) > now_ms) {
+        if(!conn->checkConnected()) {
             invalid_conns.push_back(conn);
             continue;
         }
@@ -368,9 +369,11 @@ HttpConnection::ptr HttpConnectionPool::getConnection(uint64_t& timeout_ms) {
 
 void HttpConnectionPool::ReleasePtr(HttpConnection* ptr, HttpConnectionPool* pool) {
     ++ptr->m_request;
-    if (!ptr->isConnected()
+    if(pool->m_total >= (int32_t)pool->m_maxSize
+        || !ptr->isConnected()
+        || (ptr->m_request >= pool->m_maxRequest)
         || ((ptr->m_createTime + pool->m_maxAliveTime) >= chat::GetCurrentMs())
-        || (ptr->m_request >= pool->m_maxRequest)) {
+        || !ptr->checkConnected()) {
         delete ptr;
         --pool->m_total;
         return;

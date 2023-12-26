@@ -27,6 +27,7 @@ public:
     Socket::ptr getSocket() const { return m_socket;}
 
     bool isConnected() const;
+    bool checkConnected();
 
     Address::ptr getRemoteAddress();
     Address::ptr getLocalAddress();

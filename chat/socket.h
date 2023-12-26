@@ -83,6 +83,7 @@ public:
     int getProtocol() const {return m_protocol;}
 
     bool isConnected() const {return m_isConnected;}
+    bool checkConnected();
     bool isValid() const;
     int getError();
 

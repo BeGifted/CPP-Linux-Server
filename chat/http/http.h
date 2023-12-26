@@ -354,6 +354,7 @@ public:
     void setCookie(const std::string& key, const std::string& val,
                    time_t expired = 0, const std::string& path = "",
                    const std::string& domain = "", bool secure = false);
+    void initConnection();
 private:
     HttpStatus m_status;
     uint8_t m_version;

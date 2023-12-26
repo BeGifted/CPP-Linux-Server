@@ -303,6 +303,16 @@ void HttpResponse::setCookie(const std::string& key, const std::string& val,
     m_cookies.push_back(ss.str());
 }
 
+void HttpResponse::initConnection() {
+    std::string conn = getHeader("connection");
+    if(!conn.empty()) {
+        if(strcasecmp(conn.c_str(), "keep-alive") == 0) {
+            m_close = false;
+        } else {
+            m_close = m_version == 0x10;
+        }
+    }
+}
 
 std::string HttpResponse::toString() const {
     std::stringstream ss;
@@ -321,9 +331,13 @@ std::ostream& HttpResponse::dump(std::ostream& os) const {
        << (m_reason.empty() ? HttpStatusToString(m_status) : m_reason)
        << "\r\n";
 
+    bool has_content_length = false;
     for (auto& i : m_headers) {
         if(!m_websocket && strcasecmp(i.first.c_str(), "connection") == 0) {
             continue;
+        }
+        if(!has_content_length && strcasecmp(i.first.c_str(), "content-length") == 0) {
+            has_content_length = true;
         }
         os << i.first << ": " << i.second << "\r\n";
     }
@@ -334,8 +348,11 @@ std::ostream& HttpResponse::dump(std::ostream& os) const {
         os << "connection: " << (m_close ? "close" : "keep-alive") << "\r\n";
     }
     if (!m_body.empty()) {
-        os << "content-length: " << m_body.size() << "\r\n\r\n"
-           << m_body;
+        if(!has_content_length) {
+            os << "content-length: " << m_body.size() << "\r\n\r\n" << m_body;
+        } else {
+            os << "\r\n" << m_body;
+        }
     } else {
         os << "\r\n";
     }

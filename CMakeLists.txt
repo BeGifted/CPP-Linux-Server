@@ -19,6 +19,8 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 find_package(Protobuf)
 include_directories(${Protobuf_INCLUDE_DIRS})
 
+ENABLE_LANGUAGE(ASM)
+
 set(LIB_SRC
     chat/address.cc
     chat/application.cc
@@ -28,6 +30,7 @@ set(LIB_SRC
     chat/env.cc
     chat/fiber.cc
     chat/fd_manager.cc
+    chat/fcontext/fcontext.S
     chat/hook.cc
     chat/http/http.cc
     chat/http/http_connection.cc
@@ -78,6 +81,7 @@ set(LIB_LIB
     -lz # zlib
     ${PROTOBUF_LIBRARIES}
     zookeeper_mt
+    tbb
 )
 
 

@@ -1,9 +1,18 @@
 #ifndef __CHAT_FIBER_H__
 #define __CHAT_FIBER_H__
 
-#include <ucontext.h>
 #include <memory>
 #include <functional>
+
+#define FIBER_UCONTEXT      1
+#define FIBER_FCONTEXT      2
+#define FIBER_CONTEXT_TYPE  FIBER_UCONTEXT
+
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
+#include <ucontext.h>
+#elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
+#include "chat/fcontext/fcontext.h"
+#endif
 
 namespace chat {
 
@@ -45,8 +54,19 @@ public:
     //总协程数
     static uint64_t TotalFibers();
 
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
+    //执行完成返回到线程主协程
     static void MainFunc();
+#elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
+    static void MainFunc(intptr_t vp);
+#endif
+
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
+    //执行完成返回到线程调度协程
     static void CallerMainFunc();
+#elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
+    static void CallerMainFunc(intptr_t vp);
+#endif
 
     static uint64_t GetFiberId();
 private:
@@ -54,7 +74,11 @@ private:
     uint32_t m_stacksize = 0;
     State m_state = State::INIT;
 
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
     ucontext_t m_ctx;
+#elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
+    fcontext_t m_ctx = nullptr;
+#endif
     void* m_stack = nullptr;
 
     std::function<void()> m_cb;
