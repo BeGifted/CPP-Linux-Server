@@ -1,8 +1,9 @@
 #include "fiber.h"
-#include <atomic>
 #include "config.h"
 #include "macro.h"
 #include "scheduler.h"
+#include <atomic>
+#include <sys/mman.h>
 
 namespace chat {
 static std::atomic<uint64_t> s_fiber_id {0};
@@ -28,7 +29,34 @@ public:
     }
 };
 
+class MMapStackAllocator {
+public:
+    static void* Alloc(size_t size) {
+        return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+    }
+
+    static void Dealloc(void* vp, size_t size) {
+        munmap(vp, size);
+    }
+};
+
 using StackAllocator = MallocStackAllocator;
+
+Fiber* NewFiber() {
+    return new Fiber();
+}
+
+Fiber* NewFiber(std::function<void()> cb, size_t stacksize, bool use_caller) {
+    stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();
+    Fiber* p = (Fiber*)StackAllocator::Alloc(sizeof(Fiber) + stacksize);
+    return new (p) Fiber(cb, stacksize, use_caller);
+}
+
+void FreeFiber(Fiber* ptr) {
+    ptr->~Fiber();
+    StackAllocator::Dealloc(ptr, 0);
+}
+
 
 Fiber::Fiber() {  //主协程
     m_state = State::EXEC;
@@ -52,9 +80,7 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
     :m_id(++s_fiber_id)
     ,m_cb(cb){
     ++s_fiber_count;
-    m_stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();
-
-    m_stack = StackAllocator::Alloc(m_stacksize);
+    m_stacksize = stacksize;
 
 #if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
     if (getcontext(&m_ctx)) {
@@ -93,7 +119,6 @@ Fiber::~Fiber() {
     --s_fiber_count;
     if (m_stack) {
         CHAT_ASSERT(m_state == State::TERM || m_state == State::INIT || m_state == State::EXCEPT);
-        StackAllocator::Dealloc(m_stack, m_stacksize);
     } else {
         CHAT_ASSERT(!m_cb);
         CHAT_ASSERT(m_state == State::EXEC);
@@ -200,7 +225,7 @@ Fiber::ptr Fiber::GetThis() {
     if (t_fiber) {
         return t_fiber->shared_from_this();  //指向自身的智能指针
     }
-    Fiber::ptr main_fiber(new Fiber);
+    Fiber::ptr main_fiber(NewFiber());
     CHAT_ASSERT(t_fiber == main_fiber.get());
     t_threadFiber = main_fiber;
     return t_fiber->shared_from_this();

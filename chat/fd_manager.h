@@ -42,7 +42,7 @@ private:
 
 class FdManager{
 public:
-    typedef RWMutex RWMutexType;
+    typedef RWSpinlock RWMutexType;
 
     FdManager();
     FdCtx::ptr get(int fd, bool auto_create = false);

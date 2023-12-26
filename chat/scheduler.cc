@@ -21,7 +21,7 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
         CHAT_ASSERT(GetThis() == nullptr);
         t_scheduler = this;
 
-        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
+        m_rootFiber.reset(NewFiber(std::bind(&Scheduler::run, this), 0, true), FreeFiber);
         chat::Thread::SetName(m_name);
 
         t_scheduler_fiber = m_rootFiber.get();
@@ -50,7 +50,7 @@ Fiber* Scheduler::GetMainFiber() {
 }
 
 void Scheduler::start() {
-    MutexType::Lock lock(m_mutex);
+    MutexType::WriteLock lock(m_mutex);
     if (!m_stopping) {
         return;
     }
@@ -118,7 +118,7 @@ void Scheduler::stop() {
 
     std::vector<Thread::ptr> thrs;
     {
-        MutexType::Lock lock(m_mutex);
+        MutexType::WriteLock lock(m_mutex);
         thrs.swap(m_threads);
     }
 
@@ -143,7 +143,7 @@ void Scheduler::run() {  // 新创建线程执行
         t_scheduler_fiber = Fiber::GetThis().get();
     }
 
-    Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle, this)));
+    Fiber::ptr idle_fiber(NewFiber(std::bind(&Scheduler::idle, this)), FreeFiber);
     Fiber::ptr cb_fiber;
 
     FiberAndThread ft;
@@ -151,8 +151,8 @@ void Scheduler::run() {  // 新创建线程执行
         ft.reset();
         bool tickle_me = false;
         bool is_active = false;
-        {  //消息队列取出需要执行的任务
-            MutexType::Lock lock(m_mutex);
+        {   //消息队列取出需要执行的任务
+            MutexType::WriteLock lock(m_mutex);
             auto it = m_fibers.begin();
             while (it != m_fibers.end()) { 
                 if(it->thread != -1 && it->thread != chat::GetThreadId()) {
@@ -197,7 +197,7 @@ void Scheduler::run() {  // 新创建线程执行
             if (cb_fiber) {
                 cb_fiber->reset(ft.cb);
             } else {
-                cb_fiber.reset(new Fiber(ft.cb));
+                cb_fiber.reset(NewFiber(ft.cb), FreeFiber);
             }
             ft.reset();
 
@@ -240,7 +240,7 @@ void Scheduler::tickle() {
 }
 
 bool Scheduler::stopping() {
-    MutexType::Lock lock(m_mutex);
+    MutexType::ReadLock lock(m_mutex);
     return m_stopping && m_autoStop && m_fibers.empty() && m_activeThreadCount == 0;
 }
 
