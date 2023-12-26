@@ -409,6 +409,8 @@ void SDLoadBalance::initConf(const std::unordered_map<std::string
                 t = ILoadBalance::ROUNDROBIN;
             } else if(n.second == "weight") {
                 t = ILoadBalance::WEIGHT;
+            } else if(n.second == "fair") {
+                t = ILoadBalance::FAIR;
             }
             types[i.first][n.first] = t;
             query_infos[i.first].insert(n.first);

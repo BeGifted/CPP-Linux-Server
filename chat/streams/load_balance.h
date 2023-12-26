@@ -109,7 +109,7 @@ public:
 
 class LoadBalance : public ILoadBalance {
 public:
-    typedef chat::RWMutex RWMutexType;
+    typedef chat::RWSpinlock RWMutexType;
     typedef std::shared_ptr<LoadBalance> ptr;
     void add(LoadBalanceItem::ptr v);
     void del(LoadBalanceItem::ptr v);
@@ -168,7 +168,7 @@ class SDLoadBalance {
 public:
     typedef std::shared_ptr<SDLoadBalance> ptr;
     typedef std::function<SocketStream::ptr(ServiceItemInfo::ptr)> stream_callback;
-    typedef chat::RWMutex RWMutexType;
+    typedef chat::RWSpinlock RWMutexType;
 
     SDLoadBalance(IServiceDiscovery::ptr sd);
     virtual ~SDLoadBalance() {}

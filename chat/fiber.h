@@ -46,7 +46,7 @@ private:
     Fiber();
     Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
 
-private:
+public:
     ~Fiber();
 
     void reset(std::function<void()> cb); //init term except 状态重置
@@ -99,9 +99,8 @@ private:
     coctx_t m_ctx;
 #endif
 
-    // void* m_stack = nullptr;  // 栈指针
+    void* m_stack = nullptr;  // 栈指针
     std::function<void()> m_cb;
-    char m_stack[];
 };
 
 }

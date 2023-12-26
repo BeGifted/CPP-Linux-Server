@@ -25,6 +25,16 @@ ServiceItemInfo::ptr ServiceItemInfo::Create(const std::string& ip_and_port, con
     rt->m_ip = ip;
     rt->m_port = port;
     rt->m_data = data;
+
+    std::vector<std::string> parts = chat::split(data, '&');
+    for(auto& i : parts) {
+        auto pos = i.find('=');
+        if(pos == std::string::npos) {
+            continue;
+        }
+        rt->m_datas[i.substr(0, pos)] = i.substr(pos + 1);
+    }
+    rt->m_updateTime = rt->getDataAs<uint64_t>("update_time");
     return rt;
 }
 
@@ -36,6 +46,23 @@ std::string ServiceItemInfo::toString() const {
        << " data=" << m_data
        << "]";
     return ss.str();
+}
+
+std::string ServiceItemInfo::getData(const std::string& key, const std::string& def) const {
+    auto it = m_datas.find(key);
+    return it == m_datas.end() ? def : it->second;
+}
+
+
+void IServiceDiscovery::addParam(const std::string& key, const std::string& val) {
+    chat::RWMutex::WriteLock lock(m_mutex);
+    m_params[key] = val;
+}
+
+std::string IServiceDiscovery::getParam(const std::string& key, const std::string& def) {
+    chat::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_params.find(key);
+    return it == m_params.end() ? def : it->second;
 }
 
 void IServiceDiscovery::setQueryServer(const std::unordered_map<std::string, std::unordered_set<std::string> >& v) {

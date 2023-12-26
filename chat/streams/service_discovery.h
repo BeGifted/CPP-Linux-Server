@@ -5,9 +5,11 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
+#include <map>
 #include "chat/mutex.h"
 #include "chat/iomanager.h"
 #include "chat/zk_client.h"
+#include "chat/util.h"
 
 namespace chat {
 
@@ -18,15 +20,24 @@ public:
 
     uint64_t getId() const { return m_id;}
     uint16_t getPort() const { return m_port;}
+    uint32_t getUpdateTime() const { return m_updateTime;}
     const std::string& getIp() const { return m_ip;}
     const std::string& getData() const { return m_data;}
+    std::string getData(const std::string& key, const std::string& def = "") const;
+    template<class T>
+    T getDataAs(const std::string& key, const T& def = T()) const {
+        return chat::GetParamValue(m_datas, key, def);
+    }
 
     std::string toString() const;
+
 private:
     uint64_t m_id;
     uint16_t m_port;
+    uint32_t m_updateTime = 0;
     std::string m_ip;
     std::string m_data;
+    std::map<std::string, std::string> m_datas;
 };
 
 class IServiceDiscovery {
@@ -53,6 +64,14 @@ public:
     void setServiceCallback(service_callback v) { m_cb = v;}
 
     void setQueryServer(const std::unordered_map<std::string, std::unordered_set<std::string> >& v);
+
+    const std::string& getSelfInfo() const { return m_selfInfo;}
+    void setSelfInfo(const std::string& v) { m_selfInfo = v;}
+    const std::string& getSelfData() const { return m_selfData;}
+    void setSelfData(const std::string& v) { m_selfData = v;}
+
+    void addParam(const std::string& key, const std::string& val);
+    std::string getParam(const std::string& key, const std::string& def = "");
 protected:
     chat::RWMutex m_mutex;
     //domain -> [service -> [id -> ServiceItemInfo] ]
@@ -65,6 +84,11 @@ protected:
     std::unordered_map<std::string, std::unordered_set<std::string> > m_queryInfos;
 
     service_callback m_cb;
+
+    std::string m_selfInfo;
+    std::string m_selfData;
+
+    std::map<std::string, std::string> m_params;
 };
 
 class ZKServiceDiscovery : public IServiceDiscovery
@@ -72,10 +96,6 @@ class ZKServiceDiscovery : public IServiceDiscovery
 public:
     typedef std::shared_ptr<ZKServiceDiscovery> ptr;
     ZKServiceDiscovery(const std::string& hosts);
-    const std::string& getSelfInfo() const { return m_selfInfo;}
-    void setSelfInfo(const std::string& v) { m_selfInfo = v;}
-    const std::string& getSelfData() const { return m_selfData;}
-    void setSelfData(const std::string& v) { m_selfData = v;}
 
     virtual void start();
     virtual void stop();
@@ -96,8 +116,6 @@ private:
     bool getChildren(const std::string& path);
 private:
     std::string m_hosts;
-    std::string m_selfInfo;
-    std::string m_selfData;
     ZKClient::ptr m_client;
     chat::Timer::ptr m_timer;
     bool m_isOnTimer = false;
