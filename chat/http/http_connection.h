@@ -107,7 +107,7 @@ public:
                        ,uint32_t max_alive_time
                        ,uint32_t max_request);
 
-    HttpConnection::ptr getConnection();
+    HttpConnection::ptr getConnection(uint64_t& timeout_ms);
 
     HttpResult::ptr doGet(const std::string& url
                           , uint64_t timeout_ms
