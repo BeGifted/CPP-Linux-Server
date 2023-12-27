@@ -333,6 +333,20 @@ std::string GetIPv4();
 std::vector<std::string> split(const std::string &str, char delim, size_t max = ~0);
 std::vector<std::string> split(const std::string &str, const char *delims, size_t max = ~0);
 
+//时间微秒
+class TimeCalc {
+public:
+    TimeCalc();
+    uint64_t elapse() const;
+
+    void tick(const std::string& name);
+    const std::vector<std::pair<std::string, uint64_t> > getTimeLine() const { return m_timeLine;}
+
+    std::string toString() const;
+private:
+    uint64_t m_time;
+    std::vector<std::pair<std::string, uint64_t> > m_timeLine;
+};
 
 }
 

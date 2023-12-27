@@ -616,6 +616,12 @@ std::string JsonUtil::GetString(const Json::Value& json
     auto& v = json[name];
     if(v.isString()) {
         return v.asString();
+    } else if(v.isArray()) {
+        return ToString(v);
+    } else if(v.isObject()) {
+        return ToString(v);
+    } else {
+        return v.asString();
     }
     return default_value;
 }
@@ -700,9 +706,18 @@ bool JsonUtil::FromString(Json::Value& json, const std::string& v) {
     return reader.parse(v, json);
 }
 
+static Json::StreamWriter* GetJsonStreamWriter() {
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+    return builder.newStreamWriter();
+}
+
 std::string JsonUtil::ToString(const Json::Value& json) {
-    Json::FastWriter w;
-    return w.write(json);
+    static Json::StreamWriter* s_writer = GetJsonStreamWriter();
+    std::stringstream ss;
+    s_writer->write(json, &ss);
+    return ss.str();
 }
 
 int32_t CryptoUtil::AES256Ecb(const void* key
@@ -1357,6 +1372,29 @@ std::string _GetIPv4() {
 std::string GetIPv4() {
     static const std::string ip = _GetIPv4();
     return ip;
+}
+
+
+TimeCalc::TimeCalc()
+    :m_time(chat::GetCurrentUs()) {
+}
+
+uint64_t TimeCalc::elapse() const {
+    return chat::GetCurrentUs() - m_time;
+}
+
+void TimeCalc::tick(const std::string& name) {
+    m_timeLine.push_back(std::make_pair(name, elapse()));
+}
+
+std::string TimeCalc::toString() const {
+    std::stringstream ss;
+    uint64_t last = 0;
+    for(size_t i = 0; i < m_timeLine.size(); ++i) {
+        ss << "(" << m_timeLine[i].first << ":" << (m_timeLine[i].second - last) << ")";
+        last = m_timeLine[i].second;
+    }
+    return ss.str();
 }
 
 }
