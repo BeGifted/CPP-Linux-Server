@@ -161,6 +161,7 @@ public:
 
     LogLevel::Level getLevel() const { return m_level;}
     void setLevel(LogLevel::Level val) { m_level = val;}
+    virtual bool reopen() { return true;}
 protected:
     LogLevel::Level m_level = LogLevel::DEBUG;
     bool m_hasFormatter = false;
@@ -173,7 +174,7 @@ class Logger: public std::enable_shared_from_this<Logger> {
 friend class LoggerManager;
 public:
     typedef std::shared_ptr<Logger> ptr;
-    typedef Spinlock MutexType;
+    typedef RWSpinlock MutexType;
 
     Logger(const std::string& name = "root");
     void log(LogLevel::Level level, LogEvent::ptr event);
@@ -198,6 +199,8 @@ public:
     const std::string& getName() const { return m_name; }
 
     std::string toYamlString();
+
+    bool reopen();
 
 private:
     std::string m_name;
@@ -225,7 +228,7 @@ public:
     void log(Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override;
     std::string toYamlString() override;
     //重新打开文件
-    bool reopen();
+    bool reopen() override;
 private:
     std::string m_filename;
     std::ofstream m_filestream;
@@ -234,14 +237,14 @@ private:
 
 class LoggerManager {
 public:
-    typedef Spinlock MutexType;
+    typedef RWSpinlock MutexType;
     LoggerManager();
     Logger::ptr getLogger(const std::string& name);
     void init();
 
     Logger::ptr getRoot() const { return m_root; }
     std::string toYamlString();
-
+    bool reopen();
 private:
     MutexType m_mutex;
     std::map<std::string, Logger::ptr> m_loggers;

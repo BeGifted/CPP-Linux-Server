@@ -126,8 +126,17 @@ void Application::initEnv() {
     }
 }
 
+void sigproc(int sig) {
+    CHAT_LOG_INFO(g_logger) << "sigproc sig=" << sig;
+    if(sig == SIGUSR1) {
+        chat::LoggerMgr::GetInstance()->reopen();
+    }
+}
+
 int Application::main(int argc, char** argv) {
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGUSR1, sigproc);
+
     CHAT_LOG_INFO(g_logger) << "main";
     std::string conf_path = chat::EnvMgr::GetInstance()->getConfigPath();
     chat::Config::LoadFromConfDir(conf_path, true);

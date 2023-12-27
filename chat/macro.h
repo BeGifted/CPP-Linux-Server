@@ -37,4 +37,10 @@
         assert(x); \
     }
 
+#define CHAT_STR(...) #__VA_ARGS__
+#define CHAT_TSTR(...) _CHAT_STR(__VA_ARGS__)
+#define CHAT_DSTR(s, d) (NULL != (s) ? (const char*)(s) : (const char*)(d))
+#define CHAT_SSTR(s) CHAT_DSTR(s, "")
+#define CHAT_SLEN(s) (NULL != (s) ? strlen((const char*)(s)) : 0)
+
 #endif

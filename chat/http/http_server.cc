@@ -37,6 +37,7 @@ void HttpServer::handleClient(Socket::ptr client) {
         HttpResponse::ptr rsp = std::make_shared<HttpResponse>(req->getVersion(), req->isClose() || !m_isKeepalive);
         rsp->setBody("hello");
         rsp->setHeader("Server", getName());
+        rsp->setHeader("Content-Type", "application/json;charset=utf8");
         {
             chat::SchedulerSwitcher sw(m_worker);
             m_dispatch->handle(req, rsp, session);

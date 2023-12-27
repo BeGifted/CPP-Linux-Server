@@ -59,9 +59,9 @@ public:
 };
 
 
-std::string base64decode(const std::string &src);
-std::string base64encode(const std::string &data);
-std::string base64encode(const void *data, size_t len);
+std::string base64decode(const std::string &src, bool url = false);
+std::string base64encode(const std::string &data, bool url = false);
+std::string base64encode(const void *data, size_t len, bool url = false);
 
 // Returns result in hex
 std::string md5(const std::string &data);
@@ -136,7 +136,7 @@ public:
                        ,const std::string& name
                        ,uint64_t default_value = 0);
     static bool FromString(Json::Value& json, const std::string& v);
-    static std::string ToString(const Json::Value& json);
+    static std::string ToString(const Json::Value& json, bool emit_utf8 = true);
 };
 
 class Atomic {
