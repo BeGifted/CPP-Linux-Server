@@ -174,6 +174,15 @@ void ZKServiceDiscovery::stop() {
     }
 }
 
+bool ZKServiceDiscovery::doRegister() {
+    return true;
+}
+
+bool ZKServiceDiscovery::doQuery() {
+    return true;
+}
+
+
 void ZKServiceDiscovery::onZKConnect(const std::string& path, ZKClient::ptr client) {
     CHAT_LOG_INFO(g_logger) << "onZKConnect path=" << path;
     chat::RWMutex::ReadLock lock(m_mutex);

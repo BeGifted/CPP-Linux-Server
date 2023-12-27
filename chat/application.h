@@ -19,6 +19,7 @@ public:
 
     ZKServiceDiscovery::ptr getServiceDiscovery() const { return m_serviceDiscovery;}
     // RockSDLoadBalance::ptr getRockSDLoadBalance() const { return m_rockSDLoadBalance;}
+    void initEnv();
 private:
     int main(int argc, char** argv);
     int run_fiber();

@@ -6,12 +6,16 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <sys/resource.h>
 
 namespace chat {
 
 static chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
 static chat::ConfigVar<uint32_t>::ptr g_daemon_restart_interval
     = chat::Config::Lookup("daemon.restart_interval", (uint32_t)5, "daemon restart interval");
+
+static chat::ConfigVar<int64_t>::ptr g_daemon_core =
+    chat::Config::Lookup("daemon.core", (int64_t)-1, "daemon core size");
 
 std::string ProcessInfo::toString() const {
     std::stringstream ss;
@@ -21,6 +25,12 @@ std::string ProcessInfo::toString() const {
        << " main_start_time=" << chat::Time2Str(main_start_time)
        << " restart_count=" << restart_count << "]";
     return ss.str();
+}
+
+static void ulimitc(const rlim_t& s) {
+    struct rlimit limit;
+    limit.rlim_max = limit.rlim_cur = s;
+    setrlimit(RLIMIT_CORE, &limit);
 }
 
 static int real_start(int argc, char** argv, std::function<int(int argc, char** argv)> main_cb) {
@@ -36,6 +46,11 @@ static int real_daemon(int argc, char** argv, std::function<int(int argc, char**
     ProcessInfoMgr::GetInstance()->parent_id = getpid();
     ProcessInfoMgr::GetInstance()->parent_start_time = time(0);
     while(true) {
+        if(ProcessInfoMgr::GetInstance()->restart_count == 0) {
+            ulimitc(g_daemon_core->getValue());
+        } else {
+            ulimitc(0);
+        }
         pid_t pid = fork();  //父子进程并行执行相同的代码
         if (pid == 0) {
             //子进程返回

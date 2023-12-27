@@ -406,6 +406,15 @@ void SDLoadBalance::stop() {
     m_sd->stop();
 }
 
+bool SDLoadBalance::doQuery() {
+    bool rt = m_sd->doQuery();
+    return rt;
+}
+bool SDLoadBalance::doRegister() {
+    return m_sd->doRegister();
+}
+
+
 void SDLoadBalance::refresh() {
     if(m_isRefresh) {
         return;

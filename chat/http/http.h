@@ -199,7 +199,7 @@ public:
     const MapType& getHeaders() const { return m_headers;}
     const MapType& getParams() const { return m_params;}
     const MapType& getCookies() const { return m_cookies;}
-
+    const std::string& getFragment() const { return m_fragment;}
 
     void setMethod(HttpMethod v) { m_method = v;}
     void setVersion(uint8_t v) { m_version = v;}

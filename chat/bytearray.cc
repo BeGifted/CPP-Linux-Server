@@ -26,6 +26,13 @@ ByteArray::Node::~Node() {
     if (ptr) delete[] ptr;
 }
 
+void ByteArray::Node::free() {
+    if(ptr) {
+        delete[] ptr;
+        ptr = nullptr;
+    }
+}
+
 ByteArray::ByteArray(size_t base_size)
     :m_baseSize(base_size)
     ,m_position(0)
@@ -33,7 +40,21 @@ ByteArray::ByteArray(size_t base_size)
     ,m_size(0)
     ,m_endian(CHAT_BIG_ENDIAN)
     ,m_root(new Node(base_size))
-    ,m_cur(m_root) {
+    ,m_cur(m_root)
+    ,m_owner(true) {
+}
+
+ByteArray::ByteArray(void* data, size_t size, bool owner)
+    :m_baseSize(size)
+    ,m_position(0)
+    ,m_capacity(size)
+    ,m_size(size)
+    ,m_endian(CHAT_BIG_ENDIAN)
+    ,m_owner(owner) {
+    m_root = new Node();
+    m_root->ptr = (char*)data;
+    m_root->size = size;
+    m_cur = m_root;
 }
 
 ByteArray::~ByteArray() {
@@ -41,6 +62,9 @@ ByteArray::~ByteArray() {
     while(tmp) {
         m_cur = tmp;
         tmp = tmp->next;
+        if(m_owner) {
+            m_cur->free();
+        }
         delete m_cur;
     }
 }
@@ -336,6 +360,9 @@ void ByteArray::clear() {
     while(tmp) {
         m_cur = tmp;
         tmp = tmp->next;
+        if(m_owner) {
+            m_cur->free();
+        }
         delete m_cur;
     }
     m_cur = m_root;

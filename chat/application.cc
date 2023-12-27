@@ -118,6 +118,14 @@ bool Application::run() {
                                                   std::placeholders::_2), is_daemon);
 }
 
+void Application::initEnv() {
+    chat::WorkerMgr::GetInstance()->init();
+
+    if(!g_service_discovery_zk->getValue().empty()) {
+        m_serviceDiscovery = std::make_shared<ZKServiceDiscovery>(g_service_discovery_zk->getValue());
+    }
+}
+
 int Application::main(int argc, char** argv) {
     signal(SIGPIPE, SIG_IGN);
     CHAT_LOG_INFO(g_logger) << "main";
@@ -136,6 +144,9 @@ int Application::main(int argc, char** argv) {
 
     m_mainIOManager = std::make_shared<chat::IOManager>(1, true, "main");
     m_mainIOManager->schedule(std::bind(&Application::run_fiber, this));
+    m_mainIOManager->addTimer(2000, [conf_path](){
+        chat::Config::LoadFromConfDir(conf_path);
+    }, true);
     m_mainIOManager->stop();
     return 0;
 }
@@ -301,12 +312,13 @@ int Application::run_fiber() {
         i->start();
     }
 
-    // if(m_rockSDLoadBalance) {
-    //     m_rockSDLoadBalance->start();
-    // }
 
     // for(auto& i : modules) {
     //     i->onServerUp();
+    // }
+
+    // if(m_rockSDLoadBalance) {
+    //     m_rockSDLoadBalance->start();
     // }
     // ZKServiceDiscovery::ptr m_serviceDiscovery;
     //RockSDLoadBalance::ptr m_rockSDLoadBalance;

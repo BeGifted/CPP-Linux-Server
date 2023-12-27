@@ -17,6 +17,7 @@ public:
         Node(size_t s);
         Node();
         ~Node();
+        void free();
 
         char* ptr;
         size_t size;
@@ -24,6 +25,7 @@ public:
     };
 
     ByteArray(size_t base_size = 4096);
+    ByteArray(void* data, size_t size, bool owner);
     ~ByteArray();
 
     bool isLittleEndian() const;
@@ -108,6 +110,8 @@ private:
     int8_t m_endian;  //默认大端
     Node* m_root;
     Node* m_cur;
+    // 是否拥有数据的管理权限
+    bool m_owner;
 };
 
 }

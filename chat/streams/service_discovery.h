@@ -59,6 +59,8 @@ public:
 
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual bool doRegister() = 0;
+    virtual bool doQuery() = 0;
 
     std::string toString();
 
@@ -101,6 +103,8 @@ public:
 
     virtual void start();
     virtual void stop();
+    virtual bool doRegister();
+    virtual bool doQuery();
 
 private:
     void onWatch(int type, int stat, const std::string& path, ZKClient::ptr);
