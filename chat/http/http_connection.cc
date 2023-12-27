@@ -23,7 +23,7 @@ HttpConnection::HttpConnection(Socket::ptr sock, bool owner)
 }
 
 HttpResponse::ptr HttpConnection::recvResponse() {
-    HttpResponseParser::ptr parser(new HttpResponseParser);
+    HttpResponseParser::ptr parser = std::make_shared<HttpResponseParser>();
     uint64_t buff_size = HttpResponseParser::GetHttpResponseBufferSize();
     std::shared_ptr<char> buffer(new char[buff_size + 1], [](char* ptr){
         delete[] ptr;

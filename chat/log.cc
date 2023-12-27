@@ -228,7 +228,7 @@ LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level
 Logger::Logger(const std::string& name)  //init "root"
     :m_name(name)
     ,m_level(LogLevel::DEBUG) {
-    m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+    m_formatter = std::make_shared<LogFormatter>("%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
 }
 
 std::string Logger::toYamlString() {
@@ -262,7 +262,7 @@ void Logger::setFormatter(LogFormatter::ptr val) {
 }
 
 void Logger::setFormatter(const std::string& val) {
-    chat::LogFormatter::ptr new_v(new chat::LogFormatter(val));
+    chat::LogFormatter::ptr new_v = std::make_shared<chat::LogFormatter>(val);
     if (new_v->isError()) {
         std::cout << "Logger set Formatter name=" << m_name << " value=" << val << " invalid formatter" << std::endl;
         return;
@@ -486,7 +486,7 @@ void LogFormatter::init(){
     static std::map<std::string, std::function<FormatItem::ptr(const std::string& str)> > s_format_items = {
 //%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n
 #define XX(str, C) \
-        {#str, [] (const std::string& fmt) { return FormatItem::ptr(new C(fmt)); }}
+        {#str, [] (const std::string& fmt) { return FormatItem::ptr(std::make_shared<C>(fmt)); }}
 
         XX(m, MessageFormatItem),
         XX(p, LevelFormatItem),
@@ -505,11 +505,11 @@ void LogFormatter::init(){
 
     for (auto& i : vec) {
         if (std::get<2>(i) == 0) {
-            m_items.push_back(FormatItem::ptr(new StringFormatItem(std::get<0>(i))));
+            m_items.push_back(std::make_shared<StringFormatItem>(std::get<0>(i)));
         } else {
             auto it = s_format_items.find(std::get<0>(i));
             if (it == s_format_items.end()) {
-                m_items.push_back(FormatItem::ptr(new StringFormatItem("<<error_format %" + std::get<0>(i) + ">>")));
+                m_items.push_back(std::make_shared<StringFormatItem>("<<error_format %" + std::get<0>(i) + ">>"));
                 m_error = true;
             } else {
                 m_items.push_back(it->second(std::get<1>(i)));
@@ -523,8 +523,8 @@ void LogFormatter::init(){
 }
 
 LoggerManager::LoggerManager() {
-    m_root.reset(new Logger);
-    m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
+    m_root = std::make_shared<Logger>();
+    m_root->addAppender(std::make_shared<StdoutLogAppender>());
 
     m_loggers[m_root->m_name] = m_root;
 
@@ -537,7 +537,7 @@ Logger::ptr LoggerManager::getLogger(const std::string& name) {
     if (it != m_loggers.end()) {
         return it->second;
     }
-    Logger::ptr logger(new Logger(name));
+    Logger::ptr logger = std::make_shared<Logger>(name);
     logger->m_root = m_root;
     m_loggers[name] = logger;
     return logger;
@@ -691,17 +691,17 @@ struct LogIniter {
                 for (auto& a : i.appenders) {
                     chat::LogAppender::ptr ap;
                     if (a.type == 1) {
-                        ap.reset(new FileLogAppender(a.file));
+                        ap = std::make_shared<FileLogAppender>(a.file);
                     } else if (a.type == 2) {
                         if (!chat::EnvMgr::GetInstance()->has("d")) {
-                            ap.reset(new StdoutLogAppender);
+                            ap = std::make_shared<StdoutLogAppender>();
                         } else {
                             continue;
                         }
                     }
                     ap->setLevel(a.level);
                     if (!a.formatter.empty()) {
-                        LogFormatter::ptr fmt(new LogFormatter(a.formatter));
+                        LogFormatter::ptr fmt = std::make_shared<LogFormatter>(a.formatter);
                         if (!fmt->isError()) {
                             ap->setFormatter(fmt);
                         } else {

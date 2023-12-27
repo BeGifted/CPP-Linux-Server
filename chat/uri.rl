@@ -132,7 +132,7 @@ namespace chat {
 }%%
 
 Uri::ptr Uri::Create(const std::string& uristr) {
-    Uri::ptr uri(new Uri);
+    Uri::ptr uri = std::make_shared<Uri>();
     int cs = 0;  //cs 用来保存 FSM 运行中状态
     const char* mark = 0;
     %% write init;

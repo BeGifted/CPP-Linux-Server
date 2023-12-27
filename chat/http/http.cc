@@ -70,7 +70,7 @@ std::string HttpRequest::getHeader(const std::string& key, const std::string& de
 }
 
 std::shared_ptr<HttpResponse> HttpRequest::createResponse() {
-    HttpResponse::ptr rsp(new HttpResponse(getVersion(), isClose()));
+    HttpResponse::ptr rsp = std::make_shared<HttpResponse>(getVersion(), isClose());
     return rsp;
 }
 

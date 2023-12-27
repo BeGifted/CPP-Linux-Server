@@ -134,7 +134,7 @@ int Application::main(int argc, char** argv) {
     }
 
 
-    m_mainIOManager.reset(new chat::IOManager(1, true, "main"));
+    m_mainIOManager = std::make_shared<chat::IOManager>(1, true, "main");
     m_mainIOManager->schedule(std::bind(&Application::run_fiber, this));
     m_mainIOManager->stop();
     return 0;
@@ -170,7 +170,7 @@ int Application::run_fiber() {
         for(auto& a : i.address) {
             size_t pos = a.find(":");
             if (pos == std::string::npos) {
-                address.push_back(UnixAddress::ptr(new UnixAddress(a)));
+                address.push_back(std::make_shared<UnixAddress>(a));
                 continue;
             }
             int32_t port = atoi(a.substr(pos + 1).c_str());
@@ -226,9 +226,9 @@ int Application::run_fiber() {
 
         TcpServer::ptr server;
         if(i.type == "http") {
-            server.reset(new chat::http::HttpServer(i.keepalive, process_worker, io_worker, accept_worker));
+            server = std::make_shared<chat::http::HttpServer>(i.keepalive, process_worker, io_worker, accept_worker);
         } else if(i.type == "ws") {
-            server.reset(new chat::http::WSServer(process_worker, io_worker, accept_worker));
+            server = std::make_shared<chat::http::WSServer>(process_worker, io_worker, accept_worker);
         } else if(i.type == "rock") {
             // server.reset(new chat::RockServer("rock", process_worker, io_worker, accept_worker));
         } else if(i.type == "nameserver") {
@@ -259,7 +259,7 @@ int Application::run_fiber() {
     }
 
     if(!g_service_discovery_zk->getValue().empty()) {
-        m_serviceDiscovery.reset(new ZKServiceDiscovery(g_service_discovery_zk->getValue()));
+        m_serviceDiscovery = std::make_shared<ZKServiceDiscovery>(g_service_discovery_zk->getValue());
         // m_rockSDLoadBalance.reset(new RockSDLoadBalance(m_serviceDiscovery));
 
         std::vector<TcpServer::ptr> svrs;
@@ -308,7 +308,7 @@ int Application::run_fiber() {
     // for(auto& i : modules) {
     //     i->onServerUp();
     // }
-    //ZKServiceDiscovery::ptr m_serviceDiscovery;
+    // ZKServiceDiscovery::ptr m_serviceDiscovery;
     //RockSDLoadBalance::ptr m_rockSDLoadBalance;
     //chat::ZKServiceDiscovery::ptr zksd(new chat::ZKServiceDiscovery("127.0.0.1:21811"));
     //zksd->registerServer("blog", "chat", chat::GetIPv4() + ":8090", "xxx");

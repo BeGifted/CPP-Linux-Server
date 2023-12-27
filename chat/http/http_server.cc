@@ -12,7 +12,7 @@ HttpServer::HttpServer(bool keepalive
                ,chat::IOManager* accept_worker)
     :TcpServer(worker, io_worker, accept_worker)
     ,m_isKeepalive(keepalive) {
-    m_dispatch.reset(new ServletDispatch);
+    m_dispatch = std::make_shared<ServletDispatch>();
 
     m_type = "http";
 }
@@ -24,7 +24,7 @@ void HttpServer::setName(const std::string& v) {
 
 void HttpServer::handleClient(Socket::ptr client) {
     CHAT_LOG_DEBUG(g_logger) << "handleClient " << client->toString();
-    HttpSession::ptr session(new HttpSession(client));
+    HttpSession::ptr session = std::make_shared<HttpSession>(client);
     do {
         auto req = session->recvRequest();
         if (!req) {
@@ -34,7 +34,7 @@ void HttpServer::handleClient(Socket::ptr client) {
             break;
         }
 
-        HttpResponse::ptr rsp(new HttpResponse(req->getVersion(), req->isClose() || !m_isKeepalive));
+        HttpResponse::ptr rsp = std::make_shared<HttpResponse>(req->getVersion(), req->isClose() || !m_isKeepalive);
         rsp->setBody("hello");
         rsp->setHeader("Server", getName());
         m_dispatch->handle(req, rsp, session);

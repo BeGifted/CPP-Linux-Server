@@ -4,7 +4,7 @@
 namespace chat {
 
 ByteArray::ptr Message::toByteArray() {
-    ByteArray::ptr ba(new ByteArray);
+    ByteArray::ptr ba = std::make_shared<ByteArray>();
     if(serializeToByteArray(ba)) {
         return ba;
     }

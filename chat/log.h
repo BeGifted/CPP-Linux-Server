@@ -23,9 +23,9 @@
  */
 #define CHAT_LOG_LEVEL(logger, level) \
     if(logger->getLevel() <= level) \
-        chat::LogEventWrap(chat::LogEvent::ptr(new chat::LogEvent(logger, level, \
+        chat::LogEventWrap(std::make_shared<chat::LogEvent>(logger, level, \
                         __FILE__, __LINE__, 0, chat::GetThreadId(),\
-                chat::GetFiberId(), time(0), chat::Thread::GetName()))).getSS()
+                chat::GetFiberId(), time(0), chat::Thread::GetName())).getSS()
 
 #define CHAT_LOG_DEBUG(logger) CHAT_LOG_LEVEL(logger, chat::LogLevel::DEBUG)
 #define CHAT_LOG_INFO(logger) CHAT_LOG_LEVEL(logger, chat::LogLevel::INFO)
@@ -35,9 +35,9 @@
 
 #define CHAT_LOG_FMT_LEVEL(logger, level, fmt, ...) \
     if(logger->getLevel() <= level) \
-        chat::LogEventWrap(chat::LogEvent::ptr(new chat::LogEvent(logger, level, \
+        chat::LogEventWrap(std::make_shared<chat::LogEvent>(logger, level, \
                         __FILE__, __LINE__, 0, chat::GetThreadId(),\
-                chat::GetFiberId(), time(0), chat::Thread::GetName()))).getEvent()->format(fmt, __VA_ARGS__)
+                chat::GetFiberId(), time(0), chat::Thread::GetName())).getEvent()->format(fmt, __VA_ARGS__)
 
 #define CHAT_LOG_FMT_DEBUG(logger, fmt, ...) CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define CHAT_LOG_FMT_INFO(logger, fmt, ...)  CHAT_LOG_FMT_LEVEL(logger, chat::LogLevel::INFO, fmt, __VA_ARGS__)

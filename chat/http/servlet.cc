@@ -18,7 +18,7 @@ int32_t FunctionServlet::handle(chat::http::HttpRequest::ptr request
 
 ServletDispatch::ServletDispatch()
     :Servlet("ServletDispatch") {
-    m_default.reset(new NotFoundServlet("chat/1.0.0"));
+    m_default = std::make_shared<NotFoundServlet>("chat/1.0.0");
 }
 
 int32_t ServletDispatch::handle(chat::http::HttpRequest::ptr request

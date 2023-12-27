@@ -13,7 +13,7 @@ ZlibStream::ptr ZlibStream::CreateDeflate(bool encode, uint32_t buff_size) {
 
 ZlibStream::ptr ZlibStream::Create(bool encode, uint32_t buff_size,
             Type type, int level, int window_bits, int memlevel, Strategy strategy) {
-    ZlibStream::ptr rt(new ZlibStream(encode, buff_size));
+    ZlibStream::ptr rt = std::make_shared<ZlibStream>(encode, buff_size);
     if(rt->init(type, level, window_bits, memlevel, strategy) == Z_OK) {
         return rt;
     }
@@ -200,7 +200,7 @@ std::string ZlibStream::getResult() const {
 }
 
 chat::ByteArray::ptr ZlibStream::getByteArray() {
-    chat::ByteArray::ptr ba(new chat::ByteArray);
+    chat::ByteArray::ptr ba = std::make_shared<chat::ByteArray>();
     for(auto& i : m_buffs) {
         ba->write(i.iov_base, i.iov_len);
     }

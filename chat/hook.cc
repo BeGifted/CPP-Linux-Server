@@ -99,7 +99,7 @@ static ssize_t do_io(int fd, OriginFun fun, const char* hook_fun_name, uint32_t 
     }
 
     uint64_t to = ctx->getTimeout(timeout_so);
-    std::shared_ptr<timer_info> tinfo(new timer_info);
+    std::shared_ptr<timer_info> tinfo = std::make_shared<timer_info>();
 
 retry:
     ssize_t n = fun(fd, std::forward<Args>(args)...);
@@ -224,7 +224,7 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
 
     chat::IOManager* iom = chat::IOManager::GetThis();
     chat::Timer::ptr timer;
-    std::shared_ptr<timer_info> tinfo(new timer_info);
+    std::shared_ptr<timer_info> tinfo = std::make_shared<timer_info>();
     std::weak_ptr<timer_info> winfo(tinfo);
 
     if (timeout_ms != (uint64_t)-1) {

@@ -171,7 +171,7 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client) {
 
             if(ws_head.fin) {
                 CHAT_LOG_INFO(g_logger) << data;
-                return WSFrameMessage::ptr(new WSFrameMessage(opcode, std::move(data)));
+                return std::make_shared<WSFrameMessage>(opcode, std::move(data));
             }
         } else {
             CHAT_LOG_INFO(g_logger) << "invalid opcode=" << ws_head.opcode;

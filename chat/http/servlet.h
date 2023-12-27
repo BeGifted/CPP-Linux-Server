@@ -83,12 +83,12 @@ public:
     ServletCreator() {}
 
     Servlet::ptr get() const override {
-        return Servlet::ptr(new T);
+        return std::make_shared<T>();
     }
 
-    // std::string getName() const override {
-    //     return TypeToName<T>();
-    // }
+    std::string getName() const override {
+        return TypeToName<T>();
+    }
 };
 
 //Servlet分发器,将特定的请求映射到相应的Servlet
