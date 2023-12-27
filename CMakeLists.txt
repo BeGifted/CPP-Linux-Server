@@ -28,6 +28,7 @@ set(LIB_SRC
     chat/bytearray.cc
     chat/config.cc
     chat/daemon.cc
+    chat/dyna_thread.cc
     chat/env.cc
     chat/fiber.cc
     chat/fd_manager.cc
@@ -47,6 +48,7 @@ set(LIB_SRC
     chat/http/ws_servlet.cc
     chat/http/ws_session.cc
     chat/iomanager.cc
+    chat/kafka_client.cc
     chat/log.cc
     chat/libco/coctx.cc
     chat/libco/coctx_swap.S
@@ -85,6 +87,9 @@ set(LIB_LIB
     ${PROTOBUF_LIBRARIES}
     zookeeper_mt
     tbb
+    rdkafka
+    rdkafka++
+    event
 )
 
 
