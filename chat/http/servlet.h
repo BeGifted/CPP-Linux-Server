@@ -95,7 +95,7 @@ public:
 class ServletDispatch : public Servlet {
 public:
     typedef std::shared_ptr<ServletDispatch> ptr;
-    typedef RWMutex RWMutexType;
+    typedef RWSpinlock RWMutexType;
 
     ServletDispatch();
     virtual int32_t handle(chat::http::HttpRequest::ptr request

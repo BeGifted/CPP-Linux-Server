@@ -41,6 +41,7 @@ public:
         Scheduler* scheduler;
         Fiber::ptr fiber;
         Timer::ptr timer;
+        std::string resultStr = "ok";
 
         virtual void doRsp();
         virtual bool doSend(AsyncSocketStream::ptr stream) = 0;
