@@ -205,7 +205,7 @@ void DynaThread::stop() {
 
 void DynaThread::join() {
     if(m_thread) {
-        m_thread->join();
+        m_thread->join();  // 等待线程执行完成
         delete m_thread;
         m_thread = NULL;
     }
