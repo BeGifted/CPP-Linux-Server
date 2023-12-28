@@ -74,6 +74,10 @@ std::shared_ptr<HttpResponse> HttpRequest::createResponse() {
     return rsp;
 }
 
+void HttpRequest::paramToQuery() {
+    m_query = chat::MapJoin(m_params.begin(), m_params.end());
+}
+
 std::string HttpRequest::getParam(const std::string& key, const std::string& def) {
     initQueryParam();
     initBodyParam();
@@ -173,6 +177,9 @@ std::ostream& HttpRequest::dump(std::ostream& os) const {
     }
     for (auto& i : m_headers) {
         if (!m_websocket && strcasecmp(i.first.c_str(), "connection") == 0) {
+            continue;
+        }
+        if(!strcasecmp(i.first.c_str(), "content-length")) {
             continue;
         }
         os << i.first << ": " << i.second << "\r\n";

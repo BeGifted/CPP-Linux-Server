@@ -14,6 +14,7 @@ ByteArray::ptr Message::toByteArray() {
 Request::Request()
     :m_sn(0)
     ,m_cmd(0) {
+    m_time = chat::GetCurrentUs();
 }
 
 bool Request::serializeToByteArray(ByteArray::ptr bytearray) {

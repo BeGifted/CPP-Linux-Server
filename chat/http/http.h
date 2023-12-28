@@ -200,7 +200,9 @@ public:
     const MapType& getParams() const { return m_params;}
     const MapType& getCookies() const { return m_cookies;}
     const std::string& getFragment() const { return m_fragment;}
-
+    
+    void paramToQuery();
+    
     void setMethod(HttpMethod v) { m_method = v;}
     void setVersion(uint8_t v) { m_version = v;}
     void setPath(const std::string& v) { m_path = v;}

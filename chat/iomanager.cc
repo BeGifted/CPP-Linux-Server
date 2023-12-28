@@ -30,7 +30,14 @@ void IOManager::FdContext::resetContext(EventContext& ctx) {
 }
 
 void IOManager::FdContext::triggerEvent(IOManager::Event event) {
-    CHAT_ASSERT(m_events & event);  //要有event
+    if(CHAT_UNLIKELY(!(m_events & event))) {
+        CHAT_LOG_ERROR(g_logger) << "fd=" << fd
+            << " triggerEvent event=" << event
+            << " events=" << m_events
+            << "\nbacktrace:\n"
+            << chat::BacktraceToString(100, 2, "    ");
+        return;
+    }
     m_events = (Event)(m_events & ~event);  //del
     EventContext& ctx = getContext(event);
     if(ctx.cb) {

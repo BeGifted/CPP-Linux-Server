@@ -21,6 +21,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
+#include <unordered_map>
 #include "chat/iomanager.h"
 #include "chat/singleton.h"
 
@@ -441,12 +442,25 @@ private:
     RWMutexType m_mutex;
     uint32_t m_interval;
     std::vector<std::string> m_dims;
-    std::map<std::string, Tracker::ptr> m_datas;
+    std::unordered_map<std::string, Tracker::ptr> m_datas;
     Tracker::ptr m_totalTracker;
     chat::Timer::ptr m_timer;
 };
 
 typedef chat::Singleton<TrackerManager> TrackerMgr;
+
+template<class Iter>
+std::string MapJoin(Iter begin, Iter end, const std::string& tag1 = "=", const std::string& tag2 = "&") {
+    std::stringstream ss;
+    for(Iter it = begin; it != end; ++it) {
+        if(it != begin) {
+            ss << tag2;
+        }
+        ss << it->first << "=" << it->second;
+    }
+    return ss.str();
+}
+
 
 }
 
