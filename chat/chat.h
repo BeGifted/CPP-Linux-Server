@@ -23,6 +23,7 @@
 #include "http/ws_servlet.h"
 #include "http/ws_session.h"
 #include "iomanager.h"
+#include "kafka_client.h"
 #include "log.h"
 #include "macro.h"
 #include "protocol.h"

@@ -169,8 +169,9 @@ private:
 class SDLoadBalance {
 public:
     typedef std::shared_ptr<SDLoadBalance> ptr;
-    typedef std::function<SocketStream::ptr(ServiceItemInfo::ptr)> stream_callback;
     typedef chat::RWSpinlock RWMutexType;
+    typedef std::function<SocketStream::ptr(const std::string& domain
+                ,const std::string& service, ServiceItemInfo::ptr)> stream_callback;
 
     SDLoadBalance(IServiceDiscovery::ptr sd);
     virtual ~SDLoadBalance() {}
