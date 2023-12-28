@@ -7,14 +7,20 @@
 #define FIBER_UCONTEXT      1
 #define FIBER_FCONTEXT      2
 #define FIBER_LIBCO         3 
-#define FIBER_CONTEXT_TYPE  FIBER_LIBCO
+#define FIBER_LIBACO        4
+
+#ifndef FIBER_CONTEXT_TYPE
+#define FIBER_CONTEXT_TYPE FIBER_LIBCO
+#endif
 
 #if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
 #include <ucontext.h>
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
-#include "chat/fcontext/fcontext.h"
+#include "fcontext/fcontext.h"
 #elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
-#include "chat/libco/coctx.h"
+#include "libco/coctx.h"
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBACO
+#include "libaco/aco.h"
 #endif
 
 namespace chat {
@@ -67,7 +73,7 @@ public:
     //总协程数
     static uint64_t TotalFibers();
 
-#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT || FIBER_CONTEXT_TYPE == FIBER_LIBACO
     //执行完成返回到线程主协程
     static void MainFunc();
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
@@ -76,7 +82,7 @@ public:
     static void* MainFunc(void*, void*);
 #endif
 
-#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT
+#if FIBER_CONTEXT_TYPE == FIBER_UCONTEXT || FIBER_CONTEXT_TYPE == FIBER_LIBACO
     //执行完成返回到线程调度协程
     static void CallerMainFunc();
 #elif FIBER_CONTEXT_TYPE == FIBER_FCONTEXT
@@ -97,6 +103,9 @@ private:
     fcontext_t m_ctx = nullptr;
 #elif FIBER_CONTEXT_TYPE == FIBER_LIBCO
     coctx_t m_ctx;
+#elif FIBER_CONTEXT_TYPE == FIBER_LIBACO
+    aco_t* m_ctx = nullptr;
+    aco_share_stack_t m_astack;
 #endif
 
     void* m_stack = nullptr;  // 栈指针

@@ -3,6 +3,7 @@
 #include "chat/iomanager.h"
 #include "chat/bytearray.h"
 #include "chat/address.h"
+#include "chat/worker.h"
 
 static chat::Logger::ptr g_logger = CHAT_LOG_ROOT();
 
@@ -49,6 +50,21 @@ void EchoServer::handleClient(chat::Socket::ptr client) {
 
 int type = 1;
 
+void test() {
+    CHAT_LOG_INFO(g_logger) << "=========== test begin";
+    chat::TimeCalc tc;
+    chat::TimedWorkerGroup::ptr wg = chat::TimedWorkerGroup::Create(5, 1000);
+    for(size_t i = 0; i < 10; ++i) {
+        wg->schedule([i](){
+            sleep(i);
+            CHAT_LOG_INFO(g_logger) << "=========== " << i;
+        });
+    }
+    wg->waitAll();
+    CHAT_LOG_INFO(g_logger) << "=========== " << tc.elapse() << " over";
+}
+
+
 void run() {
     CHAT_LOG_INFO(g_logger) << "server type=" << type;
     EchoServer::ptr es(new EchoServer(type));
@@ -57,6 +73,7 @@ void run() {
         sleep(2);
     }
     es->start();
+    chat::IOManager::GetThis()->schedule(test);
 }
 
 int main(int argc, char** argv) {

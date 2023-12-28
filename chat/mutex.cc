@@ -70,5 +70,14 @@ void FiberSemaphore::notify() {
     }
 }
 
+void FiberSemaphore::notifyAll() {
+    MutexType::Lock lock(m_mutex);
+    for(auto& i : m_waiters) {
+        i.first->schedule(i.second);
+    }
+    m_waiters.clear();
+}
+
+
 }
 

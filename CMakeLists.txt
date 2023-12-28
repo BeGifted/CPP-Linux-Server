@@ -5,7 +5,7 @@ include (cmake/utils.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -fPIC -ggdb -std=c++20 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
-set(CMAKE_C_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -fPIC -ggdb -std=c20 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
+set(CMAKE_C_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -fPIC -ggdb -std=c2x -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
 
 include_directories(.)
 include_directories(/usr/local/include)
@@ -52,6 +52,8 @@ set(LIB_SRC
     chat/log.cc
     chat/libco/coctx.cc
     chat/libco/coctx_swap.S
+    chat/libaco/aco.c
+    chat/libaco/acosw.S
     chat/mutex.cc
     chat/protocol.cc
     chat/scheduler.cc
@@ -167,10 +169,10 @@ set(LIB_LIB
 # force_redefine_file_macro_for_sources(test_tcp_server) #__FILE__
 # target_link_libraries(test_tcp_server ${LIB_LIB})
 
-# add_executable(echo_server examples/echo_server.cc)
-# add_dependencies(echo_server chat)
-# force_redefine_file_macro_for_sources(echo_server) #__FILE__
-# target_link_libraries(echo_server ${LIB_LIB})
+add_executable(echo_server examples/echo_server.cc)
+add_dependencies(echo_server chat)
+force_redefine_file_macro_for_sources(echo_server) #__FILE__
+target_link_libraries(echo_server ${LIB_LIB})
 
 # add_executable(test_http_server tests/test_http_server.cc)
 # add_dependencies(test_http_server chat)
