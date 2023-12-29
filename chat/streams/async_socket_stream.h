@@ -27,7 +27,17 @@ public:
         IO_ERROR = -2,
         NOT_CONNECT = -3
     };
-    struct Ctx {
+
+protected:
+    struct SendCtx {
+    public:
+        typedef std::shared_ptr<SendCtx> ptr;
+        virtual ~SendCtx() {}
+
+        virtual bool doSend(AsyncSocketStream::ptr stream) = 0;
+    };
+
+    struct Ctx : public SendCtx {
     public:
         typedef std::shared_ptr<Ctx> ptr;
         virtual ~Ctx() {}
@@ -41,12 +51,13 @@ public:
         Scheduler* scheduler;
         Fiber::ptr fiber;
         Timer::ptr timer;
+
         std::string resultStr = "ok";
 
         virtual void doRsp();
-        virtual bool doSend(AsyncSocketStream::ptr stream) = 0;
     };
 
+public:
     void setWorker(chat::IOManager* v) { m_worker = v;}
     chat::IOManager* getWorker() const { return m_worker;}
 
@@ -102,7 +113,7 @@ protected:
     }
 
     bool addCtx(Ctx::ptr ctx);
-    bool enqueue(Ctx::ptr ctx);
+    bool enqueue(SendCtx::ptr ctx);
 
     bool innerClose();
     bool waitFiber();
@@ -110,7 +121,7 @@ protected:
     chat::FiberSemaphore m_sem;
     chat::FiberSemaphore m_waitSem;
     RWMutexType m_queueMutex;
-    std::list<Ctx::ptr> m_queue;
+    std::list<SendCtx::ptr> m_queue;
     RWMutexType m_mutex;
     std::unordered_map<uint32_t, Ctx::ptr> m_ctxs;
 

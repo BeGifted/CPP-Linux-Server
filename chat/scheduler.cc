@@ -21,7 +21,7 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
         CHAT_ASSERT(GetThis() == nullptr);
         t_scheduler = this;
 
-        m_rootFiber.reset(NewFiber(std::bind(&Scheduler::run, this), 0, true), FreeFiber);
+        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
         chat::Thread::SetName(m_name);
 
         t_scheduler_fiber = m_rootFiber.get();
@@ -143,7 +143,7 @@ void Scheduler::run() {  // 新创建线程执行
         t_scheduler_fiber = Fiber::GetThis().get();
     }
 
-    Fiber::ptr idle_fiber(NewFiber(std::bind(&Scheduler::idle, this)), FreeFiber);
+    Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle, this)));
     Fiber::ptr cb_fiber;
 
     FiberAndThread ft;
@@ -197,7 +197,7 @@ void Scheduler::run() {  // 新创建线程执行
             if (cb_fiber) {
                 cb_fiber->reset(ft.cb);
             } else {
-                cb_fiber.reset(NewFiber(ft.cb), FreeFiber);
+                cb_fiber.reset(new Fiber(ft.cb));
             }
             ft.reset();
 

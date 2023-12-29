@@ -33,6 +33,7 @@ set(LIB_SRC
     chat/fiber.cc
     chat/fd_manager.cc
     chat/fcontext/fcontext.S
+    chat/grpc/grpc_stream.cc
     chat/hook.cc
     chat/http/http.cc
     chat/http/http_connection.cc
@@ -47,6 +48,13 @@ set(LIB_SRC
     chat/http/ws_server.cc
     chat/http/ws_servlet.cc
     chat/http/ws_session.cc
+    chat/http2/dynamic_table.cc
+    chat/http2/frame.cc
+    chat/http2/hpack.cc
+    chat/http2/http2_stream.cc
+    chat/http2/http2_server.cc
+    chat/http2/huffman.cc
+    chat/http2/stream.cc
     chat/iomanager.cc
     chat/kafka_client.cc
     chat/log.cc
@@ -233,6 +241,27 @@ add_executable(teat_service_discovery tests/teat_service_discovery.cc)
 add_dependencies(teat_service_discovery chat)
 force_redefine_file_macro_for_sources(teat_service_discovery) #__FILE__
 target_link_libraries(teat_service_discovery ${LIB_LIB})
+
+add_executable(test_http2_server tests/test_http2_server.cc)
+add_dependencies(test_http2_server chat)
+force_redefine_file_macro_for_sources(test_http2_server) #__FILE__
+target_link_libraries(test_http2_server ${LIB_LIB})
+
+add_executable(test_http2_client tests/test_http2_client.cc)
+add_dependencies(test_http2_client chat)
+force_redefine_file_macro_for_sources(test_http2_client) #__FILE__
+target_link_libraries(test_http2_client ${LIB_LIB})
+
+
+set(GRPC_SRCS
+    tests/test_grpc_client.cc
+)
+protobufmaker(tests/test.proto GRPC_SRCS ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(test_grpc_client "${GRPC_SRCS}")
+add_dependencies(test_grpc_client chat)
+force_redefine_file_macro_for_sources(test_grpc_client) #__FILE__
+target_link_libraries(test_grpc_client ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

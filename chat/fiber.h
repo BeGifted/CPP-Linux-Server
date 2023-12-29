@@ -25,17 +25,17 @@
 
 namespace chat {
 
-class Scheduler;
-class Fiber;
-Fiber* NewFiber();
-Fiber* NewFiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
-void FreeFiber(Fiber* ptr);
+// class Scheduler;
+// class Fiber;
+// Fiber* NewFiber();
+// Fiber* NewFiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
+// void FreeFiber(Fiber* ptr);
 
 class Fiber: public std::enable_shared_from_this<Fiber> {
 friend class Scheduler;
-friend Fiber* NewFiber();
-friend Fiber* NewFiber(std::function<void()> cb, size_t stacksize, bool use_caller);
-friend void FreeFiber(Fiber* ptr);
+// friend Fiber* NewFiber();
+// friend Fiber* NewFiber(std::function<void()> cb, size_t stacksize, bool use_caller);
+// friend void FreeFiber(Fiber* ptr);
 
 public:
     typedef std::shared_ptr<Fiber> ptr;
@@ -50,6 +50,7 @@ public:
     };
 private:
     Fiber();
+public:
     Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
 
 public:
@@ -110,6 +111,7 @@ private:
 
     void* m_stack = nullptr;  // 栈指针
     std::function<void()> m_cb;
+    // char m_stack[];
 };
 
 }

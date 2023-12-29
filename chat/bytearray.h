@@ -25,7 +25,7 @@ public:
     };
 
     ByteArray(size_t base_size = 4096);
-    ByteArray(void* data, size_t size, bool owner);
+    ByteArray(void* data, size_t size, bool owner = false);
     ~ByteArray();
 
     bool isLittleEndian() const;
