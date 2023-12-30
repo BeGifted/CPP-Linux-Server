@@ -1,11 +1,15 @@
 #include "chat/chat.h"
 #include "chat/http2/http2_stream.h"
 
+std::string bigstr;
+
 void test() {
-    //chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("192.168.1.6:8099");
+    bigstr = "aaaaaaaaaa";
+    for(int i = 0; i < 20; ++i) {
+        bigstr = bigstr + bigstr;
+    }
     chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("0.0.0.0:8099");
     chat::http2::Http2Connection::ptr stream(new chat::http2::Http2Connection());
-    //if(!stream->connect(addr, true)) {
     if(!stream->connect(addr, false)) {
         std::cout << "connect " << *addr << " fail";
     }
@@ -20,7 +24,7 @@ void test() {
 
     for(int x = 0; x < 1; ++x) {
         chat::IOManager::GetThis()->schedule([stream, x](){
-            for(int i = 0; i < 100; ++i) {
+            for(int i = 0; i < 1; ++i) {
                 chat::http::HttpRequest::ptr req(new chat::http::HttpRequest);
                 req->setHeader(":method", "GET");
                 req->setHeader(":scheme", "http");
@@ -30,11 +34,11 @@ void test() {
                 req->setHeader("user-agent", "grpc-go/1.37.0");
                 req->setHeader("hello", "world");
                 req->setHeader("id", std::to_string(x) + "_" + std::to_string(i));
-                req->setBody("hello test");
+                req->setBody(bigstr + "_hello");
 
                 auto rt = stream->request(req, 100000);
                 std::cout << "----" << rt->result << std::endl;
-                //sleep(1);
+                std::cout << "bigstr.length=" << bigstr.length() << std::endl;
             }
         });
     }

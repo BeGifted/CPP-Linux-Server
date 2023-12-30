@@ -3,7 +3,7 @@
 #include "test.pb.h"
 
 void run() {
-    chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("0.0.0.0:8099");
+    chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("127.0.0.1:8099");
     chat::grpc::GrpcConnection::ptr conn(new chat::grpc::GrpcConnection);
 
     if(!conn->connect(addr, false)) {
@@ -19,22 +19,22 @@ void run() {
     // auto rsp = conn->request("/test.HelloService/Hello", hr, 100);
     // std::cout << rsp->toString() << std::endl;
 
-    std::string  prefx;
-    for(int i = 0; i < 1000; ++i) {
-        //prefx += "a";
+    std::string  prefx = "aaaa";
+    for(int i = 0; i < 23; ++i) {
+        prefx = prefx + prefx;
     }
 
-    for(int x = 0; x < 2; ++x) {
+    for(int x = 0; x < 1; ++x) {
         chat::IOManager::GetThis()->schedule([conn, x, prefx](){
             int fail = 0;
             int error = 0;
             static int sn = 0;
-            for(int i = 0; i < 10; ++i) {
+            for(int i = 0; i < 1; ++i) {
                 test::HelloRequest hr;
                 auto tmp = chat::Atomic::addFetch(sn, 1);
                 hr.set_id(prefx + "hello_" + std::to_string(tmp));
                 hr.set_msg(prefx + "world_" + std::to_string(tmp));
-                auto rsp = conn->request("/test.HelloService/Hello", hr, 10000);
+                auto rsp = conn->request("/test.HelloService/Hello", hr, 100000);
                 std::cout << rsp->toString() << std::endl;
                 if(rsp->getResponse()) {
                     //std::cout << *rsp->getResponse() << std::endl;

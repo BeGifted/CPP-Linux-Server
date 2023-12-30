@@ -50,8 +50,9 @@ namespace http2 {
 */
 
 class Http2Stream;
-class Stream {
+class Stream : public std::enable_shared_from_this<Stream> {
 public:
+friend class Http2Stream;
     typedef std::shared_ptr<Stream> ptr;
     enum class State {
         IDLE                = 0x0,
@@ -62,7 +63,7 @@ public:
         HALF_CLOSE_LOCAL    = 0x5,
         HALF_CLOSE_REMOTE   = 0x6
     };
-    Stream(std::weak_ptr<Http2Stream> stm, uint32_t id);
+    Stream(std::shared_ptr<Http2Stream> stm, uint32_t id);
 
     uint32_t getId() const { return m_id;}
 
@@ -77,10 +78,20 @@ public:
 
     http::HttpRequest::ptr getRequest() const { return m_request;}
     http::HttpResponse::ptr getResponse() const { return m_response;}
+
+    int32_t updateSendWindowByDiff(int32_t diff);
+    int32_t updateRecvWindowByDiff(int32_t diff);
+
+    int32_t getSendWindow() const { return send_window;}
+    int32_t getRecvWindow() const { return recv_window;}
+
 private:
     int32_t handleHeadersFrame(Frame::ptr frame, bool is_client);
     int32_t handleDataFrame(Frame::ptr frame, bool is_client);
     int32_t handleRstStreamFrame(Frame::ptr frame, bool is_client);
+
+    int32_t updateWindowSizeByDiff(int32_t* window_size, int32_t diff);
+
 private:
     std::weak_ptr<Http2Stream> m_stream;
     State m_state;
@@ -89,6 +100,8 @@ private:
     http::HttpResponse::ptr m_response;
     HPack::ptr m_recvHPack;
     std::string m_body;
+    int32_t send_window = 0;
+    int32_t recv_window = 0;
 };
 
 class StreamManager {
@@ -99,6 +112,9 @@ public:
     Stream::ptr get(uint32_t id);
     void add(Stream::ptr stream);
     void del(uint32_t id);
+    void clear();
+    void foreach(std::function<void(Stream::ptr)> cb);
+    
 private:
     RWMutexType m_mutex;
     std::unordered_map<uint32_t, Stream::ptr> m_streams;

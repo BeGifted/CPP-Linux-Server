@@ -44,13 +44,21 @@ GrpcResponse::ptr GrpcConnection::request(GrpcRequest::ptr req, uint64_t timeout
         rsp->setError(result->response->getHeader("grpc-message"));
 
         auto& body = result->response->getBody();
-        chat::ByteArray::ptr ba(new chat::ByteArray((void*)&body[0], body.size()));
-        GrpcMessage::ptr msg = std::make_shared<GrpcMessage>();
-        rsp->setData(msg);
+        if(!body.empty()) {
+            chat::ByteArray::ptr ba(new chat::ByteArray((void*)&body[0], body.size()));
+            GrpcMessage::ptr msg = std::make_shared<GrpcMessage>();
+            rsp->setData(msg);
 
-        msg->compressed = ba->readFuint8();
-        msg->length = ba->readFuint32();
-        msg->data = ba->toString();
+            try {
+                msg->compressed = ba->readFuint8();
+                msg->length = ba->readFuint32();
+                msg->data = ba->toString();
+            } catch (...) {
+                CHAT_LOG_ERROR(g_logger) << "invalid grpc body";
+                result->result = -501;
+                result->error = "invalid grpc body";
+            }
+        }
     }
     return rsp;
 }
