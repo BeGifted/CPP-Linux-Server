@@ -209,6 +209,7 @@ protected:
     ILoadBalance::Type m_defaultType = ILoadBalance::FAIR;
     stream_callback m_cb;
     chat::Timer::ptr m_timer;
+    std::string m_type;
     bool m_isRefresh = false;
 };
 

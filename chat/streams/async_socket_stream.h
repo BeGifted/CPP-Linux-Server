@@ -127,6 +127,7 @@ protected:
 
     uint32_t m_sn;
     bool m_autoConnect;
+    uint16_t m_tryConnectCount;
     chat::Timer::ptr m_timer;
     chat::IOManager* m_iomanager;
     chat::IOManager* m_worker;

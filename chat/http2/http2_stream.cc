@@ -48,7 +48,7 @@ std::string Http2Settings::toString() const {
 
 Http2Stream::Http2Stream(Socket::ptr sock, bool client)
     :AsyncSocketStream(sock, true)
-    ,m_sn(client ? -1 : 0)
+    ,m_sn(client ? 1 : 0)
     ,m_isClient(client)
     ,m_ssl(false) {
     m_codec = std::make_shared<FrameCodec>();
@@ -282,8 +282,6 @@ int32_t Http2Stream::sendData(http2::Stream::ptr stream, const std::string& data
         if(len > (int)max_frame_size) {
             len = max_frame_size;
         }
-
-        usleep(2 * 1000);
 
         Frame::ptr body = std::make_shared<Frame>();
         body->header.type = (uint8_t)FrameType::DATA;

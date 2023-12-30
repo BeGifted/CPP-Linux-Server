@@ -35,6 +35,7 @@ ServiceItemInfo::ptr ServiceItemInfo::Create(const std::string& ip_and_port, con
         rt->m_datas[i.substr(0, pos)] = i.substr(pos + 1);
     }
     rt->m_updateTime = rt->getDataAs<uint64_t>("update_time");
+    rt->m_type = rt->getData("type");
     return rt;
 }
 
@@ -65,9 +66,19 @@ std::string IServiceDiscovery::getParam(const std::string& key, const std::strin
     return it == m_params.end() ? def : it->second;
 }
 
+void IServiceDiscovery::addServiceCallback(service_callback v) {
+    chat::RWMutex::WriteLock lock(m_mutex);
+    m_cbs.push_back(v);
+}
+
 void IServiceDiscovery::setQueryServer(const std::unordered_map<std::string, std::unordered_set<std::string> >& v) {
     chat::RWMutex::WriteLock lock(m_mutex);
-    m_queryInfos = v;
+    for(auto& i : v) {
+        auto& m = m_queryInfos[i.first];
+        for(auto& x : i.second) {
+            m.insert(x);
+        }
+    }
 }
 
 void IServiceDiscovery::registerServer(const std::string& domain, const std::string& service,
@@ -382,9 +393,12 @@ bool ZKServiceDiscovery::getChildren(const std::string& path) {
     auto new_vals = infos;
     chat::RWMutex::WriteLock lock(m_mutex);
     m_datas[domain][service].swap(infos);
+    auto cbs = m_cbs;
     lock.unlock();
 
-    m_cb(domain, service, infos, new_vals);
+    for(auto& cb : cbs) {
+        cb(domain, service, infos, new_vals);
+    }
     return true;
 }
 

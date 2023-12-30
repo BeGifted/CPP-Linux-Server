@@ -280,37 +280,12 @@ int Application::run_fiber() {
 
     if(!g_service_discovery_zk->getValue().empty()) {
         m_serviceDiscovery = std::make_shared<ZKServiceDiscovery>(g_service_discovery_zk->getValue());
-        // m_rockSDLoadBalance.reset(new RockSDLoadBalance(m_serviceDiscovery));
+        m_grpcSDLoadBalance = std::make_shared<grpc::GrpcSDLoadBalance>(m_serviceDiscovery);
+    }
 
-        std::vector<TcpServer::ptr> svrs;
-        if(!getServer("http", svrs)) {
-            m_serviceDiscovery->setSelfInfo(chat::GetIPv4() + ":0:" + chat::GetHostName());
-        } else {
-            std::string ip_and_port;
-            for(auto& i : svrs) {
-                auto socks = i->getSocks();
-                for(auto& s : socks) {
-                    auto addr = std::dynamic_pointer_cast<IPv4Address>(s->getLocalAddress());
-                    if(!addr) {
-                        continue;
-                    }
-                    auto str = addr->toString();
-                    if(str.find("127.0.0.1") == 0) {
-                        continue;
-                    }
-                    if(str.find("0.0.0.0") == 0) {
-                        ip_and_port = chat::GetIPv4() + ":" + std::to_string(addr->getPort());
-                        break;
-                    } else {
-                        ip_and_port = addr->toString();
-                    }
-                }
-                if(!ip_and_port.empty()) {
-                    break;
-                }
-            }
-            m_serviceDiscovery->setSelfInfo(ip_and_port + ":" + chat::GetHostName());
-        }
+    if(m_grpcSDLoadBalance) {
+        m_grpcSDLoadBalance->start();
+        sleep(1);
     }
 
     // for(auto& i : modules) {
@@ -321,14 +296,14 @@ int Application::run_fiber() {
         i->start();
     }
 
-
     // for(auto& i : modules) {
     //     i->onServerUp();
     // }
 
-    // if(m_rockSDLoadBalance) {
-    //     m_rockSDLoadBalance->start();
-    // }
+    if(m_grpcSDLoadBalance) {
+        m_grpcSDLoadBalance->doRegister();
+    }
+
     // ZKServiceDiscovery::ptr m_serviceDiscovery;
     //RockSDLoadBalance::ptr m_rockSDLoadBalance;
     //chat::ZKServiceDiscovery::ptr zksd(new chat::ZKServiceDiscovery("127.0.0.1:21811"));

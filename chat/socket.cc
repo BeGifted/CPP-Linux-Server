@@ -603,7 +603,14 @@ bool SSLSocket::init(int sock) {
     if(v) {
         m_ssl.reset(SSL_new(m_ctx.get()),  SSL_free);
         SSL_set_fd(m_ssl.get(), m_sock);
-        v = (SSL_accept(m_ssl.get()) == 1);
+        int rt = SSL_accept(m_ssl.get());
+        v = rt == 1;
+        if(!v) {
+            int e = SSL_get_error(m_ssl.get(), rt);
+            CHAT_LOG_ERROR(g_logger) << "SSL_accept rt=" << rt
+                << " err=" << e
+                << " errstr=" << ERR_error_string(e, nullptr);
+        }
     }
     return v;
 }

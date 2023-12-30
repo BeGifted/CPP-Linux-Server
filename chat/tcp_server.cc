@@ -81,8 +81,8 @@ void TcpServer::startAccept(Socket::ptr sock) {
             client->setRecvTimeout(m_recvTimeout);
             m_ioWorker->schedule(std::bind(&TcpServer::handleClient, shared_from_this(), client));
         } else {
-            CHAT_LOG_ERROR(g_logger) << "accept errno=" << errno
-                << " errstr=" << strerror(errno);
+            CHAT_LOG_ERROR(g_logger) << "accept errno=" << sock->getError()
+                << " errstr=" << strerror(sock->getError());
         }
     }
 }

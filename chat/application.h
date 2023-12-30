@@ -3,6 +3,7 @@
 
 #include "http/http_server.h"
 #include "streams/service_discovery.h"
+#include "grpc/grpc_stream.h"
 
 namespace chat {
 
@@ -18,7 +19,7 @@ public:
     void listAllServer(std::map<std::string, std::vector<TcpServer::ptr> >& servers);
 
     ZKServiceDiscovery::ptr getServiceDiscovery() const { return m_serviceDiscovery;}
-    // RockSDLoadBalance::ptr getRockSDLoadBalance() const { return m_rockSDLoadBalance;}
+    grpc::GrpcSDLoadBalance::ptr getGrpcSDLoadBalance() const { return m_grpcSDLoadBalance;}
     void initEnv();
 private:
     int main(int argc, char** argv);
@@ -32,7 +33,7 @@ private:
     static Application* s_instance;
 
     ZKServiceDiscovery::ptr m_serviceDiscovery;
-    // RockSDLoadBalance::ptr m_rockSDLoadBalance;
+    grpc::GrpcSDLoadBalance::ptr m_grpcSDLoadBalance;
 };
 
 }
