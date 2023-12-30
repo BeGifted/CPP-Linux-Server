@@ -15,7 +15,7 @@ void run() {
     sd->addServlet("/hello", 
     [](chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) {
+                   , chat::SocketStream::ptr session) {
 
         CHAT_LOG_INFO(g_logger) << *request;
 

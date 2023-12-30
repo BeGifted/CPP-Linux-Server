@@ -6,12 +6,11 @@ namespace http2 {
 
 static chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
 
-Http2Server::Http2Server(const std::string& type
-                        ,chat::IOManager* worker
+Http2Server::Http2Server(chat::IOManager* worker
                         ,chat::IOManager* io_worker
                         ,chat::IOManager* accept_worker)
     :TcpServer(worker, io_worker, accept_worker) {
-    m_type = type;
+    m_type = "http2";
     m_dispatch = std::make_shared<http::ServletDispatch>();
 }
 

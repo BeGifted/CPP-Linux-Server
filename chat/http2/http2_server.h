@@ -11,8 +11,7 @@ namespace http2 {
 class Http2Server : public TcpServer {
 public:
     typedef std::shared_ptr<Http2Server> ptr;
-    Http2Server(const std::string& type = "http2"
-                ,chat::IOManager* worker = chat::IOManager::GetThis()
+    Http2Server(chat::IOManager* worker = chat::IOManager::GetThis()
                 ,chat::IOManager* io_worker = chat::IOManager::GetThis()
                 ,chat::IOManager* accept_worker = chat::IOManager::GetThis());
 

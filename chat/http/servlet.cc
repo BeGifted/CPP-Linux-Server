@@ -11,7 +11,7 @@ FunctionServlet::FunctionServlet(callback cb)
 
 int32_t FunctionServlet::handle(chat::http::HttpRequest::ptr request
                , chat::http::HttpResponse::ptr response
-               , chat::http::HttpSession::ptr session) {
+               , chat::SocketStream::ptr session) {
     return m_cb(request, response, session);
 }
 
@@ -23,7 +23,7 @@ ServletDispatch::ServletDispatch()
 
 int32_t ServletDispatch::handle(chat::http::HttpRequest::ptr request
                , chat::http::HttpResponse::ptr response
-               , chat::http::HttpSession::ptr session) {
+               , chat::SocketStream::ptr session) {
     auto slt = getMatchedServlet(request->getPath());
     if (slt) {
         slt->handle(request, response, session);
@@ -145,7 +145,7 @@ NotFoundServlet::NotFoundServlet(const std::string& name)
 
 int32_t NotFoundServlet::handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) {
+                   , chat::SocketStream::ptr session) {
     response->setStatus(chat::http::HttpStatus::NOT_FOUND);
     response->setHeader("Server", "chat/1.0.0");
     response->setHeader("Content-Type", "text/html");

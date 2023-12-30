@@ -271,7 +271,7 @@ bool Http2Stream::FrameSendCtx::doSend(AsyncSocketStream::ptr stream) {
                 ->sendFrame(frame, false) > 0;
 }
 
-int32_t Http2Stream::sendData(http2::Stream::ptr stream, const std::string& data, bool async) {
+int32_t Http2Stream::sendData(http2::Stream::ptr stream, const std::string& data, bool async, bool end_stream) {
     int pos = 0;
     int length = data.size();
 
@@ -285,7 +285,11 @@ int32_t Http2Stream::sendData(http2::Stream::ptr stream, const std::string& data
 
         Frame::ptr body = std::make_shared<Frame>();
         body->header.type = (uint8_t)FrameType::DATA;
-        body->header.flags = (length == len ? (uint8_t)FrameFlagData::END_STREAM : 0);
+        if(end_stream) {
+            body->header.flags = (length == len ? (uint8_t)FrameFlagData::END_STREAM : 0);
+        } else {
+            body->header.flags = 0;
+        }
         body->header.identifier = stream->getId();
         auto df = std::make_shared<DataFrame>();
         df->data = data.substr(pos, len);
@@ -311,13 +315,14 @@ bool Http2Stream::RequestCtx::doSend(AsyncSocketStream::ptr stream) {
     Frame::ptr headers = std::make_shared<Frame>();
     headers->header.type = (uint8_t)FrameType::HEADERS;
     headers->header.flags = (uint8_t)FrameFlagHeaders::END_HEADERS;
+    headers->header.identifier = sn;
+    HeadersFrame::ptr data;
+    data = std::make_shared<HeadersFrame>();
+
+    auto m = request->getHeaders();
     if(request->getBody().empty()) {
         headers->header.flags |= (uint8_t)FrameFlagHeaders::END_STREAM;
     }
-    headers->header.identifier = sn;
-    HeadersFrame::ptr data;
-    auto m = request->getHeaders();
-    data = std::make_shared<HeadersFrame>();
 
     HPack hp(h2stream->m_sendTable);
     std::vector<std::pair<std::string, std::string> > hs;
@@ -345,6 +350,7 @@ bool Http2Stream::RequestCtx::doSend(AsyncSocketStream::ptr stream) {
         if(ok <= 0) {
             CHAT_LOG_ERROR(g_logger) << "Stream id=" << sn
                 << " sendData fail, rt=" << ok << " size=" << request->getBody().size();
+            return ok;
         }
     }
     return ok;

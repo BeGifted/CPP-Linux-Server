@@ -24,7 +24,7 @@ public:
     //处理请求
     virtual int32_t handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) = 0;
+                   , chat::SocketStream::ptr session) = 0;
     const std::string& getName() const { return m_name;}
 
 protected:
@@ -37,12 +37,12 @@ public:
     typedef std::shared_ptr<FunctionServlet> ptr;
     typedef std::function<int32_t (chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session)> callback;
+                   , chat::SocketStream::ptr session)> callback;
 
     FunctionServlet(callback cb);
     virtual int32_t handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) override;
+                   , chat::SocketStream::ptr session) override;
 
 private:
     //回调函数
@@ -100,7 +100,7 @@ public:
     ServletDispatch();
     virtual int32_t handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) override;
+                   , chat::SocketStream::ptr session) override;
 
     //添加精准匹配servlet
     void addServlet(const std::string& uri, Servlet::ptr slt);
@@ -154,7 +154,7 @@ public:
     NotFoundServlet(const std::string& name);
     virtual int32_t handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) override;
+                   , chat::SocketStream::ptr session) override;
 
 private:
     std::string m_name;

@@ -18,7 +18,7 @@ public:
 
     virtual int32_t handle(chat::http::HttpRequest::ptr request
                    , chat::http::HttpResponse::ptr response
-                   , chat::http::HttpSession::ptr session) override {
+                   , chat::SocketStream::ptr session) override {
         return 0;
     }
 

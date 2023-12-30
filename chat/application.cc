@@ -247,6 +247,8 @@ int Application::run_fiber() {
         TcpServer::ptr server;
         if(i.type == "http") {
             server = std::make_shared<chat::http::HttpServer>(i.keepalive, process_worker, io_worker, accept_worker);
+        } else if(i.type == "http2") {
+            server = std::make_shared<chat::http2::Http2Server>(process_worker, io_worker, accept_worker); 
         } else if(i.type == "ws") {
             server = std::make_shared<chat::http::WSServer>(process_worker, io_worker, accept_worker);
         } else if(i.type == "rock") {
