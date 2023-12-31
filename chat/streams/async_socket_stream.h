@@ -90,6 +90,7 @@ protected:
     virtual void startWrite();
     virtual void onTimeOut(Ctx::ptr ctx);
     virtual Ctx::ptr doRecv() = 0;
+    virtual void onClose() {}
 
     Ctx::ptr getCtx(uint32_t sn);
     Ctx::ptr getAndDelCtx(uint32_t sn);
@@ -136,6 +137,10 @@ protected:
     disconnect_callback m_disconnectCb;
 
     boost::any m_data;
+
+public:
+    bool recving = false;
+
 };
 
 class AsyncSocketStreamManager {

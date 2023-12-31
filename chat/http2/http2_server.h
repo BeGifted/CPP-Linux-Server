@@ -1,7 +1,7 @@
 #ifndef __CHAT_HTTP2_SERVER_H__
 #define __CHAT_HTTP2_SERVER_H__
 
-#include "http2_stream.h"
+#include "http2_session.h"
 #include "chat/tcp_server.h"
 #include "chat/http/servlet.h"
 
@@ -21,7 +21,7 @@ public:
     virtual void setName(const std::string& v) override;
 protected:
     virtual void handleClient(Socket::ptr client) override;
-private:
+protected:
     http::ServletDispatch::ptr m_dispatch;
 };
 

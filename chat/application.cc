@@ -6,16 +6,13 @@
 #include "config.h"
 #include "env.h"
 #include "log.h"
-// #include "module.h"
-// #include "rock/rock_stream.h"
 #include "worker.h"
 #include "http/ws_server.h"
 #include "http/http_server.h"
 #include "util.h"
-// #include "rock/rock_server.h"
-// #include "ns/name_server_module.h"
-// #include "db/fox_thread.h"
-// #include "db/redis.h"
+#include "http2/http2_server.h"
+#include "grpc/grpc_server.h"
+
 
 namespace chat {
 
@@ -249,6 +246,8 @@ int Application::run_fiber() {
             server = std::make_shared<chat::http::HttpServer>(i.keepalive, process_worker, io_worker, accept_worker);
         } else if(i.type == "http2") {
             server = std::make_shared<chat::http2::Http2Server>(process_worker, io_worker, accept_worker); 
+        } else if(i.type == "grpc") {
+            server = std::make_shared<chat::grpc::GrpcServer>(process_worker, io_worker, accept_worker);
         } else if(i.type == "ws") {
             server = std::make_shared<chat::http::WSServer>(process_worker, io_worker, accept_worker);
         } else if(i.type == "rock") {

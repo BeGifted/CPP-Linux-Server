@@ -11,7 +11,6 @@ namespace http2 {
 #pragma pack(push)
 #pragma pack(1)
 
-// 帧类型
 enum class FrameType {
     DATA            = 0x0,
     HEADERS         = 0x1,
@@ -61,8 +60,6 @@ enum class FrameR {
 
 /*
 HTTP2 frame 格式
-所有的帧数据都是以一个固定的 9 字节开头
-后面跟一个可变长度的有效负载Frame Payload
 +-----------------------------------------------+
 |                 Length (24)                   |
 +---------------+---------------+---------------+
@@ -182,6 +179,8 @@ struct HeadersFrame : public IFrame {
     PriorityFrame priority; //flag & FrameFlagHeaders::PRIORITY
     std::string data;
     std::string padding;
+    HPack::ptr hpack;
+    std::vector<std::pair<std::string, std::string> > kvs;
 
     std::string toString() const;
     bool writeTo(ByteArray::ptr ba, const FrameHeader& header);

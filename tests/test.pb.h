@@ -37,6 +37,7 @@ void protobuf_AssignDesc_tests_2ftest_2eproto();
 void protobuf_ShutdownFile_tests_2ftest_2eproto();
 
 class HelloRequest;
+class HelloRequest2;
 class HelloResponse;
 
 // ===================================================================
@@ -137,6 +138,105 @@ class HelloRequest : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   void InitAsDefaultInstance();
   static HelloRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class HelloRequest2 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:test.HelloRequest2) */ {
+ public:
+  HelloRequest2();
+  virtual ~HelloRequest2();
+
+  HelloRequest2(const HelloRequest2& from);
+
+  inline HelloRequest2& operator=(const HelloRequest2& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const HelloRequest2& default_instance();
+
+  void Swap(HelloRequest2* other);
+
+  // implements Message ----------------------------------------------
+
+  inline HelloRequest2* New() const { return New(NULL); }
+
+  HelloRequest2* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const HelloRequest2& from);
+  void MergeFrom(const HelloRequest2& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(HelloRequest2* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string id = 1;
+  void clear_id();
+  static const int kIdFieldNumber = 1;
+  const ::std::string& id() const;
+  void set_id(const ::std::string& value);
+  void set_id(const char* value);
+  void set_id(const char* value, size_t size);
+  ::std::string* mutable_id();
+  ::std::string* release_id();
+  void set_allocated_id(::std::string* id);
+
+  // optional string msg = 2;
+  void clear_msg();
+  static const int kMsgFieldNumber = 2;
+  const ::std::string& msg() const;
+  void set_msg(const ::std::string& value);
+  void set_msg(const char* value);
+  void set_msg(const char* value, size_t size);
+  ::std::string* mutable_msg();
+  ::std::string* release_msg();
+  void set_allocated_msg(::std::string* msg);
+
+  // @@protoc_insertion_point(class_scope:test.HelloRequest2)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool _is_default_instance_;
+  ::google::protobuf::internal::ArenaStringPtr id_;
+  ::google::protobuf::internal::ArenaStringPtr msg_;
+  mutable int _cached_size_;
+  friend void  protobuf_AddDesc_tests_2ftest_2eproto();
+  friend void protobuf_AssignDesc_tests_2ftest_2eproto();
+  friend void protobuf_ShutdownFile_tests_2ftest_2eproto();
+
+  void InitAsDefaultInstance();
+  static HelloRequest2* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -335,6 +435,98 @@ inline void HelloRequest::set_allocated_msg(::std::string* msg) {
 
 // -------------------------------------------------------------------
 
+// HelloRequest2
+
+// optional string id = 1;
+inline void HelloRequest2::clear_id() {
+  id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& HelloRequest2::id() const {
+  // @@protoc_insertion_point(field_get:test.HelloRequest2.id)
+  return id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void HelloRequest2::set_id(const ::std::string& value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:test.HelloRequest2.id)
+}
+inline void HelloRequest2::set_id(const char* value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:test.HelloRequest2.id)
+}
+inline void HelloRequest2::set_id(const char* value, size_t size) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:test.HelloRequest2.id)
+}
+inline ::std::string* HelloRequest2::mutable_id() {
+  
+  // @@protoc_insertion_point(field_mutable:test.HelloRequest2.id)
+  return id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* HelloRequest2::release_id() {
+  // @@protoc_insertion_point(field_release:test.HelloRequest2.id)
+  
+  return id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void HelloRequest2::set_allocated_id(::std::string* id) {
+  if (id != NULL) {
+    
+  } else {
+    
+  }
+  id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), id);
+  // @@protoc_insertion_point(field_set_allocated:test.HelloRequest2.id)
+}
+
+// optional string msg = 2;
+inline void HelloRequest2::clear_msg() {
+  msg_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& HelloRequest2::msg() const {
+  // @@protoc_insertion_point(field_get:test.HelloRequest2.msg)
+  return msg_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void HelloRequest2::set_msg(const ::std::string& value) {
+  
+  msg_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:test.HelloRequest2.msg)
+}
+inline void HelloRequest2::set_msg(const char* value) {
+  
+  msg_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:test.HelloRequest2.msg)
+}
+inline void HelloRequest2::set_msg(const char* value, size_t size) {
+  
+  msg_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:test.HelloRequest2.msg)
+}
+inline ::std::string* HelloRequest2::mutable_msg() {
+  
+  // @@protoc_insertion_point(field_mutable:test.HelloRequest2.msg)
+  return msg_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* HelloRequest2::release_msg() {
+  // @@protoc_insertion_point(field_release:test.HelloRequest2.msg)
+  
+  return msg_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void HelloRequest2::set_allocated_msg(::std::string* msg) {
+  if (msg != NULL) {
+    
+  } else {
+    
+  }
+  msg_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), msg);
+  // @@protoc_insertion_point(field_set_allocated:test.HelloRequest2.msg)
+}
+
+// -------------------------------------------------------------------
+
 // HelloResponse
 
 // optional string id = 1;
@@ -426,6 +618,8 @@ inline void HelloResponse::set_allocated_msg(::std::string* msg) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

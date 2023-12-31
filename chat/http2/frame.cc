@@ -146,6 +146,9 @@ bool HeadersFrame::writeTo(ByteArray::ptr ba, const FrameHeader& header) {
         if(header.flags & (uint8_t)FrameFlagHeaders::PRIORITY) {
             priority.writeTo(ba, header);
         }
+        if(hpack && !kvs.empty()) {
+            hpack->pack(kvs, data);
+        }
         ba->write(data.c_str(), data.size());
         if(header.flags & (uint8_t)FrameFlagHeaders::PADDED) {
             ba->write(padding.c_str(), padding.size());
@@ -168,7 +171,6 @@ bool HeadersFrame::readFrom(ByteArray::ptr ba, const FrameHeader& header) {
             priority.readFrom(ba, header);
             len -= 5;
         }
-        std::string data;
         //check len
         data.resize(len);
         ba->read(&data[0], data.size());
@@ -668,6 +670,7 @@ Frame::ptr FrameCodec::parseFrom(Stream::ptr stream) {
 }
 
 int32_t FrameCodec::serializeTo(Stream::ptr stream, Frame::ptr frame) {
+    CHAT_LOG_DEBUG(g_logger) << "serializeTo " << frame->toString();
     ByteArray::ptr ba(new ByteArray);
     frame->header.writeTo(ba);
     if(frame->data) {

@@ -1,639 +1,478 @@
 #include "http2_stream.h"
+#include "http2_socket_stream.h"
 #include "chat/log.h"
-#include "http2_server.h"
+#include "chat/macro.h"
 
 namespace chat {
 namespace http2 {
 
-static const std::string CLIENT_PREFACE = "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n";
-
 static chat::Logger::ptr g_logger = CHAT_LOG_NAME("system");
 
-static const std::vector<std::string> s_http2error_strings = {
-    "OK",
-    "PROTOCOL_ERROR",
-    "INTERNAL_ERROR",
-    "FLOW_CONTROL_ERROR",
-    "SETTINGS_TIMEOUT_ERROR",
-    "STREAM_CLOSED_ERROR",
-    "FRAME_SIZE_ERROR",
-    "REFUSED_STREAM_ERROR",
-    "CANCEL_ERROR",
-    "COMPRESSION_ERROR",
-    "CONNECT_ERROR",
-    "ENHANCE_YOUR_CALM_ERROR",
-    "INADEQUATE_SECURITY_ERROR",
-    "HTTP11_REQUIRED_ERROR",
+static const std::vector<std::string> s_state_strings = {
+        "IDLE",
+        "OPEN",
+        "CLOSED",
+        "RESERVED_LOCAL",
+        "RESERVED_REMOTE",
+        "HALF_CLOSE_LOCAL",
+        "HALF_CLOSE_REMOTE",
 };
 
-std::string Http2ErrorToString(Http2Error error) {
-    static uint32_t SIZE = s_http2error_strings.size();
-    uint8_t v = (uint8_t)error;
-    if(v < SIZE) {
-        return s_http2error_strings[v];
+std::string Http2Stream::StateToString(State state) {
+    uint8_t v = (uint8_t)state;
+    if(v < 7) {
+        return s_state_strings[v];
     }
     return "UNKNOW(" + std::to_string((uint32_t)v) + ")";
 }
 
-std::string Http2Settings::toString() const {
-    std::stringstream ss;
-    ss << "[Http2Settings header_table_size=" << header_table_size
-       << " max_header_list_size=" << max_header_list_size
-       << " max_concurrent_streams=" << max_concurrent_streams
-       << " max_frame_size=" << max_frame_size
-       << " initial_window_size=" << initial_window_size
-       << " enable_push=" << enable_push << "]";
-    return ss.str();
+Http2Stream::Http2Stream(std::shared_ptr<Http2SocketStream> stm, uint32_t id)
+    :m_stream(stm)
+    ,m_state(State::IDLE)
+    ,m_handleCount(0)
+    ,m_isStream(false)
+    ,m_id(id){
+
+    m_sendWindow = stm->getPeerSettings().initial_window_size;
+    m_recvWindow = stm->getOwnerSettings().initial_window_size;
 }
 
-Http2Stream::Http2Stream(Socket::ptr sock, bool client)
-    :AsyncSocketStream(sock, true)
-    ,m_sn(client ? 1 : 0)
-    ,m_isClient(client)
-    ,m_ssl(false) {
-    m_codec = std::make_shared<FrameCodec>();
-    m_server = nullptr;
+void Http2Stream::addHandleCount() {
+    ++m_handleCount;
+}
+
+std::string Http2Stream::getHeader(const std::string& name) const {
+    if(!m_recvHPack) {
+        return "";
+    }
+    auto& m = m_recvHPack->getHeaders();
+    for(auto& i : m) {
+        if(i.name == name) {
+            return i.value;
+        }
+    }
+    return "";
 }
 
 Http2Stream::~Http2Stream() {
-    CHAT_LOG_INFO(g_logger) << "Http2Stream::~Http2Stream " << this;
+    close();
+    CHAT_LOG_INFO(g_logger) << "Http2Stream::~Http2Stream id=" << m_id
+            << " - " << StateToString(m_state);
 }
 
-bool Http2Stream::handleShakeClient() {
-    CHAT_LOG_INFO(g_logger) << "handleShakeClient";
-    if(!isConnected()) {
-        return false;
+void Http2Stream::close() {
+    if(m_handler) {
+        m_handler(nullptr);
     }
-
-    int rt = writeFixSize(CLIENT_PREFACE.c_str(), CLIENT_PREFACE.size());
-    if(rt <= 0) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeClient CLIENT_PREFACE fail, rt=" << rt
-            << " errno=" << errno << " - " << strerror(errno);
-        return false;
-    }
-
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::SETTINGS;
-    auto sf = std::make_shared<SettingsFrame>();
-    sf->items.emplace_back((uint8_t)SettingsFrame::Settings::ENABLE_PUSH, 0);
-    sf->items.emplace_back((uint8_t)SettingsFrame::Settings::INITIAL_WINDOW_SIZE, 4194304);
-    sf->items.emplace_back((uint8_t)SettingsFrame::Settings::MAX_HEADER_LIST_SIZE, 10485760);
-    frame->data = sf;
-
-    handleSendSetting(frame);
-    rt = sendFrame(frame, false);
-    if(rt <= 0) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeClient Settings fail, rt=" << rt
-            << " errno=" << errno << " - " << strerror(errno);
-        return false;
-    }
-    sendWindowUpdate(0, MAX_INITIAL_WINDOW_SIZE - recv_window);
-    return true;
+    m_data.push(nullptr);
+    //m_data.notifyAll();
 }
 
-bool Http2Stream::handleShakeServer() {
-    ByteArray::ptr ba = std::make_shared<ByteArray>();
-    int rt = readFixSize(ba, CLIENT_PREFACE.size());
-    if(rt <= 0) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeServer recv CLIENT_PREFACE fail, rt=" << rt
-            << " errno=" << errno << " - " << strerror(errno);
-        return false;
-    }
-    ba->setPosition(0);
-    if(ba->toString() != CLIENT_PREFACE) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeServer recv CLIENT_PREFACE fail, rt=" << rt
-            << " errno=" << errno << " - " << strerror(errno)
-            << " hex: " << ba->toHexString();
-        return false;
-    }
-    auto frame = m_codec->parseFrom(shared_from_this());
-    if(!frame) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeServer recv SettingsFrame fail,"
-            << " errno=" << errno << " - " << strerror(errno);
-        return false;
-    }
-    if(frame->header.type != (uint8_t)FrameType::SETTINGS) {
-        CHAT_LOG_ERROR(g_logger) << "handleShakeServer recv Frame not SettingsFrame, type="
-            << FrameTypeToString((FrameType)frame->header.type);
-        return false;
-    }
-    handleRecvSetting(frame);
-    sendSettingsAck();
-    sendSettings({});
-    return true;
+void Http2Stream::endStream() {
+    sendData("", true, true);
 }
 
-int32_t Http2Stream::sendFrame(Frame::ptr frame, bool async) {
-    if(isConnected()) {
-        if(async) {
-            FrameSendCtx::ptr ctx = std::make_shared<FrameSendCtx>();
-            ctx->frame = frame;
-            enqueue(ctx);
-            return 1;
-        } else {
-            return m_codec->serializeTo(shared_from_this(), frame);
+std::shared_ptr<Http2SocketStream> Http2Stream::getSockStream() const {
+    return m_stream.lock();
+}
+
+int32_t Http2Stream::handleRstStreamFrame(Frame::ptr frame, bool is_client) {
+    m_state = State::CLOSED;
+    return 0;
+}
+
+int32_t Http2Stream::handleFrame(Frame::ptr frame, bool is_client) {
+    int rt = 0;
+    if(frame->header.type == (uint8_t)FrameType::HEADERS) {
+        rt = handleHeadersFrame(frame, is_client);
+        CHAT_ASSERT(rt != -1);
+    } else if(frame->header.type == (uint8_t)FrameType::DATA) {
+        rt = handleDataFrame(frame, is_client);
+    } else if(frame->header.type == (uint8_t)FrameType::RST_STREAM) {
+        rt = handleRstStreamFrame(frame, is_client);
+    }
+
+    if(m_handler) {
+        m_handler(frame);
+    }
+
+    if(frame->header.flags & (uint8_t)FrameFlagHeaders::END_STREAM) {
+        m_state = State::CLOSED;
+        if(m_isStream) {
+            m_data.push(nullptr);
         }
-    } else {
+        if(is_client) {
+            if(!m_response) {
+                m_response = std::make_shared<http::HttpResponse>(0x20);
+            }
+            if(!m_isStream) {
+                m_response->setBody(getDataBody());
+            }
+            if(m_recvHPack) {
+                auto& m = m_recvHPack->getHeaders();
+                for(auto& i : m) {
+                    m_response->setHeader(i.name, i.value);
+                }
+            }
+            Http2InitResponseForRead(m_response);
+        } else {
+            initRequest();
+        }
+        CHAT_LOG_DEBUG(g_logger) << "id=" << m_id << " is_client=" << is_client
+            << " req=" << m_request << " rsp=" << m_response;
+    }
+    return rt;
+}
+
+std::string Http2Stream::getDataBody() {
+    std::stringstream ss;
+    while(!m_data.empty()) {
+        auto data = m_data.pop();
+        ss << data->data;
+    }
+    return ss.str();
+}
+
+void Http2Stream::initRequest() {
+    if(!m_request) {
+        m_request = std::make_shared<http::HttpRequest>(0x20);
+    }
+    if(!m_isStream) {
+        m_request->setBody(getDataBody());
+    }
+    if(m_recvHPack) {
+        auto& m = m_recvHPack->getHeaders();
+        for(auto& i : m) {
+            m_request->setHeader(i.name, i.value);
+        }
+    }
+    Http2InitRequestForRead(m_request);
+}
+
+int32_t Http2Stream::handleHeadersFrame(Frame::ptr frame, bool is_client) {
+    auto headers = std::dynamic_pointer_cast<HeadersFrame>(frame->data);
+    if(!headers) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " handleHeadersFrame data not HeadersFrame "
+            << frame->toString();
         return -1;
     }
-}
-
-AsyncSocketStream::Ctx::ptr Http2Stream::doRecv() {
-    auto frame = m_codec->parseFrom(shared_from_this());
-    if(!frame) {
-        innerClose();
-        return nullptr;
+    auto stream = getSockStream();
+    if(!stream) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " handleHeadersFrame stream is closed " 
+            << frame->toString();
+        return -1;
     }
-    CHAT_LOG_DEBUG(g_logger) << "doRecv(): " << frame->toString();
-    if(frame->header.type == (uint8_t)FrameType::WINDOW_UPDATE) {
-        auto wuf = std::dynamic_pointer_cast<WindowUpdateFrame>(frame->data);
-        if(wuf) {
-            if(frame->header.identifier) {
-                auto stream = getStream(frame->header.identifier);
-                if(!stream) {
-                    CHAT_LOG_ERROR(g_logger) << "WINDOW_UPDATE stream_id=" << frame->header.identifier
-                        << " not exists, " << getRemoteAddressString();
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    return nullptr;
-                }
-                if(((int64_t)stream->send_window + wuf->increment) > MAX_INITIAL_WINDOW_SIZE) {
-                    CHAT_LOG_ERROR(g_logger) << "WINDOW_UPDATE stream_id=" << stream->getId()
-                        << " increment=" << wuf->increment << " send_window=" << stream->send_window
-                        << " biger than " << MAX_INITIAL_WINDOW_SIZE << " " << getRemoteAddressString();
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    return nullptr;
-                }
-                stream->updateSendWindowByDiff(wuf->increment);
-            } else {
-                if(((int64_t)send_window + wuf->increment) > MAX_INITIAL_WINDOW_SIZE) {
-                    CHAT_LOG_ERROR(g_logger) << "WINDOW_UPDATE stream_id=0"
-                        << " increment=" << wuf->increment << " send_window=" << send_window
-                        << " biger than " << MAX_INITIAL_WINDOW_SIZE << " " << getRemoteAddressString();
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    return nullptr;
-                }
-                send_window += wuf->increment;
-            }
-        } else {
-            CHAT_LOG_ERROR(g_logger) << "WINDOW_UPDATE stream_id=" << frame->header.identifier
-                << " invalid body " << getRemoteAddressString();
-            innerClose();
-            return nullptr;
-        }
-    } else if(frame->header.identifier) {
-        auto stream = getStream(frame->header.identifier);
-        if(!stream) {
-            if(m_isClient) {
-                CHAT_LOG_ERROR(g_logger) << "doRecv stream id="
-                    << frame->header.identifier << " not exists "
-                    << frame->toString();
-                return nullptr;
-            } else {
-                stream = newStream(frame->header.identifier);
-                if(!stream) {
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    return nullptr;
-                }
-            }
-        }
 
-        stream->handleFrame(frame, m_isClient);
-        if(frame->header.type == (uint8_t)FrameType::DATA) {
-            if(frame->header.length) {
-                recv_window -= frame->header.length;
-                if(recv_window < (int32_t)MAX_INITIAL_WINDOW_SIZE / 4) {
-                    CHAT_LOG_INFO(g_logger) << "recv_window=" << recv_window
-                        << " length=" << frame->header.length
-                        << " " << (MAX_INITIAL_WINDOW_SIZE / 4);
-                    sendWindowUpdate(0, MAX_INITIAL_WINDOW_SIZE - recv_window);
-                }
-
-                stream->recv_window -= frame->header.length;
-                if(stream->recv_window < (int32_t)MAX_INITIAL_WINDOW_SIZE / 4) {
-                    CHAT_LOG_INFO(g_logger) << "recv_window=" << stream->recv_window
-                        << " length=" << frame->header.length
-                        << " " << (MAX_INITIAL_WINDOW_SIZE / 4)
-                        << " diff=" << (MAX_INITIAL_WINDOW_SIZE - stream->recv_window);
-                    sendWindowUpdate(stream->getId(), MAX_INITIAL_WINDOW_SIZE - stream->recv_window);
-                }
-            }
-        }
-        if(stream->getState() == http2::Stream::State::CLOSED) {
-            if(m_isClient) {
-                delStream(stream->getId());
-                RequestCtx::ptr ctx = getAndDelCtxAs<RequestCtx>(stream->getId());
-                if(!ctx) {
-                    CHAT_LOG_WARN(g_logger) << "Http2Stream request timeout response";
-                    return nullptr;
-                }
-                ctx->response = stream->getResponse();
-                return ctx;
-            } else {
-                auto req = stream->getRequest();
-                if(!req) {
-                    CHAT_LOG_DEBUG(g_logger) << "Http2Stream recv http request fail, errno="
-                        << errno << " errstr=" << strerror(errno);
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    delStream(stream->getId());
-                    return nullptr;
-                }
-                m_worker->schedule(std::bind(&Http2Stream::handleRequest, std::dynamic_pointer_cast<Http2Stream>(shared_from_this()), req, stream));
-            }
-        }
-    } else {
-        if(frame->header.type == (uint8_t)FrameType::SETTINGS) {
-            if(!(frame->header.flags & (uint8_t)FrameFlagSettings::ACK)) {
-                handleRecvSetting(frame);
-                sendSettingsAck();
-            }
-        } else if(frame->header.type == (uint8_t)FrameType::PING) {
-            if(!(frame->header.flags & (uint8_t)FrameFlagPing::ACK)) {
-                auto data = std::dynamic_pointer_cast<PingFrame>(frame->data);
-                sendPing(true, data->uint64);
-            }
-
-        }
+    if(!m_recvHPack) {
+        m_recvHPack = std::make_shared<HPack>(stream->getRecvTable());
     }
-    return nullptr;
+    return m_recvHPack->parse(headers->data);
 }
 
-void Http2Stream::handleRequest(http::HttpRequest::ptr req, http2::Stream::ptr stream) {
-    http::HttpResponse::ptr rsp = std::make_shared<http::HttpResponse>(req->getVersion(), false);
-    CHAT_LOG_DEBUG(g_logger) << *req;
-    rsp->setHeader("server", m_server->getName());
-    m_server->getServletDispatch()->handle(req, rsp, nullptr);
-    stream->sendResponse(rsp);
-    delStream(stream->getId());
-}
-
-bool Http2Stream::FrameSendCtx::doSend(AsyncSocketStream::ptr stream) {
-    return std::dynamic_pointer_cast<Http2Stream>(stream)
-                ->sendFrame(frame, false) > 0;
-}
-
-int32_t Http2Stream::sendData(http2::Stream::ptr stream, const std::string& data, bool async, bool end_stream) {
-    int pos = 0;
-    int length = data.size();
-
-    auto max_frame_size = m_peer.max_frame_size - 9;
-
-    while(length > 0) {
-        int len = length;
-        if(len > (int)max_frame_size) {
-            len = max_frame_size;
-        }
-
-        Frame::ptr body = std::make_shared<Frame>();
-        body->header.type = (uint8_t)FrameType::DATA;
-        if(end_stream) {
-            body->header.flags = (length == len ? (uint8_t)FrameFlagData::END_STREAM : 0);
-        } else {
-            body->header.flags = 0;
-        }
-        body->header.identifier = stream->getId();
-        auto df = std::make_shared<DataFrame>();
-        df->data = data.substr(pos, len);
-        body->data = df;
-
-        int rt = sendFrame(body, async);
-        if(rt <= 0) {
-            CHAT_LOG_DEBUG(g_logger) << "sendData error rt=" << rt << " errno=" << errno;
-            return rt;
-        }
-        length -= len;
-        pos += len;
-
-        stream->updateSendWindowByDiff(-len);
-        chat::Atomic::addFetch(send_window, -len);
+int32_t Http2Stream::handleDataFrame(Frame::ptr frame, bool is_client) {
+    //sleep(1);
+    //if(m_handleCount > 0) {
+    //    return 0;
+    //}
+    auto data = std::dynamic_pointer_cast<DataFrame>(frame->data);
+    if(!data) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " handleDataFrame data not DataFrame "
+            << frame->toString();
+        return -1;
     }
-    return 1;
+    auto stream = getSockStream();
+    if(!stream) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " handleDataFrame stream is closed " 
+            << frame->toString();
+        return -1;
+    }
+    m_data.push(data);
+    //m_body += data->data;
+    //CHAT_LOG_DEBUG(g_logger) << "stream_id=" << m_id << " cur_body_size=" << m_body.size();
+    //if(is_client) {
+    //    m_response = std::make_shared<http::HttpResponse>(0x20);
+    //    m_response->setBody(data->data);
+    //} else {
+    //    m_request = std::make_shared<http::HttpRequest>(0x20);
+    //    m_request->setBody(data->data);
+    //}
+    return 0;
 }
 
-bool Http2Stream::RequestCtx::doSend(AsyncSocketStream::ptr stream) {
-    auto h2stream = std::dynamic_pointer_cast<Http2Stream>(stream);
+DataFrame::ptr Http2Stream::recvData() {
+    return m_data.pop();
+}
+
+int32_t Http2Stream::sendRequest(chat::http::HttpRequest::ptr req, bool end_stream, bool async) {
+    auto stream = getSockStream();
+    if(!stream) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " sendResponse stream is closed";
+        return -1;
+    }
+
+    Http2InitRequestForWrite(req, stream->isSsl());
 
     Frame::ptr headers = std::make_shared<Frame>();
     headers->header.type = (uint8_t)FrameType::HEADERS;
     headers->header.flags = (uint8_t)FrameFlagHeaders::END_HEADERS;
-    headers->header.identifier = sn;
+    headers->header.identifier = m_id;
     HeadersFrame::ptr data;
     data = std::make_shared<HeadersFrame>();
-
-    auto m = request->getHeaders();
-    if(request->getBody().empty()) {
+    auto m = req->getHeaders();
+    if(end_stream && req->getBody().empty()) {
         headers->header.flags |= (uint8_t)FrameFlagHeaders::END_STREAM;
     }
 
-    HPack hp(h2stream->m_sendTable);
-    std::vector<std::pair<std::string, std::string> > hs;
+    data->hpack = std::make_shared<HPack>(stream->m_sendTable);
     for(auto& i : m) {
-        hs.push_back(std::make_pair(chat::ToLower(i.first), i.second));
+        data->kvs.emplace_back(chat::ToLower(i.first), i.second);
     }
-    hs.push_back(std::make_pair("stream_id", std::to_string(sn)));
-    hp.pack(hs, data->data);
+    // debug stream_id
+    data->kvs.push_back(std::make_pair("stream_id", std::to_string(m_id)));
     headers->data = data;
-
-    bool ok = std::dynamic_pointer_cast<Http2Stream>(stream)->sendFrame(headers, false) > 0;
-    if(!ok) {
+    int32_t ok = stream->sendFrame(headers, async);
+    if(ok < 0) {
         CHAT_LOG_INFO(g_logger) << "sendHeaders fail";
         return ok;
     }
-    if(!request->getBody().empty()) {
-        auto stm = h2stream->getStream(sn);
-        if(!stm) {
-            CHAT_LOG_ERROR(g_logger) << "RequestCtx doSend Fail, sn=" << sn
-                << " not exists";
-            return false;
-        }
-
-        ok = h2stream->sendData(stm, request->getBody(), false);
+    if(!req->getBody().empty()) {
+        ok = stream->sendData(shared_from_this(), req->getBody(), async, true);
         if(ok <= 0) {
-            CHAT_LOG_ERROR(g_logger) << "Stream id=" << sn
-                << " sendData fail, rt=" << ok << " size=" << request->getBody().size();
+            CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id 
+                << " sendData fail, rt=" << ok << " size=" << req->getBody().size();
             return ok;
         }
     }
     return ok;
 }
 
-void Http2Stream::onTimeOut(AsyncSocketStream::Ctx::ptr ctx) {
-    AsyncSocketStream::onTimeOut(ctx);
-    delStream(ctx->sn);
-}
-
-http::HttpResult::ptr Http2Stream::request(http::HttpRequest::ptr req, uint64_t timeout_ms) {
-    if(isConnected()) {
-        Http2InitRequestForWrite(req, m_ssl);
-        auto stream = newStream();
-        RequestCtx::ptr ctx = std::make_shared<RequestCtx>();
-        ctx->request = req;
-        ctx->sn = stream->getId();
-        ctx->timeout = timeout_ms;
-        ctx->scheduler = chat::Scheduler::GetThis();
-        ctx->fiber = chat::Fiber::GetThis();
-        addCtx(ctx);
-        ctx->timer = chat::IOManager::GetThis()->addTimer(timeout_ms,
-                std::bind(&Http2Stream::onTimeOut, std::dynamic_pointer_cast<Http2Stream>(shared_from_this()), ctx));
-        enqueue(ctx);
-        chat::Fiber::YieldToHold();
-        auto rt = std::make_shared<http::HttpResult>(ctx->result, ctx->response, ctx->resultStr);
-        if(rt->result == 0 && !ctx->response) {
-            rt->result = -401;
-            rt->error = "rst_stream";
-        }
-        return rt;
-    } else {
-        return std::make_shared<http::HttpResult>(AsyncSocketStream::NOT_CONNECT, nullptr, "not_connect " + getRemoteAddressString());
+int32_t Http2Stream::sendHeaders(const std::map<std::string, std::string>& m, bool end_stream, bool async) {
+    auto stream = getSockStream();
+    if(!stream) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " sendHeaders stream is closed";
+        return -1;
     }
-}
 
-void Http2Stream::handleRecvSetting(Frame::ptr frame) {
-    auto s = std::dynamic_pointer_cast<SettingsFrame>(frame->data);
-    CHAT_LOG_DEBUG(g_logger) << "handleRecvSetting: " << s->toString();
-    updateSettings(m_owner, s);
-}
-
-void Http2Stream::handleSendSetting(Frame::ptr frame) {
-    auto s = std::dynamic_pointer_cast<SettingsFrame>(frame->data);
-    updateSettings(m_peer, s);
-}
-
-int32_t Http2Stream::sendGoAway(uint32_t last_stream_id, uint32_t error, const std::string& debug) {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::GOAWAY;
-    GoAwayFrame::ptr data = std::make_shared<GoAwayFrame>();
-    frame->data = data;
-    data->last_stream_id = last_stream_id;
-    data->error_code = error;
-    data->data = debug;
-    return sendFrame(frame);
-}
-
-int32_t Http2Stream::sendSettingsAck() {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::SETTINGS;
-    frame->header.flags = (uint8_t)FrameFlagSettings::ACK;
-    return sendFrame(frame);
-}
-
-int32_t Http2Stream::sendSettings(const std::vector<SettingsItem>& items) {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::SETTINGS;
-    SettingsFrame::ptr data = std::make_shared<SettingsFrame>();
-    frame->data = data;
-    data->items = items;
-    int rt = sendFrame(frame);
-    if(rt > 0) {
-        handleSendSetting(frame);
+    Frame::ptr headers = std::make_shared<Frame>();
+    headers->header.type = (uint8_t)FrameType::HEADERS;
+    headers->header.flags = (uint8_t)FrameFlagHeaders::END_HEADERS;
+    if(end_stream) {
+        headers->header.flags |= (uint8_t)FrameFlagHeaders::END_STREAM;
     }
-    return rt;
-}
+    headers->header.identifier = m_id;
+    HeadersFrame::ptr data;
+    data = std::make_shared<HeadersFrame>();
 
-int32_t Http2Stream::sendRstStream(uint32_t stream_id, uint32_t error_code) {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::RST_STREAM;
-    frame->header.identifier = stream_id;
-    RstStreamFrame::ptr data = std::make_shared<RstStreamFrame>();
-    frame->data = data;
-    data->error_code = error_code;
-    return sendFrame(frame);
-}
-
-int32_t Http2Stream::sendPing(bool ack, uint64_t v) {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::PING;
-    if(ack) {
-        frame->header.flags = (uint8_t)FrameFlagPing::ACK;
+    data->hpack = std::make_shared<HPack>(stream->getSendTable());
+    for(auto& i : m) {
+        data->kvs.emplace_back(chat::ToLower(i.first), i.second);
     }
-    PingFrame::ptr data = std::make_shared<PingFrame>();
-    frame->data = data;
-    data->uint64 = v;
-    return sendFrame(frame);
+    headers->data = data;
+    int ok = stream->sendFrame(headers, async);
+    if(ok < 0) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " sendHeaders fail " << ok;
+        return ok;
+    }
+    return ok;
 }
 
-int32_t Http2Stream::sendWindowUpdate(uint32_t stream_id, uint32_t n) {
-    Frame::ptr frame = std::make_shared<Frame>();
-    frame->header.type = (uint8_t)FrameType::WINDOW_UPDATE;
-    frame->header.identifier = stream_id;
-    WindowUpdateFrame::ptr data = std::make_shared<WindowUpdateFrame>();
-    frame->data = data;
-    data->increment= n;
-    if(stream_id == 0) {
-        recv_window += n;
-    } else {
-        auto stm = getStream(stream_id);
-        if(stm) {
-            stm->updateRecvWindowByDiff(n);
-        } else {
-            CHAT_LOG_ERROR(g_logger) << "sendWindowUpdate stream=" << stream_id << " not exists";
+int32_t Http2Stream::sendResponse(http::HttpResponse::ptr rsp, bool end_stream, bool async) {
+    auto stream = getSockStream();
+    if(!stream) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " sendResponse stream is closed";
+        return -1;
+    }
+
+    Http2InitResponseForWrite(rsp);
+
+    Frame::ptr headers = std::make_shared<Frame>();
+    headers->header.type = (uint8_t)FrameType::HEADERS;
+    headers->header.flags = (uint8_t)FrameFlagHeaders::END_HEADERS;
+    headers->header.identifier = m_id;
+    HeadersFrame::ptr data;
+    auto m = rsp->getHeaders();
+    data = std::make_shared<HeadersFrame>();
+
+    auto trailer = rsp->getHeader("trailer");
+    std::set<std::string> trailers;
+    if(!trailer.empty()) {
+        auto vec = chat::split(trailer, ',');
+        for(auto& i : vec) {
+            trailers.insert(chat::StringUtil::Trim(i));
         }
     }
-    return sendFrame(frame);
-}
 
-void Http2Stream::updateSettings(Http2Settings& sts, SettingsFrame::ptr frame) {
-    DynamicTable& table = &sts == &m_owner ? m_sendTable : m_recvTable;
+    if(end_stream && rsp->getBody().empty() && trailers.empty()) {
+        headers->header.flags |= (uint8_t)FrameFlagHeaders::END_STREAM;
+    }
 
-    for(auto& i : frame->items) {
-        switch((SettingsFrame::Settings)i.identifier) {
-            case SettingsFrame::Settings::HEADER_TABLE_SIZE:
-                sts.header_table_size = i.value;
-                table.setMaxDataSize(sts.header_table_size);
-                break;
-            case SettingsFrame::Settings::ENABLE_PUSH:
-                if(i.value != 0 && i.value != 1) {
-                    CHAT_LOG_ERROR(g_logger) << "invalid enable_push=" << i.value;
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    //TODO close socket
-                }
-                sts.enable_push = i.value;
-                break;
-            case SettingsFrame::Settings::MAX_CONCURRENT_STREAMS:
-                sts.max_concurrent_streams = i.value;
-                break;
-            case SettingsFrame::Settings::INITIAL_WINDOW_SIZE:
-                if(i.value > MAX_INITIAL_WINDOW_SIZE) {
-                    CHAT_LOG_ERROR(g_logger) << "INITIAL_WINDOW_SIZE invalid value=" << i.value;
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                } else {
-                    int32_t diff = i.value - sts.initial_window_size;
-                    sts.initial_window_size = i.value;
-                    if(&sts == &m_peer) {
-                        updateRecvWindowByDiff(diff);
-                    } else {
-                        updateSendWindowByDiff(diff);
-                    }
-                }
-                break;
-            case SettingsFrame::Settings::MAX_FRAME_SIZE:
-                sts.max_frame_size = i.value;
-                if(sts.max_frame_size < DEFAULT_MAX_FRAME_SIZE
-                        || sts.max_frame_size > MAX_MAX_FRAME_SIZE) {
-                    CHAT_LOG_ERROR(g_logger) << "invalid max_frame_size=" << sts.max_frame_size;
-                    sendGoAway(m_sn, (uint32_t)Http2Error::PROTOCOL_ERROR, "");
-                    //TODO close socket
-                }
-                break;
-            case SettingsFrame::Settings::MAX_HEADER_LIST_SIZE:
-                sts.max_header_list_size = i.value;
-                break;
-            default:
-                //sendGoAway(m_sn, Http2Error::PROTOCOL_ERROR, "");
-                //TODO close socket
-                break;
+    data->hpack = std::make_shared<HPack>(stream->getSendTable());
+    for(auto& i : m) {
+        if(trailers.count(i.first)) {
+            continue;
+        }
+
+        data->kvs.emplace_back(chat::ToLower(i.first), i.second);
+    }
+    headers->data = data;
+    int ok = stream->sendFrame(headers, async);
+    if(ok < 0) {
+        CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+            << " sendResponse send Headers fail";
+        return ok;
+    }
+    if(!rsp->getBody().empty()) {
+        ok = stream->sendData(shared_from_this(), rsp->getBody(), async, trailers.empty());
+        if(ok < 0) {
+            CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_id
+                << " sendData fail, rt=" << ok << " size=" << rsp->getBody().size();
         }
     }
-}
+    if(end_stream && !trailers.empty()) {
+        Frame::ptr headers = std::make_shared<Frame>();
+        headers->header.type = (uint8_t)FrameType::HEADERS;
+        headers->header.flags = (uint8_t)FrameFlagHeaders::END_HEADERS | (uint8_t)FrameFlagHeaders::END_STREAM;
+        headers->header.identifier = m_id;
 
-http2::Stream::ptr Http2Stream::newStream(uint32_t id) {
-    if(id <= m_sn) {
-        return nullptr;
+        HeadersFrame::ptr data = std::make_shared<HeadersFrame>();
+        data->hpack = std::make_shared<HPack>(stream->getSendTable());
+        for(auto& i : trailers) {
+            auto v = rsp->getHeader(i);
+            data->kvs.emplace_back(chat::ToLower(i), v);
+        }
+        headers->data = data;
+        bool ok = stream->sendFrame(headers, async) > 0;
+        if(!ok) {
+            CHAT_LOG_INFO(g_logger) << "sendHeaders trailer fail";
+            return ok;
+        }
     }
-    m_sn = id;
 
-    http2::Stream::ptr stream = std::make_shared<http2::Stream>(
-            std::dynamic_pointer_cast<Http2Stream>(shared_from_this())
-            , id);
-    m_streamMgr.add(stream);
-    return stream;
+    return ok;
 }
 
-http2::Stream::ptr Http2Stream::newStream() {
-    http2::Stream::ptr stream = std::make_shared<http2::Stream>(
-            std::dynamic_pointer_cast<Http2Stream>(shared_from_this())
-            ,chat::Atomic::addFetch(m_sn, 2));
-    m_streamMgr.add(stream);
-    return stream;
-}
-
-http2::Stream::ptr Http2Stream::getStream(uint32_t id) {
-    return m_streamMgr.get(id);
-}
-
-void Http2Stream::delStream(uint32_t id) {
-    return m_streamMgr.del(id);
-}
-
-void Http2Stream::updateSendWindowByDiff(int32_t diff) {
-    m_streamMgr.foreach([diff, this](http2::Stream::ptr stream){
-        if(stream->updateSendWindowByDiff(diff)) {
-            sendRstStream(stream->getId(), (uint32_t)Http2Error::FLOW_CONTROL_ERROR);
-        }
-    });
-}
-
-void Http2Stream::updateRecvWindowByDiff(int32_t diff) {
-    m_streamMgr.foreach([this, diff](http2::Stream::ptr stream){
-        if(stream->updateRecvWindowByDiff(diff)) {
-            sendRstStream(stream->getId(), (uint32_t)Http2Error::FLOW_CONTROL_ERROR);
-        }
-    });
-}
-
-Http2Session::Http2Session(Socket::ptr sock, Http2Server* server)
-    :Http2Stream(sock, false) {
-    m_server = server;
-}
-
-static bool Http2ConnectionOnConnect(AsyncSocketStream::ptr as) {
-    auto stream = std::dynamic_pointer_cast<Http2Connection>(as);
+int32_t Http2Stream::sendFrame(Frame::ptr frame, bool async) {
+    auto stream = getSockStream();
     if(stream) {
-        stream->reset();
-        return stream->handleShakeClient();
+        return stream->sendFrame(frame, async);
     }
-    return false;
-};
-
-Http2Connection::Http2Connection()
-    :Http2Stream(nullptr, true) {
-    m_autoConnect = true;
-    m_connectCb = Http2ConnectionOnConnect;
+    return 0;
 }
 
-void Http2Connection::reset() {
-    m_sendTable = DynamicTable();
-    m_recvTable = DynamicTable();
-    m_owner = Http2Settings();
-    m_peer = Http2Settings();
-    send_window = DEFAULT_INITIAL_WINDOW_SIZE;
-    recv_window = DEFAULT_INITIAL_WINDOW_SIZE;
-    m_sn = (m_isClient ? -1 : 0);
-    m_streamMgr.clear();
+int32_t Http2Stream::updateSendWindowByDiff(int32_t diff) {
+    return updateWindowSizeByDiff(&m_sendWindow, diff);
 }
 
-bool Http2Connection::connect(chat::Address::ptr addr, bool ssl) {
-    m_ssl = ssl;
-    if(!ssl) {
-        m_socket = chat::Socket::CreateTCP(addr);
-        return m_socket->connect(addr);
-    } else {
-        m_socket = chat::SSLSocket::CreateTCP(addr);
-        return m_socket->connect(addr);
+int32_t Http2Stream::updateRecvWindowByDiff(int32_t diff) {
+    return updateWindowSizeByDiff(&m_recvWindow, diff);
+}
+
+int32_t Http2Stream::updateWindowSizeByDiff(int32_t* window_size, int32_t diff) {
+    int64_t new_value = *window_size + diff;
+    if(new_value < 0 || new_value > MAX_INITIAL_WINDOW_SIZE) {
+        CHAT_LOG_DEBUG(g_logger) << (window_size == &m_recvWindow? "recv_window" : "send_window")
+            << " update to " << new_value << ", from=" << *window_size << " diff=" << diff << ", invalid"
+            << " stream_id=" << m_id << " " << this;
+        //return -1;
+    }
+    chat::Atomic::addFetch(*window_size, diff);
+    //*window_size += diff;
+    return 0;
+}
+
+int32_t Http2Stream::sendData(const std::string& data, bool end_stream, bool async) {
+    auto stm = getSockStream();
+    if(stm) {
+        return stm->sendData(shared_from_this(), data, async, end_stream);
+    }
+    return -1;
+}
+
+//StreamClient::ptr StreamClient::Create(Http2Stream::ptr stream) {
+//    auto rt = std::make_shared<StreamClient>();
+//    rt->m_stream = stream;
+//    stream->setFrameHandler(std::bind(&StreamClient::onFrame, rt, std::placeholders::_1));
+//    return rt;
+//}
+//
+//int32_t StreamClient::close() {
+//    return sendData("", true);
+//}
+//
+//int32_t StreamClient::sendData(const std::string& data, bool end_stream) {
+//    auto stm = m_stream->getSockStream();
+//    if(stm) {
+//        return stm->sendData(m_stream, data, true, end_stream);
+//    }
+//    return -1;
+//}
+//
+//DataFrame::ptr StreamClient::recvData() {
+//    auto pd = m_data.pop();
+//    return pd;
+//}
+//
+//int32_t StreamClient::onFrame(Frame::ptr frame) {
+//    if(!frame) {
+//        m_data.push(nullptr);
+//        return 0;
+//    }
+//    if(frame->header.type == (uint8_t)FrameType::DATA) {
+//        auto data = std::dynamic_pointer_cast<DataFrame>(frame->data);
+//        if(!data) {
+//            CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_stream->getId()
+//                << " onFrame data not DataFrame "
+//                << frame->toString();
+//            return -1;
+//        }
+//        m_data.push(data);
+//    }
+//    if(frame->header.flags & (uint8_t)FrameFlagHeaders::END_STREAM) {
+//        m_data.push(nullptr);
+//    }
+//    return 0;
+//}
+
+Http2Stream::ptr Http2StreamManager::get(uint32_t id) {
+    RWMutexType::ReadLock lock(m_mutex);
+    auto it = m_streams.find(id);
+    return it == m_streams.end() ? nullptr : it->second;
+}
+
+void Http2StreamManager::add(Http2Stream::ptr stream) {
+    RWMutexType::WriteLock lock(m_mutex);
+    m_streams[stream->getId()] = stream;
+}
+
+void Http2StreamManager::del(uint32_t id) {
+    RWMutexType::WriteLock lock(m_mutex);
+    m_streams.erase(id);
+}
+
+void Http2StreamManager::clear() {
+    RWMutexType::WriteLock lock(m_mutex);
+    auto streams = m_streams;
+    lock.unlock();
+    for(auto& i : streams) {
+        i.second->close();
     }
 }
 
-void Http2InitRequestForWrite(chat::http::HttpRequest::ptr req, bool ssl) {
-    req->setHeader(":scheme", (ssl ? "https" : "http"));
-    if(!req->hasHeader(":path", nullptr)) {
-        req->setHeader(":path", req->getUri());
+void Http2StreamManager::foreach(std::function<void(Http2Stream::ptr)> cb) {
+    RWMutexType::ReadLock lock(m_mutex);
+    auto m = m_streams;
+    lock.unlock();
+    for(auto& i : m) {
+        cb(i.second);
     }
-    req->setHeader(":method", http::HttpMethodToString(req->getMethod()));
-}
-
-void Http2InitResponseForWrite(chat::http::HttpResponse::ptr rsp) {
-    rsp->setHeader(":status", std::to_string((uint32_t)rsp->getStatus()));
-}
-
-void Http2InitRequestForRead(chat::http::HttpRequest::ptr req) {
-    req->setMethod(http::StringToHttpMethod(req->getHeader(":method")));
-    if(req->hasHeader(":path", nullptr)) {
-        req->setUri(req->getHeader(":path"));
-        CHAT_LOG_INFO(g_logger) << req->getPath() << " - " << req->getQuery() << " - " << req->getFragment();
-    }
-}
-
-void Http2InitResponseForRead(chat::http::HttpResponse::ptr rsp) {
-    rsp->setStatus((http::HttpStatus)chat::TypeUtil::Atoi(rsp->getHeader(":status")));
 }
 
 }

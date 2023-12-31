@@ -3,7 +3,7 @@
 
 #include "http/http_server.h"
 #include "streams/service_discovery.h"
-#include "grpc/grpc_stream.h"
+#include "grpc/grpc_loadbalance.h"
 
 namespace chat {
 

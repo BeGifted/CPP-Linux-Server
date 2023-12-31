@@ -219,6 +219,9 @@ public:
     bool isWebsocket() const { return m_websocket;}
     void setWebsocket(bool v) { m_websocket = v;}
 
+    uint32_t getStreamId() const { return m_streamId;}
+    void setStreamId(uint32_t v) { m_streamId = v;}
+
     void setHeaders(const MapType& v) { m_headers = v;}
     void setParams(const MapType& v) { m_params = v;}
     void setCookies(const MapType& v) { m_cookies = v;}
@@ -300,6 +303,7 @@ private:
     bool m_websocket;
 
     uint8_t m_parserParamFlag;
+    uint32_t m_streamId;
     std::string m_path;
     std::string m_query;
     std::string m_fragment;

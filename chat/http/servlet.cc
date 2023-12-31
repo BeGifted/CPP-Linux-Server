@@ -26,7 +26,7 @@ int32_t ServletDispatch::handle(chat::http::HttpRequest::ptr request
                , chat::SocketStream::ptr session) {
     auto slt = getMatchedServlet(request->getPath());
     if (slt) {
-        slt->handle(request, response, session);
+        return slt->handle(request, response, session);
     }
     return 0;
 }

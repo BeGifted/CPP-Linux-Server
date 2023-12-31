@@ -1,5 +1,6 @@
 #include "http2_server.h"
 #include "chat/log.h"
+#include "chat/grpc/grpc_servlet.h"
 
 namespace chat {
 namespace http2 {
@@ -20,7 +21,7 @@ void Http2Server::setName(const std::string& v) {
 }
 
 void Http2Server::handleClient(Socket::ptr client) {
-    CHAT_LOG_DEBUG(g_logger) << "handleClient " << *client;
+    CHAT_LOG_INFO(g_logger) << "**** handleClient " << *client;
     chat::http2::Http2Session::ptr session = std::make_shared<chat::http2::Http2Session>(client, this);
     if(!session->handleShakeServer()) {
         CHAT_LOG_WARN(g_logger) << "http2 session handleShake fail, " << session->getRemoteAddressString();

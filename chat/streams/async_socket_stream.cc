@@ -104,7 +104,9 @@ bool AsyncSocketStream::start() {
 void AsyncSocketStream::doRead() {
     try {
         while(isConnected()) {
+            recving = true;
             auto ctx = doRecv();
+            recving = false;
             if(ctx) {
                 ctx->doRsp();
             }
@@ -203,6 +205,7 @@ bool AsyncSocketStream::innerClose() {
     if(isConnected() && m_disconnectCb) {
         m_disconnectCb(shared_from_this());
     }
+    onClose();
     SocketStream::close();
     m_sem.notify();
     std::unordered_map<uint32_t, Ctx::ptr> ctxs;
