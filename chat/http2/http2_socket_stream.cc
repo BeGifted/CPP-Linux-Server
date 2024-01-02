@@ -318,19 +318,6 @@ void Http2SocketStream::onTimeOut(AsyncSocketStream::Ctx::ptr ctx) {
     delStream(ctx->sn);
 }
 
-//StreamClient::ptr Http2SocketStream::openStreamClient(chat::http::HttpRequest::ptr request) {
-//    if(isConnected()) {
-//        //Http2InitRequestForWrite(req, m_ssl);
-//        auto stream = newStream();
-//        StreamCtx::ptr ctx = std::make_shared<StreamCtx>();
-//        ctx->request = request;
-//        ctx->sn = stream->getId();
-//        enqueue(ctx);
-//        return StreamClient::Create(stream);
-//    }
-//    return nullptr;
-//}
-
 Http2Stream::ptr Http2SocketStream::openStream(chat::http::HttpRequest::ptr request) {
     if(isConnected()) {
         //Http2InitRequestForWrite(req, m_ssl);

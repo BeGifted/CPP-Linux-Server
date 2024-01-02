@@ -65,7 +65,6 @@ void Http2Stream::close() {
         m_handler(nullptr);
     }
     m_data.push(nullptr);
-    //m_data.notifyAll();
 }
 
 void Http2Stream::endStream() {
@@ -395,51 +394,6 @@ int32_t Http2Stream::sendData(const std::string& data, bool end_stream, bool asy
     }
     return -1;
 }
-
-//StreamClient::ptr StreamClient::Create(Http2Stream::ptr stream) {
-//    auto rt = std::make_shared<StreamClient>();
-//    rt->m_stream = stream;
-//    stream->setFrameHandler(std::bind(&StreamClient::onFrame, rt, std::placeholders::_1));
-//    return rt;
-//}
-//
-//int32_t StreamClient::close() {
-//    return sendData("", true);
-//}
-//
-//int32_t StreamClient::sendData(const std::string& data, bool end_stream) {
-//    auto stm = m_stream->getSockStream();
-//    if(stm) {
-//        return stm->sendData(m_stream, data, true, end_stream);
-//    }
-//    return -1;
-//}
-//
-//DataFrame::ptr StreamClient::recvData() {
-//    auto pd = m_data.pop();
-//    return pd;
-//}
-//
-//int32_t StreamClient::onFrame(Frame::ptr frame) {
-//    if(!frame) {
-//        m_data.push(nullptr);
-//        return 0;
-//    }
-//    if(frame->header.type == (uint8_t)FrameType::DATA) {
-//        auto data = std::dynamic_pointer_cast<DataFrame>(frame->data);
-//        if(!data) {
-//            CHAT_LOG_ERROR(g_logger) << "Stream id=" << m_stream->getId()
-//                << " onFrame data not DataFrame "
-//                << frame->toString();
-//            return -1;
-//        }
-//        m_data.push(data);
-//    }
-//    if(frame->header.flags & (uint8_t)FrameFlagHeaders::END_STREAM) {
-//        m_data.push(nullptr);
-//    }
-//    return 0;
-//}
 
 Http2Stream::ptr Http2StreamManager::get(uint32_t id) {
     RWMutexType::ReadLock lock(m_mutex);

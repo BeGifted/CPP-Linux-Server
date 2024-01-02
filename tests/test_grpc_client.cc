@@ -12,12 +12,12 @@ void testUnary(chat::grpc::GrpcConnection::ptr conn) {
         prefx = prefx + prefx;
     }
 
-    for(int x = 0; x < 20; ++x) {
+    for(int x = 0; x < 10; ++x) {
         chat::IOManager::GetThis()->schedule([conn, x, prefx](){
             int fail = 0;
             int error = 0;
             static int sn = 0;
-            for(int i = 0; i < 20; ++i) {
+            for(int i = 0; i < 10; ++i) {
                 auto hr = std::make_shared<test::HelloRequest>();
                 auto tmp = chat::Atomic::addFetch(sn, 1);
                 hr->set_id(prefx + "hello_" + std::to_string(tmp));
@@ -57,7 +57,7 @@ void testStreamClient(chat::grpc::GrpcConnection::ptr conn) {
 
                 stm->sendMessage(hr);
             }
-            stm->sendData("", true);
+            stm->sendData("", true); // end stream
             auto rsp = stm->recvMessage<test::HelloResponse>();
             CHAT_LOG_INFO(g_logger) << "===== HelloStreamA - " << rsp << " - " << (rsp ? chat::PBToJsonString(*rsp) : "(null)");
             //sleep(1);
@@ -217,7 +217,7 @@ void run() {
             CHAT_LOG_INFO(g_logger) << "------ status ------";
     }, true);
     //sleep(5);
-    //chat::IOManager::GetThis()->schedule(std::bind(testUnary, conn));
+    chat::IOManager::GetThis()->schedule(std::bind(testUnary, conn));
     //for(int i = 0; i < 1000; ++i) {
     //    //chat::IOManager::GetThis()->schedule(std::bind(testStreamClient, conn));
     //    //chat::IOManager::GetThis()->schedule(std::bind(testStreamServer, conn));

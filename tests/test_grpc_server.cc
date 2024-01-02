@@ -111,9 +111,6 @@ void run() {
     chat::grpc::GrpcServer::ptr server(new chat::grpc::GrpcServer);
     chat::Address::ptr addr = chat::Address::LookupAnyIPAddress("0.0.0.0:8099");
 
-    //std::shared_ptr<HelloServiceHello> hsh = std::make_shared<HelloServiceHello>();
-    //std::shared_ptr<HelloServiceHello> hsh2 = std::make_shared<HelloServiceHello>(*hsh);
-
     server->addGrpcServlet(chat::grpc::GrpcServlet::GetGrpcPath("test", "HelloService", "Hello"),
                            std::make_shared<HelloServiceHello>()
                            );

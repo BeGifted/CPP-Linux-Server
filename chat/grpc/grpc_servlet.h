@@ -12,7 +12,6 @@
     chat::grpc::GrpcServlet::ptr clone() override { \
         return std::make_shared<class_name>(*this); \
     }
-//return std::make_shared<std::remove_pointer<decltype(this)>::type>(*this);
 
 #define GRPC_SERVLET_CTOR(class_name) \
     class_name() \
